@@ -11,6 +11,7 @@ interface Review {
   message: string;
 }
 
+
 const FifthPage: React.FC = () => {
   const reviewsLength = customerReviews.length - 1;
   const [review, setReview] = useState<number>(0);
@@ -54,12 +55,12 @@ const FifthPage: React.FC = () => {
           More over <span className="rw-text-num">1500+ Customers</span>
         </p>
 
-        <p className="rw-text-desc">Don't believe us, Check clients word</p>
+        <p className="rw-text-desc">{"Don't believe us, Check clients word"}</p>
 
         <p className="rw-text-format">
-          <span className="rw-text-quote1">''</span>
+          <span className="rw-text-quote1">{""}</span>
           <span className="rw-review">{rMessage}</span>
-          <span className="rw-text-quote2">''</span>
+          <span className="rw-text-quote2">{''}</span>
         </p>
 
         <div className="rw-authors">

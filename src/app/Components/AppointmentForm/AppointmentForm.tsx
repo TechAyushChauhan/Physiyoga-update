@@ -1,5 +1,6 @@
+"use client"; 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
+
 import { ToastContainer, toast } from "react-toastify";
 import Footer from "../footer/page";
 import Navbar from "../navbar/page";

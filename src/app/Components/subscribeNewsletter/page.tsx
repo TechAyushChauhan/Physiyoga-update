@@ -1,4 +1,5 @@
-import React, { useState, ChangeEvent, MouseEvent } from "react";
+"use client"; 
+import React, { useState, ChangeEvent  } from "react";
 import toast, { Toaster } from "react-hot-toast"; // Import react-hot-toast
 
 const SubscribeNewsletter: React.FC = () => {
@@ -14,7 +15,7 @@ const SubscribeNewsletter: React.FC = () => {
   };
 
   // Handle button click event
-  const handleBookAppointmentClick = (event: MouseEvent<HTMLButtonElement>) => {
+  const handleBookAppointmentClick = () => {
     if (!isButtonDisabled) {
       setIsButtonDisabled(true); // Disable button immediately on click
 

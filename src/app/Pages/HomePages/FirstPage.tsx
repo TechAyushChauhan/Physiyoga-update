@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarCheck, faAngleUp } from "@fortawesome/free-solid-svg-icons";
-import { useRouter } from "next/router";
-import Appointment from "../AppointmentPage/Page";
+// import { useRouter } from "next/router";
+// import Appointment from "../AppointmentPage/Page";
 import Image from 'next/image'; // Make sure you import next/image
 import "./Styles/FirstPage.css"
 
@@ -18,7 +18,7 @@ const FirstPage: React.FC = () => {
   }, []);
 
  // Router will only be used after component mounts
- const [router, setRouter] = useState(null);
+//  const [router, setRouter] = useState(null);
 
  // useEffect to set the mounted flag
 //   useEffect(() => {

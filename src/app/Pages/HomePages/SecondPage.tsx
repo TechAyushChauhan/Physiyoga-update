@@ -4,11 +4,11 @@ import { faHeartPulse, faTruckMedical, faTooth } from "@fortawesome/free-solid-s
 import "./Styles/SecondPage.css";
 
 // Define prop types for InformationCard if it's a TypeScript component
-interface InformationCardProps {
-  title: string;
-  description: string;
-  icon: any;
-}
+// interface InformationCardProps {
+//   title: string;
+//   description: string;
+//   icon: any;
+// }
 
 const SecondPage: React.FC = () => {
   return (
