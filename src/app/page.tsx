@@ -1,22 +1,26 @@
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-function Home()
-{
+// pages/index.tsx
+import Footer from './Components/footer/page';
+import Navbar from './Components/navbar/page';
+import FirstPage from './Pages/HomePages/FirstPage';
+import SecondPage from './Pages/HomePages/SecondPage';
+import Thirdpage from './Pages/HomePages/ThirdPage';
+import FourthPage from './Pages/HomePages/FourthPage';
+import FifthPage from './Pages/HomePages/FifthPage';
+import SixthPage from './Pages/HomePages/SixthPage';
+
+const Page: React.FC = () => {
   return (
     <>
-      <div className='flex bg-black items-center'>
-        <nav className="w-auto flex-grow text-white flex justify-around h-9 items-center">
-
-          <div className="cursor-pointer">Home</div>
-          <div className="cursor-pointer">Contact</div>
-          <div className="cursor-pointer">Insights</div>
-          <div className="cursor-pointer">About</div>
-
-        </nav>
-        <div className='mr-4'>
-          <AccountCircleIcon className='text-white' />
-        </div>
-      </div>
+      <Navbar />
+      <FirstPage />
+      <SecondPage />
+      <Thirdpage />
+      <FourthPage />
+      <FifthPage />
+      <SixthPage />
+      <Footer />
     </>
   );
 }
-export default Home
+
+export default Page;
