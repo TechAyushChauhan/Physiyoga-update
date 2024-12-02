@@ -15,7 +15,7 @@ const SubscribeNewsletter: React.FC = () => {
   };
 
   // Handle button click event
-  const handleBookAppointmentClick = (event: MouseEvent<HTMLButtonElement>) => {
+  const handleBookAppointmentClick = () => {
     if (!isButtonDisabled) {
       setIsButtonDisabled(true); // Disable button immediately on click
 
