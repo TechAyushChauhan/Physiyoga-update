@@ -1,5 +1,5 @@
 "use client"; 
-import React, { useState, ChangeEvent, MouseEvent } from "react";
+import React, { useState, ChangeEvent  } from "react";
 import toast, { Toaster } from "react-hot-toast"; // Import react-hot-toast
 
 const SubscribeNewsletter: React.FC = () => {
