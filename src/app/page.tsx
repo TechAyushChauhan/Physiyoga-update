@@ -14,6 +14,7 @@ const Page: React.FC = () => {
       <Navbar />
       <FirstPage />
       <SecondPage />
+      
       <Thirdpage />
       <FourthPage />
       <FifthPage />
