@@ -1,6 +1,5 @@
 "use client"; 
 
-
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation"; 
 import "./Register.css"; 
@@ -9,6 +8,7 @@ interface FormData {
   username: string;
   password: string;
   confirmPassword: string;
+  mobileOrEmail: string;  // New field for mobile number or email
 }
 
 const Register: React.FC = () => {
@@ -16,6 +16,7 @@ const Register: React.FC = () => {
     username: "",
     password: "",
     confirmPassword: "",
+    mobileOrEmail: "",  // Initialize new field
   });
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
@@ -34,10 +35,10 @@ const Register: React.FC = () => {
     setError("");
     setSuccess("");
 
-    const { username, password, confirmPassword } = formData;
+    const { username, password, confirmPassword, mobileOrEmail } = formData;
 
     // Basic validation
-    if (username === "" || password === "" || confirmPassword === "") {
+    if (username === "" || password === "" || confirmPassword === "" || mobileOrEmail === "") {
       setError("All fields are required.");
       return;
     }
@@ -46,6 +47,8 @@ const Register: React.FC = () => {
       setError("Passwords do not match.");
       return;
     }
+
+    // You can add further validation for mobileOrEmail here, if needed
 
     // Simulate successful registration (replace with actual registration logic)
     localStorage.setItem("token", "dummyToken"); // Simulated token
@@ -98,6 +101,17 @@ const Register: React.FC = () => {
               id="confirmPassword"
               name="confirmPassword"
               value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="mobileOrEmail">Mobile Number or Email</label>
+            <input
+              type="text"
+              id="mobileOrEmail"
+              name="mobileOrEmail"
+              value={formData.mobileOrEmail}
               onChange={handleChange}
               required
             />
