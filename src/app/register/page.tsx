@@ -1,14 +1,14 @@
 "use client"; 
 
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import { useRouter } from "next/navigation"; 
-import "./Register.css"; 
+import { useRouter } from "next/navigation";
 
+// Define the type for the form data
 interface FormData {
   username: string;
   password: string;
   confirmPassword: string;
-  mobileOrEmail: string;  // New field for mobile number or email
+  mobileOrEmail: string;
 }
 
 const Register: React.FC = () => {
@@ -16,7 +16,7 @@ const Register: React.FC = () => {
     username: "",
     password: "",
     confirmPassword: "",
-    mobileOrEmail: "",  // Initialize new field
+    mobileOrEmail: "",
   });
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
@@ -48,8 +48,6 @@ const Register: React.FC = () => {
       return;
     }
 
-    // You can add further validation for mobileOrEmail here, if needed
-
     // Simulate successful registration (replace with actual registration logic)
     localStorage.setItem("token", "dummyToken"); // Simulated token
     setSuccess("Registration successful! Redirecting...");
@@ -67,64 +65,81 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="register-container">
-      <div className="register-box">
-        <button className="back-btn" onClick={handleBack}>← Back</button>
-        <h2>Register for Physiyoga</h2>
+    <div className="flex items-center justify-center h-screen bg-gradient-to-br from-[#2c3e50] to-[#1a252f] font-sans relative">
+      <div className="bg-[#1e2a33] p-10 rounded-xl shadow-lg max-w-md w-full text-center">
+        <button 
+          className="absolute top-4 left-4 bg-[#34495e] text-[#ecf0f1] text-sm font-bold py-2 px-4 rounded-md hover:bg-[#16a085]"
+          onClick={handleBack}
+        >
+          ← Back
+        </button>
+        <h2 className="text-[#f39c12] text-2xl font-bold uppercase mb-6">
+          Register for Physiyoga
+        </h2>
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
+          <div className="mb-6 text-left">
+            <label htmlFor="username" className="block text-[#bdc3c7] text-sm font-bold mb-2">Username</label>
             <input
               type="text"
               id="username"
               name="username"
               value={formData.username}
               onChange={handleChange}
+              className="w-full p-3 border border-[#7f8c8d] rounded-lg bg-[#34495e] text-[#ecf0f1] focus:outline-none focus:ring-2 focus:ring-[#f39c12]"
               required
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
+          <div className="mb-6 text-left">
+            <label htmlFor="password" className="block text-[#bdc3c7] text-sm font-bold mb-2">Password</label>
             <input
               type="password"
               id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
+              className="w-full p-3 border border-[#7f8c8d] rounded-lg bg-[#34495e] text-[#ecf0f1] focus:outline-none focus:ring-2 focus:ring-[#f39c12]"
               required
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password</label>
+          <div className="mb-6 text-left">
+            <label htmlFor="confirmPassword" className="block text-[#bdc3c7] text-sm font-bold mb-2">Confirm Password</label>
             <input
               type="password"
               id="confirmPassword"
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
+              className="w-full p-3 border border-[#7f8c8d] rounded-lg bg-[#34495e] text-[#ecf0f1] focus:outline-none focus:ring-2 focus:ring-[#f39c12]"
               required
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="mobileOrEmail">Mobile Number or Email</label>
+          <div className="mb-6 text-left">
+            <label htmlFor="mobileOrEmail" className="block text-[#bdc3c7] text-sm font-bold mb-2">Mobile Number or Email</label>
             <input
               type="text"
               id="mobileOrEmail"
               name="mobileOrEmail"
               value={formData.mobileOrEmail}
               onChange={handleChange}
+              className="w-full p-3 border border-[#7f8c8d] rounded-lg bg-[#34495e] text-[#ecf0f1] focus:outline-none focus:ring-2 focus:ring-[#f39c12]"
               required
             />
           </div>
-          {error && <p className="error-message">{error}</p>}
-          {success && <p className="success-message">{success}</p>}
-          <button type="submit" className="btn">
+          {error && <p className="text-[#e74c3c] text-xs mb-4">{error}</p>}
+          {success && <p className="text-[#2ecc71] text-xs mb-4">{success}</p>}
+          <button 
+            type="submit" 
+            className="w-full bg-[#f39c12] text-white font-semibold py-3 rounded-lg hover:bg-[#e67e22] focus:outline-none"
+          >
             Register
           </button>
         </form>
-        <p className="ppp">
+        <p className="mt-6 text-sm text-[#bdc3c7]">
           Already a user?{" "}
-          <span className="login-link" onClick={handleLoginRedirect}>
+          <span 
+            className="text-[#f39c12] hover:text-[#e67e22] cursor-pointer"
+            onClick={handleLoginRedirect}
+          >
             Login here
           </span>
         </p>

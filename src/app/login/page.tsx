@@ -1,10 +1,7 @@
-'use client'; // Add this at the top of the file to mark the component as a Client Component
-
-// src/app/login/page.tsx
+'use client';
 
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import { useRouter } from "next/navigation";  // Use "next/navigation" in Next.js 13+
-import "./Login.css";  // Import your CSS file
+import { useRouter } from "next/navigation";
 
 interface FormData {
   username: string;
@@ -33,29 +30,42 @@ const Login: React.FC = () => {
 
     const { username, password } = formData;
     if (username === "admin" && password === "password") {
-      localStorage.setItem("token", "dummyToken"); // Simulated token
-      router.push("/dashboard"); // Redirect to the dashboard
+      localStorage.setItem("token", "dummyToken");
+      router.push("/dashboard");
     } else {
       setError("Invalid username or password. Please try again.");
     }
   };
 
   const handleBack = () => {
-    router.push("/"); // Navigate to the home page ("/")
+    router.push("/");
   };
 
   const handleRegisterRedirect = () => {
-    router.push("/register"); // Redirect to the register page
+    router.push("/register");
   };
 
   return (
-    <div className="login-container">
-      <div className="login-box">
-        <button className="back-btn" onClick={handleBack}>← Back</button>
-        <h2>Physiyoga Login</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
+    <div className="flex items-center justify-center h-screen bg-gradient-to-br from-[#2c3e50] to-[#1a252f] font-sans relative">
+      {/* Back Button */}
+      <button
+        className="absolute top-5 left-5 bg-[#34495e] text-[#ecf0f1] px-3 py-2 rounded-md text-sm font-bold hover:bg-[#16a085] hover:text-white"
+        onClick={handleBack}
+      >
+        ← Back
+      </button>
+
+      {/* Login Box */}
+      <div className="bg-[#1e2a33] p-10 rounded-xl shadow-lg max-w-md w-full text-center">
+        <h2 className="text-[#f39c12] text-xl font-bold uppercase mb-6">
+          Physiyoga Login
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Username Field */}
+          <div className="text-left">
+            <label htmlFor="username" className="block text-[#bdc3c7] text-sm font-bold mb-2">
+              Username
+            </label>
             <input
               type="text"
               id="username"
@@ -63,10 +73,15 @@ const Login: React.FC = () => {
               value={formData.username}
               onChange={handleChange}
               required
+              className="w-full p-3 rounded-md bg-[#34495e] text-[#ecf0f1] border border-[#7f8c8d] focus:outline-none focus:ring-2 focus:ring-[#f39c12] focus:border-[#f39c12]"
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
+
+          {/* Password Field */}
+          <div className="text-left">
+            <label htmlFor="password" className="block text-[#bdc3c7] text-sm font-bold mb-2">
+              Password
+            </label>
             <input
               type="password"
               id="password"
@@ -74,16 +89,29 @@ const Login: React.FC = () => {
               value={formData.password}
               onChange={handleChange}
               required
+              className="w-full p-3 rounded-md bg-[#34495e] text-[#ecf0f1] border border-[#7f8c8d] focus:outline-none focus:ring-2 focus:ring-[#f39c12] focus:border-[#f39c12]"
             />
           </div>
-          {error && <p className="error-message">{error}</p>}
-          <button type="submit" className="btn">
+
+          {/* Error Message */}
+          {error && <p className="text-[#e74c3c] text-sm">{error}</p>}
+
+          {/* Login Button */}
+          <button
+            type="submit"
+            className="w-full bg-[#f39c12] text-white py-3 rounded-md font-bold text-lg hover:bg-[#e67e22] transition"
+          >
             Login
           </button>
         </form>
-        <p className="ppp">
+
+        {/* Register Link */}
+        <p className="pt-5">
           New user?{" "}
-          <span className="register-link" onClick={handleRegisterRedirect}>
+          <span
+            className="text-[#f39c12] cursor-pointer underline hover:text-[#e67e22]"
+            onClick={handleRegisterRedirect}
+          >
             Register here
           </span>
         </p>

@@ -2,8 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import "./Dashboard.css"; // Ensure you add appropriate styles
-import { FaUserAlt, FaBook, FaSignOutAlt } from "react-icons/fa"; // Importing icons for a polished look
+import dynamic from "next/dynamic";
+
+// Dynamic imports for icons
+const FaUserAlt = dynamic(() => import("react-icons/fa").then((mod) => mod.FaUserAlt), { ssr: false });
+const FaBook = dynamic(() => import("react-icons/fa").then((mod) => mod.FaBook), { ssr: false });
+const FaSignOutAlt = dynamic(() => import("react-icons/fa").then((mod) => mod.FaSignOutAlt), { ssr: false });
 
 // Dummy course data
 const courses = [
@@ -13,71 +17,76 @@ const courses = [
 ];
 
 const Dashboard: React.FC = () => {
-  const [userCourses, setUserCourses] = useState(courses); // Set user courses
+  const [userCourses, setUserCourses] = useState(courses);
   const router = useRouter();
 
   useEffect(() => {
-    // Fetch the user's course data from the API or local storage (for this demo, using dummy data)
-    // Example: setUserCourses(fetchedCourses);
+    if (typeof window !== "undefined") {
+      // Fetch the user's course data from the API or local storage
+      // Example: setUserCourses(fetchedCourses);
+    }
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Remove the token on logout
-    router.push("/login"); // Redirect to the login page after logout
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("token");
+    }
+    router.push("/login");
   };
 
   return (
-    <div className="dashboard-container">
-      <div className="sidebar">
-        <div className="sidebar-item">
+    <div className="flex min-h-screen bg-gray-100">
+      {/* Sidebar */}
+      <div className="w-1/4 bg-blue-900 text-white flex flex-col p-6 space-y-6">
+        <div className="flex items-center space-x-4 cursor-pointer">
           <FaUserAlt />
           <span>Profile</span>
         </div>
-        <div className="sidebar-item">
+        <div className="flex items-center space-x-4 cursor-pointer">
           <FaBook />
           <span>Courses</span>
         </div>
-        <div className="sidebar-item" onClick={handleLogout}>
+        <div className="flex items-center space-x-4 cursor-pointer" onClick={handleLogout}>
           <FaSignOutAlt />
           <span>Logout</span>
         </div>
       </div>
 
-      <div className="main-content">
-        <h2>Welcome to Your Yoga Dashboard</h2>
-        <p className="text-description">
+      {/* Main Content */}
+      <div className="w-3/4 p-8 space-y-8">
+        <h2 className="text-2xl font-bold text-gray-800">Welcome to Your Yoga Dashboard</h2>
+        <p className="text-gray-600">
           Manage your courses, track your progress, and explore new learning opportunities.
         </p>
 
-        <div className="dashboard-courses">
-          <h3>Your Courses</h3>
-          <div className="course-list">
-            {userCourses.map((course) => (
-              <div key={course.id} className="course-card">
-                <h4>{course.name}</h4>
-                <div className="course-progress">
-                  <p>Progress: {course.progress}%</p>
-                  <progress value={course.progress} max={100}></progress>
-                </div>
-                <button
-                  className="btn-view-course"
-                  onClick={() => router.push(`/course/${course.id}`)}
-                >
-                  View Course
-                </button>
+        {/* Courses List */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {userCourses.map((course) => (
+            <div key={course.id} className="bg-white shadow-md rounded-lg p-6 space-y-4">
+              <h4 className="text-lg font-semibold text-gray-800">{course.name}</h4>
+              <div className="space-y-2">
+                <progress className="w-full" max="100" value={course.progress}></progress>
+                <p className="text-gray-600">Progress: {course.progress}%</p>
               </div>
-            ))}
-          </div>
+              <button
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                onClick={() => router.push(`/course/${course.id}`)}
+              >
+                View Course
+              </button>
+            </div>
+          ))}
         </div>
 
-        <div className="stat-cards">
-          <div className="stat-card">
-            <h4>Total Sessions</h4>
-            <p>120</p>
+        {/* Statistics */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="bg-white shadow-md rounded-lg p-6 text-center">
+            <h4 className="text-lg font-semibold text-gray-800">Total Sessions</h4>
+            <p className="text-2xl font-bold text-blue-600">120</p>
           </div>
-          <div className="stat-card">
-            <h4>Total Revenue</h4>
-            <p>$5000</p>
+          <div className="bg-white shadow-md rounded-lg p-6 text-center">
+            <h4 className="text-lg font-semibold text-gray-800">Total Revenue</h4>
+            <p className="text-2xl font-bold text-blue-600">$5000</p>
           </div>
         </div>
       </div>
