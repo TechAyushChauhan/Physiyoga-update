@@ -1,84 +1,67 @@
-'use client';  // Add this at the top of your component
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { customerReviews } from "./Helper/reviews"; // Assume this is a valid import
-import "./Styles/FifthPage.css";
+import React, { useState, useEffect, useCallback } from "react";
+import { customerReviews } from "./Helper/reviews";
 
-// Type definition for a review
 interface Review {
   name: string;
   location: string;
   message: string;
 }
 
-
 const FifthPage: React.FC = () => {
   const reviewsLength = customerReviews.length - 1;
   const [review, setReview] = useState<number>(0);
-  
-  let rMessage: string | undefined, rName: string | undefined, rLocation: string | undefined;
 
-  // Back to previous review
-  const backBtnClick = () => {
+  const backBtnClick = useCallback(() => {
     setReview((prevReview) => (prevReview <= 0 ? reviewsLength : prevReview - 1));
-  };
+  }, [reviewsLength]);
 
-  // Go to next review
-  const frontBtnClick = () => {
+  const frontBtnClick = useCallback(() => {
     setReview((prevReview) => (prevReview >= reviewsLength ? 0 : prevReview + 1));
-  };
+  }, [reviewsLength]);
 
-  // Update reviews based on the current index
-  const handleReviewsUpdation = () => {
-    const reviewMessage: Review = customerReviews[review];
-    rName = reviewMessage.name;
-    rLocation = reviewMessage.location;
-    rMessage = reviewMessage.message;
-  };
-
-  // Automatically change reviews every 6 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       frontBtnClick();
     }, 6000);
 
-    return () => clearInterval(interval); // Clear the interval on component unmount
-  }, []);
+    return () => clearInterval(interval);
+  }, [frontBtnClick]);
 
-  // List review on visit
-  handleReviewsUpdation();
+  const currentReview = customerReviews[review];
 
   return (
-    <div className="review-section" id="reviews">
-      <div className="rw-text-content">
-        <p className="rw-text-title">
-          More over <span className="rw-text-num">1500+ Customers</span>
+    <div className="py-8 flex justify-center items-center gap-6 bg-gradient-to-r from-blue-100 to-blue-50" id="reviews">
+      <div className="w-full">
+        <p className="my-4 text-gray-500 font-bold text-2xl tracking-wide font-rubik">
+          More over <span className="text-blue-500">1500+ Customers</span>
         </p>
-
-        <p className="rw-text-desc">{"Don't believe us, Check clients word"}</p>
-
-        <p className="rw-text-format">
-          <span className="rw-text-quote1">{""}</span>
-          <span className="rw-review">{rMessage}</span>
-          <span className="rw-text-quote2">{''}</span>
+        <p className="my-4 text-black font-bold text-3xl tracking-wide leading-relaxed font-rubik">
+          {"Don't believe us, Check clients word"}
         </p>
-
-        <div className="rw-authors">
-          <div className="rw-names">
-            <p className="rw-reviewer-name">{rName}</p>
-            <p className="rw-reviewer-place">{rLocation}</p>
+        <p className="my-16 flex justify-start items-center relative">
+          <span className="absolute -top-4 -left-6 text-blue-500 font-bold text-4xl font-poppins">“</span>
+          <span className="block ml-2 text-black text-xl leading-8 font-rubik">
+            {currentReview?.message}
+          </span>
+          <span className="absolute -right-4 -bottom-6 text-blue-500 font-bold text-4xl font-poppins">”</span>
+        </p>
+        <div className="ml-2 flex flex-wrap justify-between items-center">
+          <div>
+            <p className="font-poppins text-xl font-bold">{currentReview?.name}</p>
+            <p className="mt-1 text-gray-500 font-bold text-lg">{currentReview?.location}</p>
           </div>
-
-          <div className="rw-btns">
+          <div className="flex">
             <button
-              className="rw-next-btn"
+              className="mr-6 text-black border-none bg-transparent text-4xl cursor-pointer hover:text-blue-500"
               type="button"
               onClick={backBtnClick}
             >
               ←
             </button>
             <button
-              className="rw-next-btn"
+              className="text-black border-none bg-transparent text-4xl cursor-pointer hover:text-blue-500"
               type="button"
               onClick={frontBtnClick}
             >
