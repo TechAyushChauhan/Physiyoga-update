@@ -17,15 +17,15 @@ const courses = [
 ];
 
 const Dashboard: React.FC = () => {
-  const [userCourses, setUserCourses] = useState(courses);
+  const [userCourses, setUserCourses] = useState(courses); // Retaining default courses
   const router = useRouter();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // Fetch the user's course data from the API or local storage
-      // Example: setUserCourses(fetchedCourses);
+      // Example API or local storage fetching for user courses
+      // setUserCourses(fetchedCourses); Uncomment if API is integrated
     }
-  }, []);
+  }, []); // No external dependencies here
 
   const handleLogout = () => {
     if (typeof window !== "undefined") {
@@ -37,7 +37,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-1/4 bg-blue-900 text-white flex flex-col p-6 space-y-6">
+      <aside className="w-1/4 bg-blue-900 text-white flex flex-col p-6 space-y-6">
         <div className="flex items-center space-x-4 cursor-pointer">
           <FaUserAlt />
           <span>Profile</span>
@@ -50,17 +50,17 @@ const Dashboard: React.FC = () => {
           <FaSignOutAlt />
           <span>Logout</span>
         </div>
-      </div>
+      </aside>
 
       {/* Main Content */}
-      <div className="w-3/4 p-8 space-y-8">
+      <main className="w-3/4 p-8 space-y-8">
         <h2 className="text-2xl font-bold text-gray-800">Welcome to Your Yoga Dashboard</h2>
         <p className="text-gray-600">
           Manage your courses, track your progress, and explore new learning opportunities.
         </p>
 
         {/* Courses List */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {userCourses.map((course) => (
             <div key={course.id} className="bg-white shadow-md rounded-lg p-6 space-y-4">
               <h4 className="text-lg font-semibold text-gray-800">{course.name}</h4>
@@ -76,10 +76,10 @@ const Dashboard: React.FC = () => {
               </button>
             </div>
           ))}
-        </div>
+        </section>
 
         {/* Statistics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <section className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="bg-white shadow-md rounded-lg p-6 text-center">
             <h4 className="text-lg font-semibold text-gray-800">Total Sessions</h4>
             <p className="text-2xl font-bold text-blue-600">120</p>
@@ -88,8 +88,8 @@ const Dashboard: React.FC = () => {
             <h4 className="text-lg font-semibold text-gray-800">Total Revenue</h4>
             <p className="text-2xl font-bold text-blue-600">$5000</p>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
 };
