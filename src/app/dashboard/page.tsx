@@ -17,7 +17,7 @@ const courses = [
 ];
 
 const Dashboard: React.FC = () => {
-  const [userCourses, setUserCourses] = useState(courses); // Retaining default courses
+  const [userCourses] = useState(courses); // Retaining default courses
   const router = useRouter();
 
   useEffect(() => {

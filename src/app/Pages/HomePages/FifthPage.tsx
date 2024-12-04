@@ -3,11 +3,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { customerReviews } from "./Helper/reviews";
 
-interface Review {
-  name: string;
-  location: string;
-  message: string;
-}
 
 const FifthPage: React.FC = () => {
   const reviewsLength = customerReviews.length - 1;
