@@ -25,7 +25,7 @@ export const callApi = async <T> (
     } catch (error) {
         console.log(error)
 
-      throw new Error(error?.message || 'An error occurred');
+      throw new Error( 'An error occurred');
     }
   };
   
