@@ -1,10 +1,10 @@
 
 // utils/callApi.ts
 
-export const callApi = async <T> (
+export const callApi = async (
     endpoint: string,
     method: 'POST' | 'GET' | 'PUT' | 'DELETE' = 'POST',
-    data?: T
+    data?: any
   ) => {
     try {
       const response = await fetch(endpoint, {
