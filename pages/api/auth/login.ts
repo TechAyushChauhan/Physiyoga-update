@@ -12,16 +12,20 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     // const { db } = await connectToDatabase(); 
     // Validate input data
-   
+ 
 
    console.log(req.body)
     
 
     try {
+        const users = await db.collection<User>('users').insertOne({
+            name:'test'
+        });
       // Check if user already exists
    
       return res.status(201).json({ msg: 'User registered successfully' });
     } catch (error) {
+        console.log(error)
     //   console.error(error.message);
       return res.status(500).send('Server error');
     }

@@ -30,6 +30,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         "msg": "User registered successfully"
     });
     } catch (error) {
+        console.log(error)
     //   console.error(error.message);
       return res.status(500).send('Server error');
     }
