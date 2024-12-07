@@ -4,10 +4,10 @@ import { User } from '../../models/test'; // Import the User model
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
-        if (req.method === 'GET') {
-            const { db } = await connectToDatabase(); // Establish database connection
+        if (req.method === 'Post') {
+            const { db } = await connectToDatabase(); 
 
-            // Dummy condition for testing purposes
+           
             const isLoggedIn = true;
 
             if (isLoggedIn) {
