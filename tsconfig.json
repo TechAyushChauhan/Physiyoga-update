@@ -6,7 +6,7 @@
       "esnext"
     ],
     "allowJs": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true,  // Skips type checking of declaration files
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
