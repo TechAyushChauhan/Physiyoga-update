@@ -4,7 +4,7 @@ import { connectToDatabase } from '../../../lib/mongodb';
 import ejs from 'ejs';
 import path from 'path';
 import nodemailer from "nodemailer";
-import { error } from 'console';
+// import { error } from 'console';
 
 const renderTemplate = async ( data: object) => {
   try {
