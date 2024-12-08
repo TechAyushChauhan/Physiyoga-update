@@ -45,8 +45,13 @@ const Login: React.FC = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // setError("");
+       const { username, password } = formData;
+     if (username === "" && password === "") {
 
+      setError("Invalid username or password. Please try again.");
+      return
+    }
+setError("");
     // const { username, password } = formData;
     handleLogin()
     
