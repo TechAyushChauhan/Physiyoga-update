@@ -4,6 +4,7 @@ import { connectToDatabase } from '../../../lib/mongodb';
 import ejs from 'ejs';
 import path from 'path';
 import nodemailer from "nodemailer";
+import { error } from 'console';
 
 const renderTemplate = async ( data: object) => {
   try {
@@ -47,12 +48,22 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           html: html,
       };
   
-      auth.sendMail(receiver, (error) => {
-          if(error)
-          throw error;
-          console.log("success!");
+      // auth.sendMail(receiver, (error) => {
+      //     if(error)
+      //     throw error;
+      //     console.log("success!");
    
+      // });
+      const sendEmailPromise = new Promise<void>((resolve, reject) => {
+        auth.sendMail(receiver, (error) => {
+          if (error) {
+            reject(error); // Reject with the error if it occurs
+          } else {
+            resolve(); // Resolve if the email was sent successfully
+          }
+        });
       });
+      await sendEmailPromise;
         if (existingUser) {
             return res.status(201).json(
                 
@@ -75,7 +86,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     } catch (error) {
         console.log(error)
   
-      return res.status(500).send('Server error');
+      return res.status(500).send({msg:'Server error' ,error:error});
     }
   } else {
     return res.status(405).json({ msg: 'Method Not Allowed' });
