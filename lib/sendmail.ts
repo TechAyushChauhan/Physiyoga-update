@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
   });
 
 // Render the EJS template
-const renderTemplate = async (templateName, data) => {
+const renderTemplate = async ( data) => {
   try {
     const templatePath = path.resolve(`./lib/mailtemp.ejs`);
     return await ejs.renderFile(templatePath, data);
