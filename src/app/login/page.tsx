@@ -4,6 +4,8 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "../../../lib/hooks";
 import { increment } from "../../../store/slices/counterSlice";
+import { callApi } from "../../../lib/callApi";
+import toast, { Toaster } from "react-hot-toast"; // Import react-hot-toast
 
 interface FormData {
   username: string;
@@ -28,18 +30,33 @@ const Login: React.FC = () => {
       [name]: value,
     }));
   };
+  const handleLogin=async()=>{
+
+    const user=await callApi('/api/auth/login','POST',formData)
+    if (user.type=='E') {
+      toast.error(user.msg, {
+        position: "top-right",
+      
+      });
+      return
+  }; 
+  router.push("/dashboard");
+  }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
+    // setError("");
 
-    const { username, password } = formData;
-    if (username === "admin" && password === "password") {
-      localStorage.setItem("token", "dummyToken");
-      router.push("/dashboard");
-    } else {
-      setError("Invalid username or password. Please try again.");
-    }
+    // const { username, password } = formData;
+    handleLogin()
+    
+    // if (username === "admin" && password === "password") {
+
+    //   localStorage.setItem("token", "dummyToken");
+    //   router.push("/dashboard");
+    // } else {
+    //   setError("Invalid username or password. Please try again.");
+    // }
   };
 
   const handleBack = () => {
@@ -128,6 +145,7 @@ const Login: React.FC = () => {
           </span>
         </p>
       </div>
+      <Toaster />
     </div>
   );
 };

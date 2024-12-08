@@ -1,6 +1,19 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { User } from '../../../models/login';
 import { connectToDatabase } from '../../../lib/mongodb';
+import ejs from 'ejs';
+import path from 'path';
+import nodemailer from "nodemailer";
+
+const renderTemplate = async ( data: object) => {
+  try {
+    const templatePath = path.resolve(`./lib/template/register.ejs`);
+    return await ejs.renderFile(templatePath, data);
+  } catch (error) {
+    console.error("Error rendering template:", error);
+    throw new Error("Failed to render email template");
+  }
+};
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
@@ -9,7 +22,37 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const {mobileOrEmail}= req.body
 
         const existingUser = await db.collection<User>('users').findOne({ mobileOrEmail:mobileOrEmail });
-        console.log(existingUser)
+       
+        const templateData = {
+          NAME: "ayush",
+          EMAIL:  `${mobileOrEmail}`,
+          LINK: "https://physiyoga-test.netlify.app/login", 
+        };
+        const html = await renderTemplate( templateData);
+        const auth = nodemailer.createTransport({
+          service: "gmail",
+          secure : true,
+          port : 465,
+          auth: {
+              user: "mynameisayush008@gmail.com",
+              pass: "ftyk hlvt jvll avau"
+  
+          }
+      });
+  
+      const receiver = {
+          from : "mynameisayush008@gmail.com",
+          to :  `${mobileOrEmail}`,
+          subject:'physiyoga-login',
+          html: html,
+      };
+  
+      auth.sendMail(receiver, (error) => {
+          if(error)
+          throw error;
+          console.log("success!");
+   
+      });
         if (existingUser) {
             return res.status(201).json(
                 
@@ -31,7 +74,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     });
     } catch (error) {
         console.log(error)
-    //   console.error(error.message);
+  
       return res.status(500).send('Server error');
     }
   } else {

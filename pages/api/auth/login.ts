@@ -1,37 +1,49 @@
-// // pages/api/auth/register.ts
-// import { NextApiRequest, NextApiResponse } from 'next';
-// // import bcrypt from 'bcryptjs';
-// // import { body, validationResult } from 'express-validator';
-// // import connectDB from '../../../lib/connectDB'; // Your MongoDB connection utility
-// //  import { User} from '../../../models/login';
-// // import { connectToDatabase } from '../../../lib/mongodb';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { User } from '../../../models/login';
+import { connectToDatabase } from '../../../lib/mongodb';
 
 
 
-// const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-//   if (req.method === 'POST') {
-//     // const { db } = await connectToDatabase(); 
-//     // Validate input data
- 
 
-//    console.log(req.body)
-    
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  if (req.method === 'POST') {
+    const { db } = await connectToDatabase(); 
+    try {
+        console.log(req.body)
+    const {username,password}= req.body
 
-//     try {
-//         const users = await db.collection<User>('users').insertOne({
-//             name:'test'
-//         });
-//       // Check if user already exists
+        const existingUser = await db.collection<User>('users').findOne({ mobileOrEmail:username,password:password });
+        console.log(existingUser)
+       
+  
+        if (!existingUser) {
+            return res.status(201).json(
+                
+                { 
+                    "type": "E",
+                    "msg": "Oops! The email, username, or password is incorrect. Please check and try again."
+                }
+            );
+
+            
+        }
+        
+      
+
    
-//       return res.status(201).json({ msg: 'User registered successfully' });
-//     } catch (error) {
-//         console.log(error)
-//     //   console.error(error.message);
-//       return res.status(500).send('Server error');
-//     }
-//   } else {
-//     return res.status(405).json({ msg: 'Method Not Allowed' });
-//   }
-// };
+   
+      return res.status(201).json( { 
+        "type": "S",
+        "msg": "Success"
+    });
+    } catch (error) {
+        console.log(error)
+  
+      return res.status(500).send('Server error');
+    }
+  } else {
+    return res.status(405).json({ msg: 'Method Not Allowed' });
+  }
+};
 
-// export default handler;
+export default handler;
