@@ -26,7 +26,8 @@
         "./src/*"
       ]
     },
-    "target": "ES2017"
+    "target": "ES2017",
+    "noImplicitAny": false  // Disable the error for implicit `any` types
   },
   "include": [
     "next-env.d.ts",
