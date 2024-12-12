@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { FaPlus } from "react-icons/fa";
+import Image from "next/image";
 
 // Dynamic imports for icons
 const FaArrowLeft = dynamic(() => import("react-icons/fa").then((mod) => mod.FaArrowLeft), { ssr: false });
@@ -43,7 +43,7 @@ const CoursePage: React.FC = () => {
 
       {/* Hero Section */}
       <div className="relative">
-        <img
+        <Image
           src={courseDetails.imageUrl}
           alt={courseDetails.name}
           className="w-full h-64 object-cover"

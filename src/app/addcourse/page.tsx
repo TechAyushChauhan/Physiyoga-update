@@ -7,7 +7,7 @@ const AddCourse: React.FC = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
-  const [video, setVideo] = useState<File | null>(null);
+  const [video] = useState<File | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
 
@@ -32,13 +32,13 @@ const AddCourse: React.FC = () => {
         body: formData,
       });
 
-      if (response.ok) {
-        // Redirect to courses page after successful submission
-        router.push("/courses");
-      } else {
-        const error = await response.json();
-        setErrorMessage(error.message || "Something went wrong. Try again.");
-      }
+    //   if (response.ok) {
+    //     // Redirect to courses page after successful submission
+    //     router.push("/courses");
+    //   } else {
+    //     const error = await response.json();
+    //     setErrorMessage(error.message || "Something went wrong. Try again.");
+    //   }
     } catch (error) {
       setErrorMessage("Failed to submit. Please try again later.");
     }

@@ -3,13 +3,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
 // Dynamic imports for icons
 const FaBell = dynamic(() => import("react-icons/fa").then((mod) => mod.FaBell), { ssr: false });
 const FaUserAlt = dynamic(() => import("react-icons/fa").then((mod) => mod.FaUserAlt), { ssr: false });
 const FaBook = dynamic(() => import("react-icons/fa").then((mod) => mod.FaBook), { ssr: false });
-const FaSignOutAlt = dynamic(() => import("react-icons/fa").then((mod) => mod.FaSignOutAlt), { ssr: false });
-const FaChartLine = dynamic(() => import("react-icons/fa").then((mod) => mod.FaChartLine), { ssr: false });
 
 const Dashboard: React.FC = () => {
   const [showNotifications, setShowNotifications] = useState(false);
@@ -77,7 +76,7 @@ const Dashboard: React.FC = () => {
                 className="flex items-center space-x-2 text-white"
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
               >
-                <img
+                <Image
                   src="https://via.placeholder.com/40" // Replace with user's profile picture
                   alt="Profile"
                   className="rounded-full"

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 
 const ProfilePage: React.FC = () => {
   const [user, setUser] = useState({
@@ -49,7 +50,7 @@ const ProfilePage: React.FC = () => {
       >
         {/* Profile Picture Section */}
         <div className="flex items-center justify-center flex-col">
-          <img
+          <Image
             src={formData.profilePicture}
             alt="Profile"
             className="w-32 h-32 rounded-full object-cover border-4 border-gradient-to-r from-green-400 to-blue-500"

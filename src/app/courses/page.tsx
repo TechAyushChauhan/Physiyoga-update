@@ -28,7 +28,7 @@ const notifications = [
 ];
 
 const Courses: React.FC = () => {
-  const [userCourses, setUserCourses] = useState(courses); // Retaining default courses
+  const [userCourses] = useState(courses); // Retaining default courses
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const router = useRouter();
