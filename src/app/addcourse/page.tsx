@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 
 const AddCourse: React.FC = () => {
   const [title, setTitle] = useState("");
