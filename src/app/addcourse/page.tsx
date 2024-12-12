@@ -9,7 +9,6 @@ const AddCourse: React.FC = () => {
   const [photo, setPhoto] = useState<File | null>(null);
   const [video] = useState<File | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,24 +23,6 @@ const AddCourse: React.FC = () => {
     formData.append("description", description);
     formData.append("photo", photo);
     formData.append("video", video);
-
-    try {
-      // Example POST request to an API endpoint
-      const response = await fetch("/api/addcourse", {
-        method: "POST",
-        body: formData,
-      });
-
-    //   if (response.ok) {
-    //     // Redirect to courses page after successful submission
-    //     router.push("/courses");
-    //   } else {
-    //     const error = await response.json();
-    //     setErrorMessage(error.message || "Something went wrong. Try again.");
-    //   }
-    } catch (error) {
-      setErrorMessage("Failed to submit. Please try again later.");
-    }
   };
 
   return (
