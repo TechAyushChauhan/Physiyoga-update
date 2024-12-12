@@ -23,9 +23,9 @@ const Navbar: React.FC = () => {
       setIsButtonDisabled(true);
 
       // Navigate after a brief message or logic
-      setTimeout(() => {
+    
         router.push("/login"); // Redirect to the login page
-      }, 2000); // Delay to show message before redirect (optional)
+     // Delay to show message before redirect (optional)
     }
   };
 

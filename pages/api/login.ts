@@ -1,19 +1,47 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+// import { NextApiRequest, NextApiResponse } from 'next';
+// import { connectToDatabase } from '../../lib/mongodb'; // Import database connection
+// import { User } from '../../models/test'; // Import the User model
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-   
-    if (req.method === 'GET') {
-        const isLoggedIn = true;  // This can be replaced with any condition for testing
+// export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+//     try {
+//         if (req.method === 'Post') {
+//             const { db } = await connectToDatabase(); 
 
-        if (isLoggedIn) {
-            // If logged in, return a success response
-            return res.status(200).json({ message: 'User is logged in', loggedIn: true });
-        } else {
-            // If not logged in, return a failure response
-            return res.status(401).json({ message: 'User is not logged in', loggedIn: false });
-        }
-    } else {
-        // If the request method is not GET, return a method not allowed error
-        res.status(405).json({ message: 'Method Not Allowed' });
-    }
-}
+           
+//             const isLoggedIn = true;
+
+//             if (isLoggedIn) {
+//                 // Fetch user data if required (optional based on your needs)
+//                 // const users = await db.collection<User>('users').insertOne({
+//                 //     name:'test'
+//                 // });
+
+//                 // Return success response
+//                 return res.status(200).json({
+//                     message: 'User is logged in',
+//                     loggedIn: true,
+//                     data: users, // Send user data
+//                 });
+//             } else {
+//                 // Return unauthorized response
+//                 return res.status(401).json({
+//                     message: 'User is not logged in',
+//                     loggedIn: false,
+//                 });
+//             }
+//         } else {
+//             // Return method not allowed response
+//             return res.status(405).json({
+//                 message: 'Method Not Allowed',
+//             });
+//         }
+//     } catch (error) {
+//         console.error('Error in handler:', error);
+
+//         // Return internal server error response
+//         return res.status(500).json({
+//             message: 'Internal Server Error',
+//             error: error.message,
+//         });
+//     }
+// }

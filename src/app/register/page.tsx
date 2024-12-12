@@ -2,6 +2,9 @@
 
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { callApi } from "../../../lib/callApi";
+
+import toast, { Toaster } from "react-hot-toast"; // Import react-hot-toast
 
 // Define the type for the form data
 interface FormData {
@@ -29,35 +32,46 @@ const Register: React.FC = () => {
       [name]: value,
     }));
   };
+  const handleRegister=async()=>{
+    const user=await callApi('/api/auth/register','POST',{username:formData.username,password:formData.password,mobileOrEmail:formData.mobileOrEmail})
+    if (user.type=='E') {
+      toast.error(user.msg, {
+        position: "top-right",
+      
+      });
+      return
+  }; 
+
+    router.push("/dashboard"); 
+  }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
+
     const { username, password, confirmPassword, mobileOrEmail } = formData;
 
-    // Basic validation
+   
     if (username === "" || password === "" || confirmPassword === "" || mobileOrEmail === "") {
       setError("All fields are required.");
       return;
     }
 
+
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
-
-    // Simulate successful registration (replace with actual registration logic)
     localStorage.setItem("token", "dummyToken"); // Simulated token
     setSuccess("Registration successful! Redirecting...");
-    setTimeout(() => {
-      router.push("/dashboard"); // Redirect to the dashboard after successful registration
-    }, 2000);
+    handleRegister()
+   
   };
 
   const handleBack = () => {
-    router.push("/"); // Navigate to the home page ("/")
+    router.push("/"); 
   };
 
   const handleLoginRedirect = () => {
@@ -129,6 +143,7 @@ const Register: React.FC = () => {
           {success && <p className="text-[#2ecc71] text-xs mb-4">{success}</p>}
           <button 
             type="submit" 
+           
             className="w-full bg-[#f39c12] text-white font-semibold py-3 rounded-lg hover:bg-[#e67e22] focus:outline-none"
           >
             Register
@@ -144,6 +159,7 @@ const Register: React.FC = () => {
           </span>
         </p>
       </div>
+      <Toaster />
     </div>
   );
 };

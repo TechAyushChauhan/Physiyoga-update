@@ -2,6 +2,10 @@
 
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "../../../lib/hooks";
+import { increment } from "../../../store/slices/counterSlice";
+import { callApi } from "../../../lib/callApi";
+import toast, { Toaster } from "react-hot-toast"; // Import react-hot-toast
 
 interface FormData {
   username: string;
@@ -9,6 +13,9 @@ interface FormData {
 }
 
 const Login: React.FC = () => {
+  const count = useAppSelector((state) => state.counter.value);
+  const dispatch = useAppDispatch()
+  console.log(count)
   const [formData, setFormData] = useState<FormData>({
     username: "",
     password: "",
@@ -23,18 +30,38 @@ const Login: React.FC = () => {
       [name]: value,
     }));
   };
+  const handleLogin=async()=>{
+
+    const user=await callApi('/api/auth/login','POST',formData)
+    if (user.type=='E') {
+      toast.error(user.msg, {
+        position: "top-right",
+      
+      });
+      return
+  }; 
+  router.push("/dashboard");
+  }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
+       const { username, password } = formData;
+     if (username === "" && password === "") {
 
-    const { username, password } = formData;
-    if (username === "admin" && password === "password") {
-      localStorage.setItem("token", "dummyToken");
-      router.push("/dashboard");
-    } else {
       setError("Invalid username or password. Please try again.");
+      return
     }
+setError("");
+    // const { username, password } = formData;
+    handleLogin()
+    
+    // if (username === "admin" && password === "password") {
+
+    //   localStorage.setItem("token", "dummyToken");
+    //   router.push("/dashboard");
+    // } else {
+    //   setError("Invalid username or password. Please try again.");
+    // }
   };
 
   const handleBack = () => {
@@ -43,11 +70,18 @@ const Login: React.FC = () => {
 
   const handleRegisterRedirect = () => {
     router.push("/register");
+    return
+    handleIncrement()
+  };
+  const handleIncrement = () => {
+    dispatch(increment());
   };
 
   return (
     <div className="flex items-center justify-center h-screen bg-gradient-to-br from-[#2c3e50] to-[#1a252f] font-sans relative">
-      {/* Back Button */}
+    
+
+      
       <button
         className="absolute top-5 left-5 bg-[#34495e] text-[#ecf0f1] px-3 py-2 rounded-md text-sm font-bold hover:bg-[#16a085] hover:text-white"
         onClick={handleBack}
@@ -116,6 +150,7 @@ const Login: React.FC = () => {
           </span>
         </p>
       </div>
+      <Toaster />
     </div>
   );
 };
