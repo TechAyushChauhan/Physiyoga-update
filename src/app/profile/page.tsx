@@ -9,7 +9,7 @@ const ProfilePage: React.FC = () => {
     email: "johndoe@example.com",
     phone: "123-456-7890",
     bio: "Passionate developer and tech enthusiast.",
-    profilePicture: "/images/default-profile.jpg",
+    profilePicture: "https://a.storyblok.com/f/191576/1200x800/a3640fdc4c/profile_picture_maker_before.webp",
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -50,11 +50,14 @@ const ProfilePage: React.FC = () => {
       >
         {/* Profile Picture Section */}
         <div className="flex items-center justify-center flex-col">
-          <Image
-            src={formData.profilePicture}
-            alt="Profile"
-            className="w-32 h-32 rounded-full object-cover border-4 border-gradient-to-r from-green-400 to-blue-500"
-          />
+        <Image
+  src={formData.profilePicture}
+  alt="Profile"
+  width={128} // Specify the width in pixels (adjust as necessary)
+  height={128} // Specify the height in pixels (adjust as necessary)
+  className="w-32 h-32 rounded-full object-cover border-4 border-gradient-to-r from-green-400 to-blue-500"
+/>
+
           {isEditing && (
             <div className="mt-4">
               <input
