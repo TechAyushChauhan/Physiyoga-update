@@ -61,9 +61,9 @@ const Login: React.FC = () => {
       }
       
       // Store token or user info if needed
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('userToken', user.token || '');
-      }
+      // if (typeof window !== 'undefined') {
+      //   localStorage.setItem('userToken', user.token || '');
+      // }
       
       // Reset loading state and navigate
       setIsLoading(false);
