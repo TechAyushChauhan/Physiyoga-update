@@ -32,7 +32,8 @@ const Home = () => {
   const [controlsVisible, setControlsVisible] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [showPlayOverlay, setShowPlayOverlay] = useState<boolean>(false);
-  const playerRef = useRef<any>(null);
+  const playerRef = useRef<HTMLVideoElement | HTMLAudioElement>(null);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const clickTimeout = useRef<NodeJS.Timeout | null>(null);
   const [skipMessage, setSkipMessage] = useState<string | null>(null);
