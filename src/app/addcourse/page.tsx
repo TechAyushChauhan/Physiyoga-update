@@ -11,17 +11,38 @@ const AddCourse: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!title || !description || !photo || !video) {
+    console.log(title, description ,photo)
+    if (!title || !description || !photo) {
       setErrorMessage("All fields are required.");
       return;
     }
-
+    setErrorMessage("");
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
     formData.append("photo", photo);
-    formData.append("video", video);
+    try {
+     
+      const response = await fetch('/api/addcourse', {
+        method: 'POST',
+        body: formData,
+      });
+
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        setErrorMessage(errorData.message || 'Something went wrong!');
+      } else {
+        const result = await response.json();
+      
+        console.log('File uploaded successfully:', result);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setErrorMessage('An error occurred while uploading the data.');
+    }
+    
+  
   };
 
   return (
