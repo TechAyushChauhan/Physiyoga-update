@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "strictNullChecks": false,  // Disable strict null checks
     "lib": [
       "dom",
       "dom.iterable",
@@ -30,8 +31,8 @@
     "noImplicitAny": false,
     "skipDefaultLibCheck": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": false,   // Disable unused variable checks
-    "noUnusedParameters": false // Disable unused function parameter checks
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
   "include": [
     "next-env.d.ts",

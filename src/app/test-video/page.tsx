@@ -98,22 +98,24 @@ useEffect(()=>{
 
   // Skip Backward 10 Seconds
   const handleSkipBackward = () => {
+    if (playerRef.current) {
     const currentTime = playerRef.current.getCurrentTime();
     const newTime = Math.max(currentTime - 10, 0);
     setSkipMessage("Skipped Backward 10 Seconds");
     playerRef.current.seekTo(newTime);
     setPlayed(newTime / duration);
-    setTimeout(() => setSkipMessage(null), 2000);
+    setTimeout(() => setSkipMessage(null), 2000);}
   };
 
   // Skip Forward 10 Seconds
   const handleSkipForward = () => {
+    if (playerRef.current) {
     const currentTime = playerRef.current.getCurrentTime();
     const newTime = Math.min(currentTime + 10, duration);
     playerRef.current.seekTo(newTime);
     setPlayed(newTime / duration);
     setSkipMessage("Skipped Forward 10 Seconds");
-  setTimeout(() => setSkipMessage(null), 2000); 
+  setTimeout(() => setSkipMessage(null), 2000); }
   };
 
   // Handle Clicks
