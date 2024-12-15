@@ -61,7 +61,10 @@ useEffect(()=>{
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = parseFloat(e.target.value);
     setPlayed(newTime / duration);
-    playerRef.current.seekTo(newTime);
+    if (playerRef.current) {
+      playerRef.current.seekTo(newTime);
+    }
+  
   };
 
   const handlePlayPause = () => setPlaying((prev) => !prev);
