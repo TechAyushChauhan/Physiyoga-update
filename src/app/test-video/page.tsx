@@ -7,6 +7,7 @@ import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import Replay10Icon from "@mui/icons-material/Replay10";
 import Forward10Icon from "@mui/icons-material/Forward10";
+import { default as VideoPlayer } from 'react-player';
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
@@ -32,7 +33,7 @@ const Home = () => {
   const [controlsVisible, setControlsVisible] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [showPlayOverlay, setShowPlayOverlay] = useState<boolean>(false);
-  const playerRef = useRef<HTMLVideoElement | HTMLAudioElement>(null);
+  const playerRef = useRef<VideoPlayer | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const clickTimeout = useRef<NodeJS.Timeout | null>(null);
