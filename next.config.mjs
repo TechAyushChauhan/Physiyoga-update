@@ -1,11 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images: {
-      domains: ['png.pngtree.com','a.storyblok.com'],
-    },
-
   images: {
-    domains: ['png.pngtree.com'], // Allow images from the specified external domain
+    domains: ['png.pngtree.com', 'a.storyblok.com'], // Allow images from both external domains
   },
 };
 
