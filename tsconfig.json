@@ -1,40 +1,46 @@
 {
   "compilerOptions": {
-    "strict": false,                // Disable all strict type checks
-    "strictNullChecks": false,      // Disable strict null checks
-    "noImplicitAny": false,         // Allow implicit 'any' type
-    "noUnusedLocals": false,        // Allow unused local variables
-    "noUnusedParameters": false,    // Allow unused function parameters
-    "skipLibCheck": true,           // Skip type checking of all declaration files (useful for 3rd party types)
-    "skipDefaultLibCheck": true,    // Skip type checking of the default library files
-    "esModuleInterop": true,        // Enable compatibility with CommonJS-style modules
-    "module": "esnext",             // Use 'esnext' module resolution for modern imports
-    "moduleResolution": "bundler",  // Module resolution strategy
-    "resolveJsonModule": true,      // Allow importing JSON modules
-    "isolatedModules": true,        // Ensure each file can be safely transpiled without relying on other files
-    "jsx": "preserve",              // Preserve JSX syntax in TypeScript files (for React, etc.)
-    "incremental": true,            // Enable incremental compilation for faster builds
-    "target": "ES2017",             // Target ES2017 for compiled output
+    "strict": false, // Disable all strict type checks
+    "strictNullChecks": false, // Disable strict null checks
+    "noImplicitAny": false, // Allow implicit 'any' type
+    "noUnusedLocals": false, // Allow unused local variables
+    "noUnusedParameters": false, // Allow unused function parameters
+    "skipLibCheck": true, // Skip type checking of all declaration files (useful for 3rd party types)
+    "skipDefaultLibCheck": true, // Skip type checking of the default library files
+    "esModuleInterop": true, // Enable compatibility with CommonJS-style modules
+    "module": "esnext", // Use 'esnext' module resolution for modern imports
+    "moduleResolution": "bundler", // Module resolution strategy
+    "resolveJsonModule": true, // Allow importing JSON modules
+    "isolatedModules": true, // Ensure each file can be safely transpiled without relying on other files
+    "jsx": "preserve", // Preserve JSX syntax in TypeScript files (for React, etc.)
+    "incremental": true, // Enable incremental compilation for faster builds
+    "target": "ES2017", // Target ES2017 for compiled output
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
-    ],                             // Include the necessary libraries for modern JS and DOM APIs
-    "allowJs": true,               // Allow JavaScript files to be compiled
-    "noEmitOnError": false,        // Allow emitting build output even if there are errors
+    ], // Include the necessary libraries for modern JS and DOM APIs
+    "allowJs": true, // Allow JavaScript files to be compiled
+    "noEmitOnError": false, // Allow emitting build output even if there are errors
     "paths": {
       "@/*": [
-        "./src/*"                   // Configure path aliases for better module resolution
+        "./src/*" // Configure path aliases for better module resolution
       ]
-    }
+    },
+    "noEmit": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
-    "next-env.d.ts",               // Include Next.js environment types
-    "**/*.ts",                     // Include all TypeScript files
-    "**/*.tsx",                    // Include all TypeScript React files
-    ".next/types/**/*.ts"          // Include TypeScript definitions for Next.js
+    "next-env.d.ts", // Include Next.js environment types
+    "**/*.ts", // Include all TypeScript files
+    "**/*.tsx", // Include all TypeScript React files
+    ".next/types/**/*.ts" // Include TypeScript definitions for Next.js
   ],
   "exclude": [
-    "node_modules"                 // Exclude node_modules directory from type checking
+    "node_modules" // Exclude node_modules directory from type checking
   ]
 }
