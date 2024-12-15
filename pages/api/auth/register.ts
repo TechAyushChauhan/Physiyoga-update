@@ -4,8 +4,8 @@ import { connectToDatabase } from '../../../lib/mongodb';
 import ejs from 'ejs';
 import path from 'path';
 import nodemailer from "nodemailer";
-// import { error } from 'console';
-
+import jwt from 'jsonwebtoken'; 
+const JWT_SECRET = process.env.JWT_SECRET || 'xxasd7885['; 
 const renderTemplate = async ( data: object) => {
   try {
     const templatePath = path.resolve(`./lib/template/register.ejs`);
@@ -29,6 +29,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           EMAIL:  `${mobileOrEmail}`,
           LINK: "https://physiyoga-test.netlify.app/login", 
         };
+       // Generate JWT token with user data (e.g., userId, username)
+          const token = jwt.sign(
+            {  username: mobileOrEmail },
+            JWT_SECRET,
+             // Token expires in 1 hour
+          );
         const html = await renderTemplate( templateData);
         const auth = nodemailer.createTransport({
           service: "gmail",
@@ -79,10 +85,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       console.log(saveUser)
    
-      return res.status(201).json( { 
+      return res.status(201).json({
         "type": "S",
-        "msg": "User registered successfully"
-    });
+        "msg": "User registered successfully",
+        "token": token 
+      });
     } catch (error) {
         console.log(error)
   

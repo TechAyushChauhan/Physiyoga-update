@@ -41,7 +41,7 @@ const Register: React.FC = () => {
       });
       return
   }; 
-
+  localStorage.setItem('authToken', user.token);
     router.push("/dashboard"); 
   }
 
