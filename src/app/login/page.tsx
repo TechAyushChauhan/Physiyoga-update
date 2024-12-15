@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { useAppDispatch, useAppSelector } from "../../../lib/hooks";
+// import { useAppDispatch, useAppSelector } from "../../../lib/hooks";
 import { callApi } from "../../../lib/callApi";
 import toast, { Toaster } from "react-hot-toast";
 import { Lock, User, ArrowLeft, LogIn, Eye, EyeOff } from "lucide-react";
@@ -14,7 +14,7 @@ interface FormData {
 
 const Login: React.FC = () => {
   const router = useRouter();
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
 
   // Hydration-safe state management
   const [isClient, setIsClient] = useState(false);
@@ -70,6 +70,7 @@ const Login: React.FC = () => {
       setIsLoading(false);
       router.push("/dashboard");
     } catch (err) {
+      console.log(err)
       toast.error('Login failed. Please try again.', {
         position: "top-right",
       });

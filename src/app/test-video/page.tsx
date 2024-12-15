@@ -24,7 +24,7 @@ const Home = () => {
    'http://localhost:3000/api/test'
   );
   const [playing, setPlaying] = useState<boolean>(false);
-  const [volume, setVolume] = useState<number>(0.8);
+  // const [volume, setVolume] = useState<number>(0.8);
   const [muted, setMuted] = useState<boolean>(false);
   const [loop, setLoop] = useState<boolean>(false);
   const [duration, setDuration] = useState<number>(0);
@@ -155,7 +155,7 @@ useEffect(()=>{
           ref={playerRef}
           url={url}
           playing={playing}
-          volume={volume}
+          volume={1}
           loop={loop}
           muted={muted}
           onDuration={handleDuration}
