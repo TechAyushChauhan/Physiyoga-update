@@ -30,11 +30,11 @@
   },
   "include": [
     "next-env.d.ts",               // Include Next.js environment types
-    "**/*.ts",                      // Include all TypeScript files
-    "**/*.tsx",                     // Include all TypeScript React files
-    ".next/types/**/*.ts"           // Include TypeScript definitions for Next.js
+    "**/*.ts",                     // Include all TypeScript files
+    "**/*.tsx",                    // Include all TypeScript React files
+    ".next/types/**/*.ts"          // Include TypeScript definitions for Next.js
   ],
   "exclude": [
-    "node_modules"                  // Exclude node_modules directory from type checking
+    "node_modules"                 // Exclude node_modules directory from type checking
   ]
 }
