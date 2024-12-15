@@ -19,7 +19,9 @@ const handler = async(req: NextApiRequest, res: NextApiResponse) => {
 
     // Set upload directory and preserve file extensions
     const uploadDir = path.join(process.cwd(), 'public', 'uploads'); // Use absolute path to avoid issues
+   // @ts-expect-error: 'uploadDir' property is not typed in the formidable package
     form.uploadDir = uploadDir;
+  // @ts-expect-error: 'uploadDir' property is not typed in the formidable package
     form.keepExtensions = true; 
 
     if (!fs.existsSync(uploadDir)) {
