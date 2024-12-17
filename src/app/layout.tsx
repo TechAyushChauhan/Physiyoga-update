@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import 'primereact/resources/themes/saga-blue/theme.css';  // Theme
-import 'primereact/resources/primereact.min.css';         // Core CSS
-import 'primeicons/primeicons.css';                      // Icons
-import 'primeflex/primeflex.css';   
-                    // Utility classes
+import 'primereact/resources/themes/lara-light-indigo/theme.css';  // or any other theme
+import 'primereact/resources/primereact.min.css';  // Base PrimeReact styles
+import 'primeicons/primeicons.css';  // PrimeIcons (if needed)
 
 
 import StoreProvider from "../../store/provider";
@@ -42,16 +40,6 @@ export default function RootLayout({
       >
            <StoreProvider>
          <  Loader/>
-           
-
-
-
-
- 
- 
-
-        
-                 
                    {children}
                 </StoreProvider>
         

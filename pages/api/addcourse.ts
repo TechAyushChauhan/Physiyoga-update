@@ -85,7 +85,24 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
          // Path to access the uploaded photo
       });
     });
-  } else {
+  }  else if (req.method === 'GET') {
+    try {
+      const { db } = await connectToDatabase();
+      const courses = await db.collection<Courses>('courses')
+      .find({}, { projection: { playlist: 0 } }) // Exclude playlist from the query result
+      .toArray();
+
+      res.status(200).json({
+        type: 'S',
+        message: 'Courses retrieved successfully',
+        data: courses,
+      });
+    } catch (err) {
+      console.error('Error retrieving courses:', err);
+      res.status(500).json({ message: 'Error retrieving courses', error: err.message });
+    }
+  
+}else {
     res.status(405).json({ message: 'Method Not Allowed' });
   }
 };

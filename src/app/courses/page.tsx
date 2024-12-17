@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import { setloader } from "../../../store/slices/loaderSlice";
+import { useAppDispatch } from "../../../lib/hooks";
 
-// Dynamic imports for icons
 const FaUserAlt = dynamic(() => import("react-icons/fa").then((mod) => mod.FaUserAlt), { ssr: false });
 const FaBook = dynamic(() => import("react-icons/fa").then((mod) => mod.FaBook), { ssr: false });
 const FaSignOutAlt = dynamic(() => import("react-icons/fa").then((mod) => mod.FaSignOutAlt), { ssr: false });
@@ -12,14 +14,8 @@ const FaBars = dynamic(() => import("react-icons/fa").then((mod) => mod.FaBars),
 const FaTimes = dynamic(() => import("react-icons/fa").then((mod) => mod.FaTimes), { ssr: false });
 const FaBell = dynamic(() => import("react-icons/fa").then((mod) => mod.FaBell), { ssr: false });
 
-// Dummy course data
-const courses = [
-  { id: 1, name: "Joint Shield: Knee Edition", progress: 80, key: "yogaforbeginners" },
-  { id: 2, name: "Joint Shield: Lower Back Edition", progress: 50, key: "advancedyogaposes" },
-  { id: 3, name: "NeckCare Nexus", progress: 90, key: "neckCare" },
-  { id: 4, name: "Scaitcare", progress: 90, key: "scaitcare" },
-  { id: 5, name: "ReVive Parkinson’s: Mobility & Strength Rehab", progress: 90, key: "reviveparkinson" }
-];
+
+
 
 const notifications = [
   { id: 1, message: "New course added: Yoga for Seniors" },
@@ -28,15 +24,38 @@ const notifications = [
 ];
 
 const Courses: React.FC = () => {
-  const [userCourses] = useState(courses); // Retaining default courses
+  const dispatch= useAppDispatch()
+  const [userCourses,setuserCourses] = useState([]); 
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const router = useRouter();
+  const getCourses = async (): Promise<any> => {
+    dispatch(setloader(true))
+    try {
+      const response = await fetch('/api/addcourse', {
+        method: 'GET',
+      });
+  
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to fetch courses');
+      }
+ const apiresponse=await response.json()
+  setuserCourses(apiresponse.data)
+     ;
+    } catch (error: any) {
+      console.error('Error fetching courses:', error);
+      throw error;
+    }
+    dispatch(setloader(false))
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // Example API or local storage fetching for user courses
-      // setUserCourses(fetchedCourses); Uncomment if API is integrated
+       dispatch(setloader(false))
+      getCourses()
+      
+     
     }
   }, []); // No external dependencies here
 
@@ -141,25 +160,25 @@ const Courses: React.FC = () => {
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
   {userCourses.map((course) => (
     <div
-      key={course.id}
+      key={course._id}
       className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 space-y-4 hover:shadow-lg transition-shadow duration-300 ease-in-out"
     >
-      <h4 className="text-lg font-semibold text-gray-800 dark:text-white">{course.name}</h4>
+      <h4 className="text-lg font-semibold text-gray-800 dark:text-white">{course.title}</h4>
       <div className="space-y-2">
         <progress
           className="w-full h-4 appearance-none"
           max="100"
-          value={course.progress}
+          value={10}
         ></progress>
-        <p className="text-gray-600 dark:text-gray-300">Progress: {course.progress}%</p>
+        <p className="text-gray-600 dark:text-gray-300">Progress: 10%</p>
       </div>
 
       {/* Button Container with Flexbox */}
       <div className="flex justify-between space-x-2">
-        {/* View Course Button */}
+      
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-300 w-full sm:w-auto"
-          onClick={() => router.push(`/course/${course.key}`)}
+          onClick={() => router.push(`/course/${course._id}`)}
         >
           View Course
         </button>
