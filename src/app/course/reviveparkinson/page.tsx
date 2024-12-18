@@ -30,7 +30,7 @@ const CoursePage: React.FC = () => {
       { id: 3, title: "Yoga for Relaxation", duration: "20 mins" },
     ],
     progress: 80,
-    imageUrl: "/images/yoga-beginners.jpg", // Add an image file to your public/images folder
+    imageUrl: "https://a.storyblok.com/f/191576/1200x800/a3640fdc4c/profile_picture_maker_before.webp", // Add an image file to your public/images folder
   };
 
   return (
@@ -44,10 +44,12 @@ const CoursePage: React.FC = () => {
       {/* Hero Section */}
       <div className="relative">
         <Image
-          src={courseDetails.imageUrl}
-          alt={courseDetails.name}
-          className="w-full h-64 object-cover"
-        />
+            src={courseDetails.imageUrl}
+            alt={courseDetails.name}
+            width={1200}
+            height={800}
+            className="w-full h-64 object-cover"
+          />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white">
           <div className="text-center">
             <h2 className="text-2xl font-bold">{courseDetails.name}</h2>
