@@ -7,16 +7,16 @@ const BuyPage: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [courseName, setCourseName] = useState<string | null>(null);
-  const [courseFees, setCourseFees] = useState<string | null>(null);
+  const [courseName, setCourseName] = useState<string>("");
+  const [courseFees, setCourseFees] = useState<string>("");
 
   useEffect(() => {
-    const name = searchParams.get("name");
-    const fees = searchParams.get("fees");
+    if (searchParams) {
+      const name = searchParams.get("name");
+      const fees = searchParams.get("fees");
 
-    if (name && fees) {
-      setCourseName(name);
-      setCourseFees(fees);
+      if (name) setCourseName(name);
+      if (fees) setCourseFees(fees);
     }
   }, [searchParams]);
 
@@ -34,7 +34,7 @@ const BuyPage: React.FC = () => {
           <label className="block text-gray-600 mb-1">Course Name:</label>
           <input
             type="text"
-            value={courseName || ""}
+            value={courseName}
             disabled
             className="w-full px-4 py-2 rounded border bg-gray-100 text-gray-800"
           />
@@ -43,7 +43,7 @@ const BuyPage: React.FC = () => {
           <label className="block text-gray-600 mb-1">Course Fees:</label>
           <input
             type="text"
-            value={courseFees || ""}
+            value={courseFees}
             disabled
             className="w-full px-4 py-2 rounded border bg-gray-100 text-gray-800"
           />
