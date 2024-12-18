@@ -1,24 +1,22 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const BuyPage: React.FC = () => {
-  const searchParams = useSearchParams();
   const router = useRouter();
-
   const [courseName, setCourseName] = useState<string>("");
   const [courseFees, setCourseFees] = useState<string>("");
 
   useEffect(() => {
-    if (searchParams) {
-      const name = searchParams.get("name");
-      const fees = searchParams.get("fees");
+    // Access URL parameters from `window.location` (safe for client components).
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get("name");
+    const fees = params.get("fees");
 
-      if (name) setCourseName(name);
-      if (fees) setCourseFees(fees);
-    }
-  }, [searchParams]);
+    if (name) setCourseName(name);
+    if (fees) setCourseFees(fees);
+  }, []);
 
   const handleConfirm = () => {
     console.log(`Course: ${courseName}, Fees: ${courseFees}`);
