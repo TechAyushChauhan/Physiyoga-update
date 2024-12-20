@@ -160,12 +160,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       if (fs.existsSync(videoPath)) {
         fs.unlinkSync(videoPath); // Delete the file from the server
       }
+      const data={ playlist: { _id: playlistItemObjectId }}
 
       // Remove the playlist item from the MongoDB course document
       const updatedCourse = await db.collection('courses').updateOne(
         { _id: courseObjectId },
         {
-          $pull: { playlist: { _id: playlistItemObjectId } }, // Remove the playlist item by _id
+          $pull: data, // Remove the playlist item by _id
         }
       );
 
