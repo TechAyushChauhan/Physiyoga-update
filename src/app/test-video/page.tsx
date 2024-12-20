@@ -20,10 +20,10 @@ const formatTime = (seconds: number) => {
 };
 // const proxyUrl = `/api/test`; 
 
-const Home = ({ videoUrl:string }) => {
-  // const [url, setUrl] = useState<string>(
-  //  'http://localhost:3000/api/test'
-  // );
+const Home = () => {
+  const [url, setUrl] = useState<string>(
+   'http://localhost:3000/api/test'
+  );
   const [playing, setPlaying] = useState<boolean>(false);
   // const [volume, setVolume] = useState<number>(0.8);
   const [muted, setMuted] = useState<boolean>(false);
