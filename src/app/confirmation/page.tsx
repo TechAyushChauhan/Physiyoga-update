@@ -18,27 +18,21 @@ const Confirmation: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [appointmentDetails, setAppointmentDetails] = useState<AppointmentDetails>({
-    name: "",
-    email: "",
-    phone: "",
-    appointmentType: "",
-    date: "",
-    time: "",
-    message: "No additional message.",
-  });
+  const [appointmentDetails, setAppointmentDetails] = useState<AppointmentDetails | null>(null);
 
   useEffect(() => {
-    const details: AppointmentDetails = {
-      name: searchParams.get("name") || "",
-      email: searchParams.get("email") || "",
-      phone: searchParams.get("phone") || "",
-      appointmentType: searchParams.get("appointmentType") || "",
-      date: searchParams.get("date") || "",
-      time: searchParams.get("time") || "",
-      message: searchParams.get("message") || "No additional message.",
-    };
-    setAppointmentDetails(details);
+    if (typeof window !== "undefined") {
+      const details: AppointmentDetails = {
+        name: searchParams.get("name") || "",
+        email: searchParams.get("email") || "",
+        phone: searchParams.get("phone") || "",
+        appointmentType: searchParams.get("appointmentType") || "",
+        date: searchParams.get("date") || "",
+        time: searchParams.get("time") || "",
+        message: searchParams.get("message") || "No additional message.",
+      };
+      setAppointmentDetails(details);
+    }
   }, [searchParams]);
 
   const handleBackToHome = () => {
@@ -46,8 +40,14 @@ const Confirmation: React.FC = () => {
   };
 
   const handlePrint = () => {
-    window.print();
+    if (typeof window !== "undefined") {
+      window.print();
+    }
   };
+
+  if (!appointmentDetails) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 p-4 md:p-8">
