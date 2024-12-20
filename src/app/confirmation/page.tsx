@@ -20,6 +20,7 @@ const Confirmation: React.FC = () => {
 
   const [appointmentDetails, setAppointmentDetails] = useState<AppointmentDetails | null>(null);
 
+  // Using useEffect to handle the side-effect of getting the URL parameters
   useEffect(() => {
     if (typeof window !== "undefined") {
       const details: AppointmentDetails = {
@@ -33,7 +34,7 @@ const Confirmation: React.FC = () => {
       };
       setAppointmentDetails(details);
     }
-  }, [searchParams]);
+  }, [searchParams]); // Dependency array to run only when searchParams changes
 
   const handleBackToHome = () => {
     router.push("/dashboard");
@@ -45,6 +46,7 @@ const Confirmation: React.FC = () => {
     }
   };
 
+  // If appointment details are still loading, show a loading state
   if (!appointmentDetails) {
     return <div>Loading...</div>;
   }
