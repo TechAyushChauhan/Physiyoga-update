@@ -20,7 +20,7 @@ const formatTime = (seconds: number) => {
 };
 // const proxyUrl = `/api/test`; 
 
-const Videoplayer = ({url:string}) => {
+const Videoplayer = ({ url }: { url: any }) => {
 //   const [url, setUrl] = useState<string>(
 //    'http://localhost:3000/api/test'
 //   );
