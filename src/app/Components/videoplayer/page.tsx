@@ -20,10 +20,10 @@ const formatTime = (seconds: number) => {
 };
 // const proxyUrl = `/api/test`; 
 
-const Home = ({ videoUrl }) => {
-  // const [url, setUrl] = useState<string>(
-  //  'http://localhost:3000/api/test'
-  // );
+const Videoplayer = ({url}) => {
+//   const [url, setUrl] = useState<string>(
+//    'http://localhost:3000/api/test'
+//   );
   const [playing, setPlaying] = useState<boolean>(false);
   // const [volume, setVolume] = useState<number>(0.8);
   const [muted, setMuted] = useState<boolean>(false);
@@ -151,7 +151,7 @@ useEffect(()=>{
         style={{
           position: "relative",
           width: "100%",
-          height: isFullscreen ? "100vh" : "500px",
+          height: isFullscreen ? "100vh" : "400px",
           background: "#000",
           margin: "20px 0",
           overflow: "hidden",
@@ -298,19 +298,10 @@ useEffect(()=>{
         )}
       </div>
 
-      {/* URL Input */}
-      <div>
-        <h3>Enter Video URL</h3>
-        <input
-          type="text"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="Enter video URL"
-        />
-        <button onClick={() => setUrl(url)}>Load</button>
-      </div>
+  
+        
     </div>
   );
 };
 
-export default Home;
+export default Videoplayer;

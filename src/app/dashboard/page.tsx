@@ -4,15 +4,16 @@
 import React, { useState, useRef, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import Image from "next/image";
+import LoginFooter from "../Components/loginfooter/page";
+import LoginNavbar from "../Components/loginnavbar/page";
+import { FaVideo } from "react-icons/fa";
+import CoursesComponent from "../Components/course/page";
 
 // Dynamic imports for icons
-const FaBell = dynamic(() => import("react-icons/fa").then((mod) => mod.FaBell), { ssr: false });
 const FaClipboardList = dynamic(() => import("react-icons/fa").then((mod) => mod.FaClipboardList), { ssr: false });
 
 const Dashboard: React.FC = () => {
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
   const notificationsPanelRef = useRef<HTMLDivElement | null>(null);
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
   const FaChartLine = dynamic(() => import("react-icons/fa").then((mod) => mod.FaChartLine), { ssr: false });
@@ -78,39 +79,10 @@ useEffect(() => {
     }
   };
 
-  const handleLogout = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("token");
-    }
-    router.push("/login");
-  };
-
-  // Close dropdowns when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (notificationsPanelRef.current && !notificationsPanelRef.current.contains(event.target as Node)) {
-        setShowNotifications(false);
-      }
-
-      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
-        setShowProfileMenu(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const notifications = [
-    { id: 1, message: "Welcome to your Dashboard!" },
-    { id: 2, message: "New updates available for your courses." },
-    { id: 3, message: "Your subscription is expiring soon." },
-  ];
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className=" min-h-screen bg-gray-50 dark:bg-gray-900">
+      <LoginNavbar />
       {/* Sidebar */}
       <div 
         className={`
@@ -220,86 +192,6 @@ useEffect(() => {
           ease-in-out
         `}
       >
-        {/* Header */}
-        <header className="bg-white dark:bg-gray-800 shadow-md p-4 flex justify-between items-center sticky top-0 z-20">
-          <div className="flex items-center space-x-4">
-            <h1 className="text-xl font-semibold text-gray-800 dark:text-white">Welcome, John Doe</h1>
-          </div>
-          <div className="flex items-center space-x-4">
-            {/* Notifications */}
-            <div className="relative">
-              <button
-                className="text-gray-600 dark:text-gray-300 hover:text-blue-600"
-                onClick={() => setShowNotifications(!showNotifications)}
-              >
-                <FaBell size={20} />
-                {notifications.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {notifications.length}
-                  </span>
-                )}
-              </button>
-              {showNotifications && (
-                <div
-                  ref={notificationsPanelRef}
-                  className="absolute top-full right-0 mt-2 w-72 bg-white dark:bg-gray-700 rounded-lg shadow-lg border dark:border-gray-600 z-50"
-                >
-                  <div className="p-4 border-b dark:border-gray-600">
-                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Notifications</h3>
-                  </div>
-                  <ul className="divide-y dark:divide-gray-600">
-                    {notifications.map((notification) => (
-                      <li 
-                        key={notification.id} 
-                        className="p-4 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
-                      >
-                        {notification.message}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-
-            {/* Profile Menu */}
-            <div className="relative" ref={profileMenuRef}>
-              <button
-                className="flex items-center space-x-2"
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
-              >
-                <Image
-                  src="https://a.storyblok.com/f/191576/1200x800/a3640fdc4c/profile_picture_maker_before.webp"
-                  alt="Profile"
-                  width={40}
-                  height={40}
-                  className="rounded-full"
-                />
-              </button>
-              {showProfileMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-lg shadow-lg border dark:border-gray-600 z-50">
-                  <div className="p-4 border-b dark:border-gray-600 text-center">
-                    <p className="text-gray-800 dark:text-white font-semibold">John Doe</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Student</p>
-                  </div>
-                  <ul>
-                    <li 
-                      className="p-3 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer"
-                      onClick={() => router.push("/profile")}
-                    >
-                      Profile
-                    </li>
-                    <li 
-                      className="p-3 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer"
-                      onClick={handleLogout}
-                    >
-                      Log Out
-                    </li>
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
-        </header>
 
         {/* Main Dashboard Content */}
         <main className="p-6 space-y-6">
@@ -353,34 +245,40 @@ useEffect(() => {
 
             {/* Quick Links */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border dark:border-gray-700">
-              <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Quick Actions</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <button 
-                  onClick={() => router.push("/courses")}
-                  className="bg-blue-500 text-white p-4 rounded-lg hover:bg-blue-600 transition flex items-center justify-center space-x-2"
-                >
-                  <FaBook />
-                  <span>View Courses</span>
-                </button>
-                <button 
-                  onClick={() => router.push("/profile")}
-                  className="bg-green-500 text-white p-4 rounded-lg hover:bg-green-600 transition flex items-center justify-center space-x-2"
-                >
-                  <FaUserAlt />
-                  <span>Edit Profile</span>
-                </button>
-              </div>
-            </div>
+  <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Quick Actions</h3>
+  <div className="grid grid-cols-3 gap-4">
+    <button 
+      onClick={() => router.push("/courses")}
+      className="bg-blue-500 text-white p-4 rounded-lg hover:bg-blue-600 transition flex items-center justify-center space-x-2"
+    >
+      <FaBook />
+      <span>View Courses</span>
+    </button>
+    <button 
+      onClick={() => router.push("/profile")}
+      className="bg-green-500 text-white p-4 rounded-lg hover:bg-green-600 transition flex items-center justify-center space-x-2"
+    >
+      <FaUserAlt />
+      <span>Edit Profile</span>
+    </button>
+    <button 
+      onClick={() => router.push("/addvideo")}
+      className="bg-purple-500 text-white p-4 rounded-lg hover:bg-purple-600 transition flex items-center justify-center space-x-2"
+    >
+      <FaVideo />
+      <span>View Videos</span>
+    </button>
+  </div>
+</div>
+
           </section>
         </main>
 
-        {/* Footer */}
-        <footer className="bg-white dark:bg-gray-800 border-t dark:border-gray-700 p-4 text-center">
-          <p className="text-gray-600 dark:text-gray-400">
-            &copy; {new Date().getFullYear()} Yoga Dashboard. All rights reserved.
-          </p>
-        </footer>
-      </div>
+       
+      </div>    
+      <CoursesComponent />
+      <LoginFooter />
+
     </div>
   );
 };
