@@ -6,7 +6,6 @@
     "noUnusedLocals": false, // Allow unused local variables
     "noUnusedParameters": false, // Allow unused function parameters
     "skipLibCheck": true, // Skip type checking of all declaration files (useful for 3rd party types)
-    "skipDefaultLibCheck": true, // Skip type checking of the default library files
     "esModuleInterop": true, // Enable compatibility with CommonJS-style modules
     "module": "esnext", // Use 'esnext' module resolution for modern imports
     "moduleResolution": "bundler", // Module resolution strategy
@@ -27,12 +26,13 @@
         "./src/*" // Configure path aliases for better module resolution
       ]
     },
-    "noEmit": true,
+    "noEmit": true, // Don't emit files (useful for checking only)
     "plugins": [
       {
         "name": "next"
       }
-    ]
+    ],
+    "ignoreDeprecations": "5.0" // Ignore deprecations for some older or less relevant TypeScript features
   },
   "include": [
     "next-env.d.ts", // Include Next.js environment types
