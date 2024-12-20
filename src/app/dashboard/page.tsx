@@ -55,8 +55,8 @@ useEffect(() => {
     },
     { 
       icon: FaCalendarAlt, 
-      label: "Schedule", 
-      route: "/schedule" 
+      label: "Appointment", 
+      route: "/appointment" 
     },
     { 
       icon: FaChalkboardTeacher, 
