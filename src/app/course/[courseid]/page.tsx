@@ -454,7 +454,7 @@ const CoursePage: React.FC = () => {
             name="videoFile"
             onChange={handleFileChange}
             className="w-full p-2 border rounded mt-2"
-            required
+           
           />
         </div>
           {formData.videoFile ? (

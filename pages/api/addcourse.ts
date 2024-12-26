@@ -17,20 +17,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const form = new IncomingForm();
     const { db } = await connectToDatabase();
 
-    // Determine the upload directory based on environment (local vs. serverless)
-    const uploadDir = process.env.NODE_ENV_test === 'production'
-      ? path.join('/tmp', 'uploads') // Use /tmp in serverless environments
-      : path.join(process.cwd(), 'public', 'uploads'); // Local development directory
+    // Determine the upload directory based on the environment
+    const uploadDir = process.env.NODE_ENV === 'production'
+      ? '/tmp/uploads'  // Use /tmp in production (serverless environments)
+      : path.join(process.cwd(), 'public', 'uploads');  // Local development directory
 
-    // @ts-expect-error: 'uploadDir' property is not typed in the formidable package
-    form.uploadDir = uploadDir;
-    // @ts-expect-error: 'keepExtensions' property is not typed in the formidable package
-    form.keepExtensions = true;
-
-    // Ensure the upload directory exists locally (serverless environment uses /tmp)
+    // Ensure that the upload directory exists
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
+
+    // Set up the formidable form configuration
+    form.uploadDir = uploadDir;
+    form.keepExtensions = true;
 
     // Parse the incoming request
     form.parse(req, async (err, fields, files) => {
@@ -41,7 +40,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const courseTitle = fields.title[0] as string;
       const courseDescription = fields.description[0] as string;
 
-      const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo; // Handle array if multiple files
+      const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
 
       if (!photo || !photo.filepath) {
         return res.status(400).json({ message: 'Photo is required or file path is missing' });
@@ -56,7 +55,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         // Rename the file to the new file path
         fs.renameSync(photo.filepath, filePath);
 
-        const photoPath = `/uploads/${newFilename}`;
+        const photoPath = `/uploads/${newFilename}`;  // Path for accessing the uploaded photo
         console.log(courseTitle, courseDescription, photoPath);
 
         // Save course details to the database
@@ -76,21 +75,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         console.error('Error saving course to MongoDB:', dbError);
         res.status(500).json({ message: 'Error saving course to MongoDB', error: dbError.message });
       }
-
-      // Respond with success and the uploaded file path
-      res.status(200).json({
-        message: 'File uploaded successfully',
-        courseTitle,
-        courseDescription,
-         // Path to access the uploaded photo
-      });
     });
-  }  else if (req.method === 'GET') {
+  } else if (req.method === 'GET') {
     try {
       const { db } = await connectToDatabase();
       const courses = await db.collection<Courses>('courses')
-      .find({}, { projection: { playlist: 0 } }) // Exclude playlist from the query result
-      .toArray();
+        .find({}, { projection: { playlist: 0 } }) // Exclude playlist from the query result
+        .toArray();
 
       res.status(200).json({
         type: 'S',
@@ -101,8 +92,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       console.error('Error retrieving courses:', err);
       res.status(500).json({ message: 'Error retrieving courses', error: err.message });
     }
-  
-}else {
+
+  } else {
     res.status(405).json({ message: 'Method Not Allowed' });
   }
 };
