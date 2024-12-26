@@ -17,10 +17,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     const form = new IncomingForm();
     const { db } = await connectToDatabase();
-
-    const uploadDir = process.env.NODE_ENV_test === 'production'
-      ? path.join('/tmp', 'uploads') 
-      : path.join(process.cwd(), 'public', 'uploads'); 
+   const uploadDir = process.env.NODE_ENV_test === 'production' 
+   ? '/tmp/uploads' // Use /tmp in production (serverless environments like Vercel)
+   : path.join(process.cwd(), 'uploads');
+   
 
     // @ts-expect-error: 'keepExtensions' property is not typed in the formidable package 
     form.uploadDir = uploadDir;

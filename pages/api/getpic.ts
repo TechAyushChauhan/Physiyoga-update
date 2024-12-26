@@ -3,16 +3,17 @@ import path from 'path';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 // The path to your 'uploads' folder (outside of the 'public' directory)
-const UPLOADS_DIR = process.env.NODE_ENV_test === 'production' 
-? '/tmp/uploads' // Use /tmp in production (serverless environments like Vercel)
-: path.join(process.cwd(), 'uploads');
+const UPLOADS_DIR = process.env.NODE_ENV === 'production' 
+  ? '/tmp/uploads' // Use /tmp in production (serverless environments like Vercel)
+  : path.join(process.cwd(), 'uploads');
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // const { filename } = req.body; 
-console.log(req.query.file)
+ 
+  console.log(req.query.file);
+
   if (req.method === 'GET') {
     const filePath = path.join(UPLOADS_DIR, req.query.file as string);
-    
+
     if (fs.existsSync(filePath)) {
       const file = fs.createReadStream(filePath); // Create a read stream for the file
 
@@ -44,7 +45,13 @@ function getContentType(filePath: string) {
       return 'image/svg+xml';
     case '.pdf':
       return 'application/pdf';
+    case '.mp4':
+      return 'video/mp4';
+    case '.webm':
+      return 'video/webm';
+    case '.ogg':
+      return 'video/ogg';
     default:
-      return 'application/octet-stream';
+      return 'application/octet-stream'; // Generic binary content type for unsupported files
   }
 }

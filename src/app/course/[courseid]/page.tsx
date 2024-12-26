@@ -316,7 +316,10 @@ const CoursePage: React.FC = () => {
       console.error('Failed to upload video:', error);
     }
   };
-    
+    const handleVideoLession=(url)=>{
+      setVideoUrl(`/api/getpic?file=${url.split('/')[2]}`)
+      setIsPreviewOpen(true)
+    }
   
   useEffect(()=>{
     fetchCourses()
@@ -389,6 +392,7 @@ const CoursePage: React.FC = () => {
             {playlist.map((lesson) => (
               <div
                 key={lesson._id}
+                onClick={()=>{handleVideoLession(lesson.videoUrl)}}
                 className="flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 rounded-md shadow-sm"
               >
                 <div>
