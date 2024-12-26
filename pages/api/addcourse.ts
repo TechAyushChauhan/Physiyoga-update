@@ -17,17 +17,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const form = new IncomingForm();
     const { db } = await connectToDatabase();
 
-    // Determine the upload directory based on the environment
+    // Determine the upload directory based on the environment (production vs development)
     const uploadDir = process.env.NODE_ENV === 'production'
-      ? '/tmp/uploads'  // Use /tmp in production (serverless environments)
+      ? '/tmp/uploads'  // Use /tmp in production (serverless environments like Vercel)
       : path.join(process.cwd(), 'public', 'uploads');  // Local development directory
 
-    // Ensure that the upload directory exists
+    // Ensure the upload directory exists
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
 
-    // Set up the formidable form configuration
+    // Set up the Formidable form configuration
     form.uploadDir = uploadDir;
     form.keepExtensions = true;
 
@@ -55,6 +55,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         // Rename the file to the new file path
         fs.renameSync(photo.filepath, filePath);
 
+        // Create the path for accessing the uploaded file
         const photoPath = `/uploads/${newFilename}`;  // Path for accessing the uploaded photo
         console.log(courseTitle, courseDescription, photoPath);
 
@@ -69,7 +70,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         res.status(200).json({
           type: "S",
           message: 'Course Added successfully',
-          data: newCourse, // Return the MongoDB course ID
+          data: newCourse, // Return the MongoDB course ID and data
         });
       } catch (dbError) {
         console.error('Error saving course to MongoDB:', dbError);
@@ -92,7 +93,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       console.error('Error retrieving courses:', err);
       res.status(500).json({ message: 'Error retrieving courses', error: err.message });
     }
-
   } else {
     res.status(405).json({ message: 'Method Not Allowed' });
   }
