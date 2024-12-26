@@ -21,7 +21,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     // const uploadDir = process.env.NODE_ENV_test === 'production'
     //   ? '/tmp/uploads'  // Use /tmp in production (serverless environments like Vercel)
     //   : path.join(process.cwd(), 'public', 'uploads');  // Local development directory
-    const uploadDir = path.join(process.cwd(),  'uploads');
+   const UPLOADS_DIR = process.env.NODE_ENV_test === 'production' 
+   ? '/tmp/uploads' // Use /tmp in production (serverless environments like Vercel)
+   : path.join(process.cwd(), 'uploads');
     // Ensure the upload directory exists
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
