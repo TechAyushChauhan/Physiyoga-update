@@ -3,17 +3,16 @@ import path from 'path';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 // The path to your 'uploads' folder (outside of the 'public' directory)
-const UPLOADS_DIR = process.env.NODE_ENV === 'production' 
+const UPLOADS_DIR = process.env.NODE_ENV_test === 'production' 
 ? '/tmp/uploads' // Use /tmp in production (serverless environments like Vercel)
 : path.join(process.cwd(), 'uploads');
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { filename } = req.query; 
-console.log(filename)
+  // const { filename } = req.body; 
+console.log(req.query.file)
   if (req.method === 'GET') {
-    const filePath = path.join(UPLOADS_DIR, filename as string);
-
-    // Check if the file exists
+    const filePath = path.join(UPLOADS_DIR, req.query.file as string);
+    
     if (fs.existsSync(filePath)) {
       const file = fs.createReadStream(filePath); // Create a read stream for the file
 

@@ -351,7 +351,7 @@ const CoursePage: React.FC = () => {
       {/* Hero Section */}
       <div className="relative">
       <Image
-    src={coursedata.photo || '/uploads/1734531615843-939392202.jpg'}
+    src={coursedata.photo? `/api/getpic?file=${coursedata.photo.split('/')[2]}` :'/uploads/1734531615843-939392202.jpg'}
     alt={coursedata?.title || ''}
     width={1200}
     height={800}
