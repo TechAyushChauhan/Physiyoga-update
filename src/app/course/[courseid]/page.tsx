@@ -211,6 +211,8 @@ import dynamic from "next/dynamic";
 import { FaPlus } from "react-icons/fa";
 import Image from "next/image";
 import Videoplayer from "@/app/Components/videoplayer/vid";
+// import Videoplayer from "@/app/Components/videoplayer/vid";
+
 
 
 
