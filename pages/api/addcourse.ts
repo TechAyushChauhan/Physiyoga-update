@@ -18,10 +18,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const { db } = await connectToDatabase();
 
     // Determine the upload directory based on the environment (production vs development)
-    const uploadDir = process.env.NODE_ENV_test === 'production'
-      ? '/tmp/uploads'  // Use /tmp in production (serverless environments like Vercel)
-      : path.join(process.cwd(), 'public', 'uploads');  // Local development directory
-
+    // const uploadDir = process.env.NODE_ENV_test === 'production'
+    //   ? '/tmp/uploads'  // Use /tmp in production (serverless environments like Vercel)
+    //   : path.join(process.cwd(), 'public', 'uploads');  // Local development directory
+    const uploadDir = path.join(process.cwd(),  'uploads');
     // Ensure the upload directory exists
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
