@@ -30,10 +30,9 @@ const Dashboard: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState<boolean | null>(null);
 
 useEffect(() => {
-  if (typeof window !== "undefined") {
     const saved = localStorage.getItem("sidebarCollapsed");
     setIsCollapsed(saved ? JSON.parse(saved) : false);
-  }
+  
 }, []);
 
 

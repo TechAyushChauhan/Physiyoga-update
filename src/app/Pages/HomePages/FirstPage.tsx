@@ -56,7 +56,7 @@ const FirstPage: React.FC = () => {
         <div className="relative z-10 text-center text-white p-4 pt-52">
           <p className="mb-3 text-gray-600 font-rubik text-lg font-bold tracking-wide">❤️ Health comes first</p>
           <h2 className="max-w-xl mx-auto text-black font-poppins text-4xl font-bold">
-            Live Pain Free with Granimals
+            Live Pain Free with Cure Tribe
           </h2>
           <Link href="/appointment">
             <button

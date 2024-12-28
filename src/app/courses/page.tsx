@@ -62,18 +62,15 @@ const Courses: React.FC = () => {
   };
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
        dispatch(setloader(false))
       getCourses()
       
      
-    }
   }, []); // No external dependencies here
 
   const handleLogout = () => {
-    if (typeof window !== "undefined") {
       localStorage.removeItem("token");
-    }
+    
     router.push("/login");
   };
 

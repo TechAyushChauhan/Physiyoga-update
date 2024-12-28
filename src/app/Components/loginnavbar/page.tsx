@@ -41,9 +41,7 @@ const LoginNavbar = () => {
   }, []);
 
   const handleLogout = () => {
-    if (typeof window !== 'undefined') {
       localStorage.removeItem('token');
-    }
     router.push('/login');
   };
 
