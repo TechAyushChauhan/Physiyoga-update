@@ -1,36 +1,50 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCommentDots, faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Using useRouter in the app directory of Next.js
+import { useRouter } from "next/navigation";
 import "react-toastify/dist/ReactToastify.css";
 import "./Navbar.css"; // Import the CSS file here
 
 const Navbar: React.FC = () => {
-  const [nav, setNav] = useState<boolean>(false); // Explicit type for better TS support
+  const [nav, setNav] = useState<boolean>(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
-  const router = useRouter(); // We can use this for navigation
+  const [showNavbar, setShowNavbar] = useState<boolean>(true);
+  const [lastScrollY, setLastScrollY] = useState<number>(0);
+  const router = useRouter();
 
   const openNav = (): void => {
-    setNav((prevState) => !prevState); // Toggle navigation state
+    setNav((prevState) => !prevState);
   };
 
   const handleLoginClick = (): void => {
     if (!isButtonDisabled) {
-      // Disable the button and show a toast message (you can replace this with your toast implementation)
       setIsButtonDisabled(true);
-
-      // Navigate after a brief message or logic
-    
-        router.push("/login"); // Redirect to the login page
-     // Delay to show message before redirect (optional)
+      router.push("/login");
     }
   };
 
+  const handleScroll = (): void => {
+    const currentScrollY = window.scrollY;
+    if (currentScrollY > lastScrollY && currentScrollY > 50) {
+      setShowNavbar(false); // Scrolling down, hide navbar
+    } else {
+      setShowNavbar(true); // Scrolling up, show navbar
+    }
+    setLastScrollY(currentScrollY);
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [lastScrollY]);
+
   return (
-    <div className="navbar-section">
+    <div className={`navbar-section ${showNavbar ? "visible" : "hidden"}`}>
       <h1 className="navbar-title">
         <Link href="/">
           Physiyoga <span className="navbar-sign">+</span>
