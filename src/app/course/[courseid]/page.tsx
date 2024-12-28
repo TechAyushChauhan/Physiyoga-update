@@ -210,7 +210,9 @@ import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { FaPlus } from "react-icons/fa";
 import Image from "next/image";
-import Videoplayer from "@/app/Components/videoplayer/vid";
+import Videoplayer from "./../../Components/videoplayer/vid";
+
+
 
 
 
@@ -314,7 +316,10 @@ const CoursePage: React.FC = () => {
       console.error('Failed to upload video:', error);
     }
   };
-    
+    const handleVideoLession=(url)=>{
+      setVideoUrl(`/api/getpic?file=${url.split('/')[2]}`)
+      setIsPreviewOpen(true)
+    }
   
   useEffect(()=>{
     fetchCourses()
@@ -349,7 +354,7 @@ const CoursePage: React.FC = () => {
       {/* Hero Section */}
       <div className="relative">
       <Image
-    src={coursedata.photo || '/uploads/1734531615843-939392202.jpg'}
+    src={coursedata.photo? `/api/getpic?file=${coursedata.photo.split('/')[2]}` :'/uploads/1734531615843-939392202.jpg'}
     alt={coursedata?.title || ''}
     width={1200}
     height={800}
@@ -387,6 +392,7 @@ const CoursePage: React.FC = () => {
             {playlist.map((lesson) => (
               <div
                 key={lesson._id}
+                onClick={()=>{handleVideoLession(lesson.videoUrl)}}
                 className="flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 rounded-md shadow-sm"
               >
                 <div>
@@ -454,7 +460,7 @@ const CoursePage: React.FC = () => {
             name="videoFile"
             onChange={handleFileChange}
             className="w-full p-2 border rounded mt-2"
-            required
+           
           />
         </div>
           {formData.videoFile ? (
