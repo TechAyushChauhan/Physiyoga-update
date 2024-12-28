@@ -3,9 +3,7 @@ import path from 'path';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 // The path to your 'uploads' folder (outside of the 'public' directory)
-const UPLOADS_DIR = process.env.NODE_ENV === 'production' 
-  ? '/tmp/uploads' // Use /tmp in production (serverless environments like Vercel)
-  : path.join(process.cwd(), 'uploads');
+const UPLOADS_DIR =  path.join(process.cwd(), 'uploads');
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
  
