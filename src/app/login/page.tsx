@@ -62,9 +62,8 @@ const Login: React.FC = () => {
       localStorage.setItem('authToken', user.token);
       router.push("/dashboard");
       // Store token or user info if needed
-      // if (typeof window !== 'undefined') {
       //   localStorage.setItem('userToken', user.token || '');
-      // }
+      
       
       // Reset loading state and navigate
       setIsLoading(false);

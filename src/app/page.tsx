@@ -10,8 +10,10 @@ import SixthPage from './Pages/HomePages/SixthPage';
 
 const Page: React.FC = () => {
   return (
-    <>
+    <><div className='bg-white'>
       <Navbar />
+      </div>
+
       <FirstPage />
       <SecondPage />
       

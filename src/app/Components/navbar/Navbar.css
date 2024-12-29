@@ -1,12 +1,40 @@
 /* Navbar.css */
+/* Navbar Base Styles */
 .navbar-section {
+    position: fixed; /* Ensures the navbar stays at the top */
+    top: 0;
+    left: 0;
+    width: 100%;
     padding: 0 32px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     height: 80px;
     background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow for better visibility */
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Smooth transitions */
+    z-index: 1000; /* Ensures the navbar is always on top */
 }
+
+/* Hidden Navbar State */
+.navbar-section.hidden {
+    transform: translateY(-100%); /* Moves the navbar out of view */
+    opacity: 0; /* Fades it out */
+}
+
+/* Visible Navbar State */
+.navbar-section.visible {
+    transform: translateY(0); /* Brings the navbar into view */
+    opacity: 1; /* Fully visible */
+}
+
+/* Add this to ensure compatibility with different screen sizes */
+@media (max-width: 768px) {
+    .navbar-section {
+        padding: 0 16px; /* Reduce padding on smaller screens */
+    }
+}
+
 .navbar-title a {
     color: #1A8EFD;
     letter-spacing: .6px;
