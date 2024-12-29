@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextApiRequest, NextApiResponse } from 'next';
 import { User } from '../../../models/login';
 import { connectToDatabase } from '../../../lib/mongodb';
@@ -55,6 +56,7 @@ console.log(JWT_SECRET)
       }
 
       // Verify and decode the token
+ 
       let decodedToken: any;
       try {
         decodedToken = jwt.verify(token, JWT_SECRET);
@@ -78,6 +80,7 @@ console.log(user)
         user: {
           id: user._id,      
           name: user.username,
+          // @ts-expect-error: 'keepExtensions' property is not typed in the formidable package 
           referralCode:user.referralCode
           // Include additional user fields as needed
         },
