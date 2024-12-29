@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useState, useRef, useEffect } from 'react';
