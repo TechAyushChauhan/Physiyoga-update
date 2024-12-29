@@ -1,13 +1,19 @@
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
-// Make sure to add your secret key in .env file
-const JWT_SECRET = process.env.JWT_SECRET || 'xxasd7885['; 
-export function decordtoken(token:string){
+// Initialize dotenv
+dotenv.config();
+
+const JWT_SECRET = process.env.JWT_SECRET; // No fallback here
+
+export function decodeToken(token: string) {
     try {
-        const decoded = jwt.verify(token, JWT_SECRET); // Verifies and decodes
+        console.log('Token:', token);
+        console.log('JWT_SECRET:', JWT_SECRET); // Ensure it is loaded correctly
+        const decoded = jwt.verify(token, JWT_SECRET!); // Add `!` to assert non-null
         console.log("Decoded Token:", decoded);
+        return decoded;
     } catch (err) {
         console.error("Token verification failed:", err.message);
     }
-
 }

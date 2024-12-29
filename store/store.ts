@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import counterReducer from './slices/counterSlice';
 import loaderReducer from './slices/loaderSlice';
+import userReducer from './slices/userSlice';
 
 
 
@@ -11,7 +12,8 @@ export const makeStore = () => {
     return configureStore({
         reducer: {
             counter: counterReducer,
-            loader: loaderReducer
+            loader: loaderReducer,
+            user:userReducer
 
         },
     });

@@ -4,18 +4,28 @@ import { useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
 import { FaBell } from 'react-icons/fa';
 import Image from 'next/image';
-
+import { decodeToken } from '../../../../lib/decodToken';
+import { useAppDispatch, useAppSelector } from '../../../../lib/hooks';
+import { setUser } from '../../../../store/slices/userSlice';
+interface UserState {
+  name: string | null;
+  refid: string | null;
+  loggedIn: boolean;
+}
 const LoginNavbar = () => {
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+    const { name,refid,loggedIn} = useAppSelector((state)=>state.user)
+    console.log(name,refid,loggedIn)
   const [notifications] = useState([
     { id: 1, message: 'New message from admin' },
     { id: 2, message: 'Your profile has been updated' },
     { id: 3, message: "Your subscription is expiring soon." },
     { id: 4, message: "Welcome to your Dashboard!" },
   ]);
+  const dispatch = useAppDispatch()
 
   const notificationsPanelRef = useRef(null);
   const profileMenuRef = useRef(null);
@@ -42,10 +52,16 @@ const LoginNavbar = () => {
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('token');
+      localStorage.removeItem('authToken');
     }
+    dispatch(setUser({
+      name:  null,
+      refid: null,
+      loggedIn:false,
+     }))
     router.push('/login');
   };
+
 
   return (
     <div className="flex bg-cyan-100">
@@ -59,7 +75,7 @@ const LoginNavbar = () => {
         <header className="bg-white dark:bg-gray-800 shadow-md p-3 rounded-xl flex justify-between items-center sticky top-0 z-20">
           <div className="flex items-center space-x-6">
             <h1 className="text-xl font-semibold text-gray-800 dark:text-white">
-              Welcome, John Doe
+              Welcome,{(loggedIn)? name:'Guest'}
             </h1>
             {/* Added Navigation Links */}
             <nav className="flex space-x-4">
@@ -131,7 +147,7 @@ const LoginNavbar = () => {
                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-lg shadow-lg border dark:border-gray-600 z-50">
                   <div className="p-4 border-b dark:border-gray-600 text-center">
                     <p className="text-gray-800 dark:text-white font-semibold">
-                      John Doe
+                      {name}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       Student
