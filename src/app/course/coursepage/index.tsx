@@ -23,7 +23,11 @@ const CoursePages: React.FC = () => {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const { courseid ,ref} = useParams();
   const [playlist, setPlaylist] = useState([]);
-   
+  const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
+
+  const handleVideoSelection = (id: string) => {
+    setSelectedVideoId((prevId) => (prevId === id ? null : id)); // Toggle video selection
+  };
   const { name,refid,loggedIn} = useAppSelector((state)=>state.user)
 console.log(refid)
   // You can now access query parameters like `query.id`
@@ -117,7 +121,7 @@ console.log(refid)
       setVideoUrl(`/api/getpic?file=${url.split('/')[2]}`)
       setIsPreviewOpen(true)
     }
-  
+   
   useEffect(()=>{
     fetchCourses()
     if (ref) {
@@ -216,21 +220,27 @@ console.log(refid)
         <section className="bg-white shadow-md rounded-lg p-6">
           <h3 className="text-lg font-bold text-gray-800">Lessons</h3>
           <div className="mt-4 space-y-4">
-            {playlist.map((lesson) => (
-              <div
-                key={lesson._id}
-                onClick={()=>{handleVideoLession(lesson.videoUrl)}}
-                className="flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 rounded-md shadow-sm"
-              >
-                <div>
-                  <h4 className="text-gray-800 font-semibold">{lesson.title}</h4>
-                  <p className="text-gray-600 text-sm">Duration: {lesson.duration}</p>
+          {playlist.map((lesson) => (
+              <div key={lesson._id} className="p-4 bg-gray-50 rounded-md shadow-sm">
+                <div
+                  onClick={() => handleVideoSelection(lesson._id)}
+                  className="flex justify-between items-center cursor-pointer hover:bg-gray-100"
+                >
+                  <div>
+                    <h4 className="text-gray-800 font-semibold">{lesson.title}</h4>
+                    <p className="text-gray-600 text-sm">Duration: {lesson.duration}</p>
+                  </div>
+                  <FaPlayCircle className="text-blue-600 text-2xl" />
                 </div>
-                <FaPlayCircle className="text-blue-600 text-2xl cursor-pointer" />
+                {selectedVideoId === lesson._id && (
+                  <div className="mt-4">
+                    <Videoplayer url={`/api/getpic?file=${lesson.videoUrl.split("/")[2]}`} />
+                  </div>
+                )}
               </div>
             ))}
           </div>
-        </section>
+        </section>  
 
         {/* Actions Section */}
         <section className="flex justify-between space-x-4">
