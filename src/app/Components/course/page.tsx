@@ -136,7 +136,7 @@ const CoursesComponent: React.FC = () => {
         {/* Buy Button */}
         <button
             className="bg-green-600 text-white py-2 px-4 rounded-full hover:bg-green-700 transition w-1/2"
-            onClick={() => router.push(`/buy?name=${course.name}&fees=${course.fees}`)}
+            onClick={() => router.push(`/buy?id=${course.title}&courseID=${course._id}`)}
           >
             Buy
           </button>

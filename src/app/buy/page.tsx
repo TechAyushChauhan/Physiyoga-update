@@ -3,6 +3,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAppDispatch } from "../../../lib/hooks";
+import { setloader } from "../../../store/slices/loaderSlice";
 
 const BuyPage: React.FC = () => {
   const router = useRouter();
@@ -10,25 +12,87 @@ const BuyPage: React.FC = () => {
   const [courseFees, setCourseFees] = useState<string>("");
   const [timestamp, setTimestamp] = useState<string>("");
   const [referralCode, setReferralCode] = useState<string>("");
+const dispatch=useAppDispatch()
+
+
+  const fetchAllCourses = async (courseID) => {
+    try {
+        dispatch(setloader(true))
+      const response = await fetch('/api/addcourse?id='+courseID, {
+        method: 'GET',
+      });
+
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch courses');
+      }
+     
+  
+      const data = await response.json();
+      if (data.type="S") {
+        setCourseName(data.data.title)
+        setCourseFees(data.data.pay)
+        const refral = localStorage.getItem('refcode');
+        if (refral) {
+          setReferralCode(refral)
+        }
+      }
+
+    
+    } catch (error) {
+      console.error('Error fetching courses:', error);
+    }
+    dispatch(setloader(false))
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const name = params.get("name");
-    const fees = params.get("fees");
-
-    if (name) setCourseName(name);
-    if (fees) setCourseFees(fees);
+    const courseID = params.get("courseID");
+    fetchAllCourses(courseID)
+  
+   
 
     // Only set timestamp on client side
     setTimestamp(new Date().toLocaleString());
   }, []);
+  const handlePayment = async () => {
+    try {
+    
+
+      // Prepare the data to send
+   
+
+      // Make a POST request using fetch
+      const response = await fetch('/api/payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to initiate payment.');
+      }
+
+      // Redirect user to the payment page if the request is successful
+      if (data && data.data.instrumentResponse.redirectInfo.url) {
+        window.location.href = data.data.instrumentResponse.redirectInfo.url;
+      }
+    } catch (err) {
+      console.error('Error initiating payment:', err);
+      // setError(err.message || 'An unexpected error occurred.');
+    } finally {
+      // setLoading(false);
+    }
+  };
 
   const handleConfirm = () => {
-    console.log(
-      `Course: ${courseName}, Fees: ${courseFees}, Referral Code: ${referralCode}`
-    );
-    alert("Course purchase confirmed!");
-    router.push("/courses");
+    handlePayment()
+  
   };
 
   const handleCancel = () => {

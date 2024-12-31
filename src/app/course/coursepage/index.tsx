@@ -8,7 +8,7 @@ import { FaPlus } from "react-icons/fa";
 import Image from "next/image";
 import Videoplayer from "./../../Components/videoplayer/vid";
 import { useAppSelector } from "../../../../lib/hooks";
-
+import { v4 as uuidv4 } from "uuid";
 
 
 
@@ -23,7 +23,10 @@ const CoursePages: React.FC = () => {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const { courseid ,ref} = useParams();
   const [playlist, setPlaylist] = useState([]);
-   
+  const generateGoogleMeetLink = () => {
+    const meetID = uuidv4(); // Generate a unique ID
+    return `https://meet.google.com/${meetID}`;
+  };
   const { name,refid,loggedIn} = useAppSelector((state)=>state.user)
 console.log(refid)
   // You can now access query parameters like `query.id`
@@ -216,19 +219,35 @@ console.log(refid)
         <section className="bg-white shadow-md rounded-lg p-6">
           <h3 className="text-lg font-bold text-gray-800">Lessons</h3>
           <div className="mt-4 space-y-4">
-            {playlist.map((lesson) => (
-              <div
-                key={lesson._id}
-                onClick={()=>{handleVideoLession(lesson.videoUrl)}}
-                className="flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 rounded-md shadow-sm"
-              >
-                <div>
-                  <h4 className="text-gray-800 font-semibold">{lesson.title}</h4>
-                  <p className="text-gray-600 text-sm">Duration: {lesson.duration}</p>
-                </div>
-                <FaPlayCircle className="text-blue-600 text-2xl cursor-pointer" />
-              </div>
-            ))}
+          {playlist.map((lesson, index) => (
+  <React.Fragment key={lesson._id}> {/* Use React.Fragment for unique key */}
+    <div
+      onClick={() => {
+        handleVideoLession(lesson.videoUrl);
+      }}
+      className="flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 rounded-md shadow-sm"
+    >
+      <div>
+        <h4 className="text-gray-800 font-semibold">{lesson.title}</h4>
+        <p className="text-gray-600 text-sm">Duration: {lesson.duration}</p>
+      </div>
+      <FaPlayCircle className="text-blue-600 text-2xl cursor-pointer" />
+    </div>
+
+    {/* Google Meet Link */}
+    {index > 0 && (index + 1) % 2 === 0 && (
+      <div className="mt-4">
+        <button
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-300 flex items-center"
+          onClick={() => window.open(generateGoogleMeetLink(), "_blank")}
+        >
+          {/* <FaVideo className="mr-2" /> */}
+          Join Google Meet for Discussion
+        </button>
+      </div>
+    )}
+  </React.Fragment>
+))}
           </div>
         </section>
 
