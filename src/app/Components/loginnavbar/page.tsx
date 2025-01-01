@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
-import { FaBell } from 'react-icons/fa';
+import { FaBell, FaChevronDown } from 'react-icons/fa';
 import Image from 'next/image';
 import { decodeToken } from '../../../../lib/decodToken';
 import { useAppDispatch, useAppSelector } from '../../../../lib/hooks';
@@ -17,6 +17,9 @@ const LoginNavbar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showAdminDropdown, setShowAdminDropdown] = useState(false);
+
+
     const { name,refid,loggedIn} = useAppSelector((state)=>state.user)
     console.log(name,refid,loggedIn)
   const [notifications] = useState([
@@ -29,23 +32,32 @@ const LoginNavbar = () => {
 
   const notificationsPanelRef = useRef(null);
   const profileMenuRef = useRef(null);
+  const adminDropdownRef = useRef(null);
+
 
   // Close notifications/profile menu when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event) => {
       if (
         notificationsPanelRef.current &&
-        !notificationsPanelRef.current.contains(event.target as Node)
+        !notificationsPanelRef.current.contains(event.target)
       ) {
         setShowNotifications(false);
       }
       if (
         profileMenuRef.current &&
-        !profileMenuRef.current.contains(event.target as Node)
+        !profileMenuRef.current.contains(event.target)
       ) {
         setShowProfileMenu(false);
       }
+      if (
+        adminDropdownRef.current &&
+        !adminDropdownRef.current.contains(event.target)
+      ) {
+        setShowAdminDropdown(false);
+      }
     };
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
@@ -91,6 +103,45 @@ const LoginNavbar = () => {
               >
                 Courses
               </button>
+              <div className="relative inline-block text-left" ref={adminDropdownRef}>
+                <button
+                  onClick={() => setShowAdminDropdown(!showAdminDropdown)}
+                  className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md inline-flex items-center"
+                >
+                  <span>Admin</span>
+                  <FaChevronDown
+                    className={`ml-2 transform transition-transform duration-200 ${
+                      showAdminDropdown ? 'rotate-180' : ''
+                    }`}
+                    size={12}
+                  />
+                </button>
+
+                {showAdminDropdown && (
+                  <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+                    <div className="py-1">
+                      <button
+                        onClick={() => router.push('/appointmentdata')}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Appointment Data
+                      </button>
+                      <button
+                        onClick={() => router.push('/meetingdata')}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Meeting Data
+                      </button>
+                      <button
+                        onClick={() => router.push('/logindata')}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Login Data
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </nav>
           </div>
 
