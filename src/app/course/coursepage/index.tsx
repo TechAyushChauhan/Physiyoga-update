@@ -220,25 +220,54 @@ console.log(refid)
         <section className="bg-white shadow-md rounded-lg p-6">
           <h3 className="text-lg font-bold text-gray-800">Lessons</h3>
           <div className="mt-4 space-y-4">
-          {playlist.map((lesson) => (
-              <div key={lesson._id} className="p-4 bg-gray-50 rounded-md shadow-sm">
-                <div
-                  onClick={() => handleVideoSelection(lesson._id)}
-                  className="flex justify-between items-center cursor-pointer hover:bg-gray-100"
-                >
-                  <div>
-                    <h4 className="text-gray-800 font-semibold">{lesson.title}</h4>
-                    <p className="text-gray-600 text-sm">Duration: {lesson.duration}</p>
-                  </div>
-                  <FaPlayCircle className="text-blue-600 text-2xl" />
-                </div>
-                {selectedVideoId === lesson._id && (
-                  <div className="mt-4">
-                    <Videoplayer url={`/api/getpic?file=${lesson.videoUrl.split("/")[2]}`} />
-                  </div>
-                )}
-              </div>
-            ))}
+          {playlist.map((lesson, index) => {
+  // Calculate the date for the Google Meet button
+  const today = new Date();
+  const meetDate = new Date(today);
+  meetDate.setDate(today.getDate() + 2 * Math.floor(index / 2)); // 2-day gap for every 2 lessons
+  const formattedDate = meetDate.toLocaleString('en-US', {
+    weekday: 'long',
+    hour: '2-digit',
+    minute: '2-digit',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  return (
+    <React.Fragment key={lesson._id}>
+      <div className="p-4 bg-gray-50 rounded-md shadow-sm">
+        <div
+          onClick={() => handleVideoSelection(lesson._id)}
+          className="flex justify-between items-center cursor-pointer hover:bg-gray-100"
+        >
+          <div>
+            <h4 className="text-gray-800 font-semibold">{lesson.title}</h4>
+            <p className="text-gray-600 text-sm">Duration: {lesson.duration}</p>
+          </div>
+          <FaPlayCircle className="text-blue-600 text-2xl" />
+        </div>
+        {selectedVideoId === lesson._id && (
+          <div className="mt-4">
+            <Videoplayer url={`/api/getpic?file=${lesson.videoUrl.split('/')[2]}`} />
+          </div>
+        )}
+      </div>
+
+      {/* Google Meet Button */}
+      {index > 0 && (index + 1) % 2 === 0 && (
+        <div className="mt-4 text-center">
+          <button
+            className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-all duration-300"
+            // onClick={() => window.open(generateGoogleMeetLink(), "_blank")}
+          >
+            Join Google Meet for Discussion on {formattedDate}
+          </button>
+        </div>
+      )}
+    </React.Fragment>
+  );
+})}
+
           </div>
         </section>  
 

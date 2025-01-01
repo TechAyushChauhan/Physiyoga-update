@@ -41,6 +41,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       const courseTitle = fields.title[0] as string;
       const courseDescription = fields.description[0] as string;
+      const coursepay = fields.pay[0] as string;
 
       const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
 
@@ -66,6 +67,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           title: courseTitle,
           description: courseDescription,
           photo: photoPath,
+          pay:Number(coursepay)
         });
 
         // Respond with success and the uploaded file path

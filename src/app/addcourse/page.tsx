@@ -44,9 +44,7 @@ const AddCourse: React.FC = () => {
     
   
   };
- // fetch((/getpicture))
-  
-  console.log(fetch('/api/getpic?748'))
+
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
