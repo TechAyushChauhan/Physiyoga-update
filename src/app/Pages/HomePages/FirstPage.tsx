@@ -67,20 +67,20 @@ const FirstPage: React.FC = () => {
             </button>
           </Link>
 
-          <div className="flex justify-center space-x-8 mt-24 p-5 bg-orange-400 rounded-3xl">
+          <div className="flex justify-center space-x-8 mt-24 p-5 bg-gray-200 bg-opacity-25 rounded-3xl shadow-md">
             <div className="text-center">
-              <p className="text-4xl font-semibold">145k+</p>
-              <p className="text-xl">Receive Patients</p>
+              <p className="text-4xl font-semibold text-green-200">145k+</p>
+              <p className="text-lg text-white">Happy Clients</p>
             </div>
 
             <div className="text-center">
-              <p className="text-4xl font-semibold">50+</p>
-              <p className="text-xl">Expert Doctors</p>
+              <p className="text-4xl font-semibold text-green-200">50+</p>
+              <p className="text-lg text-white">Expert Instructors</p>
             </div>
 
             <div className="text-center">
-              <p className="text-4xl font-semibold">10+</p>
-              <p className="text-xl">Years of Experience</p>
+              <p className="text-4xl font-semibold text-green-200">10+</p>
+              <p className="text-lg text-white">Years of Service</p>
             </div>
           </div>
         </div>

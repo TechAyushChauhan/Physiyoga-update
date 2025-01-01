@@ -23,9 +23,10 @@ const CoursePages: React.FC = () => {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const { courseid ,ref} = useParams();
   const [playlist, setPlaylist] = useState([]);
-  const generateGoogleMeetLink = () => {
-    const meetID = uuidv4(); // Generate a unique ID
-    return `https://meet.google.com/${meetID}`;
+  const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
+
+  const handleVideoSelection = (id: string) => {
+    setSelectedVideoId((prevId) => (prevId === id ? null : id)); // Toggle video selection
   };
   const { name,refid,loggedIn} = useAppSelector((state)=>state.user)
 console.log(refid)
@@ -120,7 +121,7 @@ console.log(refid)
       setVideoUrl(`/api/getpic?file=${url.split('/')[2]}`)
       setIsPreviewOpen(true)
     }
-  
+   
   useEffect(()=>{
     fetchCourses()
     if (ref) {
@@ -219,37 +220,27 @@ console.log(refid)
         <section className="bg-white shadow-md rounded-lg p-6">
           <h3 className="text-lg font-bold text-gray-800">Lessons</h3>
           <div className="mt-4 space-y-4">
-          {playlist.map((lesson, index) => (
-  <React.Fragment key={lesson._id}> {/* Use React.Fragment for unique key */}
-    <div
-      onClick={() => {
-        handleVideoLession(lesson.videoUrl);
-      }}
-      className="flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 rounded-md shadow-sm"
-    >
-      <div>
-        <h4 className="text-gray-800 font-semibold">{lesson.title}</h4>
-        <p className="text-gray-600 text-sm">Duration: {lesson.duration}</p>
-      </div>
-      <FaPlayCircle className="text-blue-600 text-2xl cursor-pointer" />
-    </div>
-
-    {/* Google Meet Link */}
-    {index > 0 && (index + 1) % 2 === 0 && (
-      <div className="mt-4">
-        <button
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-300 flex items-center"
-          onClick={() => window.open(generateGoogleMeetLink(), "_blank")}
-        >
-          {/* <FaVideo className="mr-2" /> */}
-          Join Google Meet for Discussion
-        </button>
-      </div>
-    )}
-  </React.Fragment>
-))}
+          {playlist.map((lesson) => (
+              <div key={lesson._id} className="p-4 bg-gray-50 rounded-md shadow-sm">
+                <div
+                  onClick={() => handleVideoSelection(lesson._id)}
+                  className="flex justify-between items-center cursor-pointer hover:bg-gray-100"
+                >
+                  <div>
+                    <h4 className="text-gray-800 font-semibold">{lesson.title}</h4>
+                    <p className="text-gray-600 text-sm">Duration: {lesson.duration}</p>
+                  </div>
+                  <FaPlayCircle className="text-blue-600 text-2xl" />
+                </div>
+                {selectedVideoId === lesson._id && (
+                  <div className="mt-4">
+                    <Videoplayer url={`/api/getpic?file=${lesson.videoUrl.split("/")[2]}`} />
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-        </section>
+        </section>  
 
         {/* Actions Section */}
         <section className="flex justify-between space-x-4">
