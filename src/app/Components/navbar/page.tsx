@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCommentDots, faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from "next/navigation";
 
 const Navbar: React.FC = () => {
@@ -41,6 +42,9 @@ const Navbar: React.FC = () => {
     };
   }, [lastScrollY]);
 
+  const [imageError, setImageError] = useState(false);
+
+
   return (
     <div
       style={{
@@ -62,9 +66,24 @@ const Navbar: React.FC = () => {
       }}
     >
       <h1 style={{ fontFamily: "Poppins, sans-serif", fontSize: "24px", letterSpacing: ".6px", color: "#1A8EFD" }}>
-        <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
-          Physiyoga <span style={{ color: "#54de54", fontWeight: "bold", fontSize: "40px" }}>+</span>
-        </Link>
+      <Link href="/" className="flex items-center hover:opacity-90 transition-all duration-300">
+        {!imageError ? (
+          <Image
+            src="/images/curetribelogofull.png" // Your logo path
+            alt="Physiyoga Plus Logo"
+            width={150}
+            height={40}
+            priority
+            onError={() => setImageError(true)}
+            className="object-contain"
+          />
+        ) : (
+          <>
+            Physiyoga{' '}
+            <span className="text-[#54de54] font-bold text-4xl">+</span>
+          </>
+        )}
+      </Link>
       </h1>
 
       {/* Desktop Navbar */}

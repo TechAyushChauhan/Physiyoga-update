@@ -1,284 +1,219 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import LoginFooter from "../Components/loginfooter/page";
 import LoginNavbar from "../Components/loginnavbar/page";
-import { FaVideo } from "react-icons/fa";
 import CoursesComponent from "../Components/course/page";
-import { 
-  ChevronLeft, 
-  Book, 
-  ClipboardList, 
+import {
+  Book,
+  ClipboardList,
   TrendingUp,
-  Video,
   User,
-  Activity,
-  Menu,
-  X
+  Video
 } from 'lucide-react';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import Buyedcourses from "../Components/buyedcourse/page";
+import MonthlyGoals from "../Components/monthlygoals/monthlygoals";
+
+// Define the type for date values
+type DateValue = Date | [Date | null, Date | null] | null;
+
 
 
 const Dashboard: React.FC = () => {
-
-  const notificationsPanelRef = useRef<HTMLDivElement | null>(null);
-  const profileMenuRef = useRef<HTMLDivElement | null>(null);
-  const FaChartLine = dynamic(() => import("react-icons/fa").then((mod) => mod.FaChartLine), { ssr: false });
-  const FaBook = dynamic(() => import("react-icons/fa").then((mod) => mod.FaBook), { ssr: false });
-  const FaUserAlt = dynamic(() => import("react-icons/fa").then((mod) => mod.FaUserAlt), { ssr: false });
-  const FaCog = dynamic(() => import("react-icons/fa").then((mod) => mod.FaCog), { ssr: false });
-  const FaCalendarAlt = dynamic(() => import("react-icons/fa").then((mod) => mod.FaCalendarAlt), { ssr: false });
-  const FaChalkboardTeacher = dynamic(() => import("react-icons/fa").then((mod) => mod.FaChalkboardTeacher), { ssr: false });
-  
   const router = useRouter();
-  const pathname = usePathname();
-  
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [date, setDate] = useState<DateValue>(new Date());
+
   // Initialize isCollapsed from localStorage or default to false
   const [isCollapsed, setIsCollapsed] = useState<boolean | null>(null);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-useEffect(() => {
+  useEffect(() => {
     const saved = localStorage.getItem("sidebarCollapsed");
     setIsCollapsed(saved ? JSON.parse(saved) : false);
-  
-}, []);
+
+  }, []);
 
 
-  const menuItems = [
-    { 
-      icon: FaChartLine, 
-      label: "Dashboard", 
-      route: "/dashboard" 
-    },
-    { 
-      icon: FaBook, 
-      label: "Courses", 
-      route: "/courses" 
-    },
-    { 
-      icon: FaUserAlt, 
-      label: "Profile", 
-      route: "/profile" 
-    },
-    { 
-      icon: FaCalendarAlt, 
-      label: "Appointment", 
-      route: "/appointment" 
-    },
-    { 
-      icon: FaChalkboardTeacher, 
-      label: "Instructors", 
-      route: "/instructors" 
-    },
-    { 
-      icon: FaCog, 
-      label: "Settings", 
-      route: "/settings" 
-    }
-  ];
 
-  // Update localStorage when sidebar state changes
-  const toggleSidebar = () => {
-    const newState = !isCollapsed;
-    setIsCollapsed(newState);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("sidebarCollapsed", JSON.stringify(newState));
-    }
+  const handleDateChange = (value: DateValue) => {
+    setDate(value);
+    // Handle date selection here
+    console.log('Selected date:', value);
   };
 
 
+
+  useEffect(() => {
+    const saved = localStorage.getItem("sidebarCollapsed");
+    setIsCollapsed(saved ? JSON.parse(saved) : false);
+
+    // Add scroll event listener
+    const controlNavbar = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY) { // if scroll down hide the navbar
+        setShowNavbar(false);
+      } else { // if scroll up show the navbar
+        setShowNavbar(true);
+      }
+
+      // remember current page location to use in the next move
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', controlNavbar);
+
+    // cleanup function
+    return () => {
+      window.removeEventListener('scroll', controlNavbar);
+    };
+  }, [lastScrollY]);
+
   return (
-    <div>
-    <LoginNavbar />
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setIsMobileMenuOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700"
-      >
-        <Menu size={24} />
-      </button>
-
-      {/* Sidebar - Desktop */}
-      <div className={`
-        fixed top-0 left-0 h-screen 
-        hidden lg:block
-        ${isCollapsed ? 'w-20' : 'w-72'} 
-        bg-white dark:bg-slate-800 
-        shadow-xl transition-all duration-300 
-        border-r border-slate-200 dark:border-slate-700
-      `}>
-        <div className="p-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-700">
-          {!isCollapsed && (
-            <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
-              Yoga Dashboard
-            </h1>
-          )}
-          <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-          >
-            {isCollapsed ? <Menu size={20} /> : <ChevronLeft size={20} />}
-          </button>
-        </div>
-
-        <nav className="p-4">
-          <ul className="space-y-2">
-            {menuItems.map((item) => (
-              <li key={item.label}>
-                <button className={`
-                  w-full p-3 flex items-center gap-4
-                  rounded-lg transition-all duration-200
-                  hover:bg-indigo-50 dark:hover:bg-slate-700
-                  text-slate-600 dark:text-slate-300
-                  hover:text-indigo-600 dark:hover:text-indigo-400
-                  group
-                `}>
-                  <item.icon size={20} className="group-hover:text-indigo-500" />
-                  {!isCollapsed && <span>{item.label}</span>}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
+    <div className="min-h-screen bg-white transition-colors duration-200">
+      <div className={`fixed w-full top-0 z-50 transition-transform duration-300 ${showNavbar ? 'translate-y-0' : '-translate-y-full'
+        }`}>
+        <LoginNavbar />
       </div>
 
-      {/* Mobile Sidebar */}
-      <div className={`
-        fixed inset-0 z-50 lg:hidden
-        transform transition-transform duration-300
-        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
-        {/* Backdrop */}
-        <div 
-          className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-        
-        {/* Mobile Menu Content */}
-        <div className="relative w-64 max-w-[80%] h-full bg-white dark:bg-slate-800 shadow-xl">
-          <div className="p-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-700">
-            <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
-              Yoga Dashboard
-            </h1>
-            <button
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
-            >
-              <X size={20} />
-            </button>
-          </div>
-
-          <nav className="p-4">
-            <ul className="space-y-2">
-              {menuItems.map((item) => (
-                <li key={item.label}>
-                  <button className={`
-                    w-full p-3 flex items-center gap-4
-                    rounded-lg transition-all duration-200
-                    hover:bg-indigo-50 dark:hover:bg-slate-700
-                    text-slate-600 dark:text-slate-300
-                    hover:text-indigo-600 dark:hover:text-indigo-400
-                    group
-                  `}>
-                    <item.icon size={20} className="group-hover:text-indigo-500" />
-                    <span>{item.label}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </div>
-      </div>
 
       {/* Main Content */}
-      <div className={`
-        transition-all duration-300 p-4 sm:p-6 lg:p-8
-        ${isCollapsed ? 'lg:ml-20' : 'lg:ml-72'}
-      `}>
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          {/* Stats Cards */}
-          {[
-            { icon: Book, label: 'Total Courses', value: '25', change: '+12.5%', color: 'indigo' },
-            { icon: ClipboardList, label: 'Completed', value: '12', change: '+8.2%', color: 'green' },
-            { icon: TrendingUp, label: 'In Progress', value: '8', change: '+15.3%', color: 'purple' }
-          ].map((stat, index) => (
-            <div key={index} className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-shadow border border-slate-200 dark:border-slate-700">
-              <div className="flex items-center justify-between mb-4">
-                <div className={`bg-${stat.color}-100 dark:bg-${stat.color}-900/50 p-3 rounded-lg`}>
-                  <stat.icon className={`text-${stat.color}-600 dark:text-${stat.color}-400`} size={20} />
-                </div>
-                <span className={`text-sm font-medium text-${stat.color}-600 dark:text-${stat.color}-400`}>{stat.change}</span>
+      <div
+        className={`
+        flex-grow flex flex-col mt-14
+        ${isCollapsed ? 'ml-20' : 'ml-64'}
+        transition-all duration-300 ease-in-out
+      `}
+      >
+        <main className="p-6 space-y-6">
+          {/* Overview Cards */}
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Total Courses Card */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-all duration-200 hover:shadow-md">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-700">
+                  Total Courses
+                </h3>
+                <Book className="w-6 h-6 text-blue-500" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-200">{stat.value}</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{stat.label}</p>
+              <p className="text-3xl font-bold text-blue-600">5</p>
+              <p className="text-sm text-gray-500 mt-2">Active Courses</p>
             </div>
-          ))}
-        </div>
 
-        {/* Activity & Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-          {/* Recent Activity */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 shadow-lg border border-slate-200 dark:border-slate-700">
-            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Recent Activity</h3>
-            <div className="space-y-4">
-              {[
-                { color: 'bg-indigo-500', text: 'Completed Meditation Basics' },
-                { color: 'bg-green-500', text: 'Achieved 7-day streak' },
-                { color: 'bg-purple-500', text: 'Started Advanced Yoga' }
-              ].map((item, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <div className={`w-2 h-2 rounded-full ${item.color}`} />
-                  <span className="text-slate-600 dark:text-slate-300">{item.text}</span>
+            {/* Completed Courses Card */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-all duration-200 hover:shadow-md">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-700">
+                  Completed
+                </h3>
+                <ClipboardList className="w-6 h-6 text-green-500" />
+              </div>
+              <p className="text-3xl font-bold text-green-600">3</p>
+              <p className="text-sm text-gray-500 mt-2">Courses Finished</p>
+            </div>
+
+            {/* In Progress Card */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-all duration-200 hover:shadow-md">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-700">
+                  In Progress
+                </h3>
+                <TrendingUp className="w-6 h-6 text-yellow-500" />
+              </div>
+              <p className="text-3xl font-bold text-yellow-600">2</p>
+              <p className="text-sm text-gray-500 mt-2">Ongoing Courses</p>
+            </div>
+          </section>
+
+
+
+
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-6 text-black">
+            {/* In Progress Card */}
+
+
+            {/* Calendar Card */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-all duration-200 hover:shadow-md text-black">
+
+              <Calendar
+                onChange={handleDateChange}
+                value={date}
+                className="border-none"
+                tileClassName="rounded-lg"
+              />
+            </div>
+
+            <div>
+              {/* Recent Activity */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-all duration-200 hover:shadow-md">
+                <h3 className="text-lg font-semibold text-gray-700 mb-4">
+                  Recent Activity
+                </h3>
+                <ul className="space-y-4">
+                  <li className="flex items-center space-x-3">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span className="text-gray-600">Completed React Basics course</span>
+                  </li>
+                  <li className="flex items-center space-x-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-gray-600">Enrolled in Advanced JavaScript</span>
+                  </li>
+                  <li className="flex items-center space-x-3">
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span className="text-gray-600">Profile information updated</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Quick Actions */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-all duration-200 hover:shadow-md">
+                <h3 className="text-lg font-semibold text-gray-700 mb-4">
+                  Quick Actions
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <button
+                    onClick={() => router.push("/courses")}
+                    className="flex items-center justify-center space-x-2 p-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200"
+                  >
+                    <Book className="w-5 h-5" />
+                    <span>View Courses</span>
+                  </button>
+                  <button
+                    onClick={() => router.push("/profile")}
+                    className="flex items-center justify-center space-x-2 p-4 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200"
+                  >
+                    <User className="w-5 h-5" />
+                    <span>Edit Profile</span>
+                  </button>
+                  <button
+                    onClick={() => router.push("/addvideo")}
+                    className="flex items-center justify-center space-x-2 p-4 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors duration-200"
+                  >
+                    <Video className="w-5 h-5" />
+                    <span>View Videos</span>
+                  </button>
                 </div>
-              ))}
+              </div>
             </div>
-          </div>
 
-          {/* Quick Actions */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 shadow-lg border border-slate-200 dark:border-slate-700">
-            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Quick Actions</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              {[
-                { icon: Book, label: 'Browse Courses', color: 'bg-indigo-500 hover:bg-indigo-600' },
-                { icon: Video, label: 'Watch Videos', color: 'bg-purple-500 hover:bg-purple-600' },
-                { icon: User, label: 'Edit Profile', color: 'bg-green-500 hover:bg-green-600' },
-                { icon: Activity, label: 'View Progress', color: 'bg-blue-500 hover:bg-blue-600' }
-              ].map((item, index) => (
-                <button
-                  key={index}
-                  className={`
-                    ${item.color}
-                    p-3 sm:p-4 rounded-lg text-white
-                    flex items-center justify-center gap-2
-                    transition-colors duration-200
-                    shadow-sm hover:shadow-md
-                    text-sm sm:text-base
-                  `}
-                >
-                  <item.icon size={18} />
-                  <span className="font-medium">{item.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-        
-        {/* Courses Component */}
-        <div className="mt-6">
-          <CoursesComponent />
-        </div>
+          </section>
+
+<MonthlyGoals />
+
+
+
+        </main>
       </div>
-    </div>
-    <LoginFooter />
-  </div>
-);
-};
 
-// export default ResponsiveDashboard;
-//   );
-// };
+      <Buyedcourses
+      />
+      <LoginFooter />
+    </div>
+  );
+};
 
 export default Dashboard;
