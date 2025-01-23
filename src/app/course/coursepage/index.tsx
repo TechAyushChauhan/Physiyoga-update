@@ -73,7 +73,7 @@ console.log(refid)
       setcoursedata(resultdata.data[0])
       setPlaylist((resultdata.data[0].playlist)? resultdata.data[0].playlist: [])
     } catch (error) {
-      console.error('Error uploading video:', error);
+      console.error('Error fetching courses:', error);
     }
   }, [courseid]);
   
@@ -130,13 +130,13 @@ console.log(refid)
       setIsPreviewOpen(true)
     }
    
-  useEffect(()=>{
-    fetchCourses()
-    if (ref) {
-      const refString = Array.isArray(ref) ? ref[0] : ref; // Use the first element if it's an array
-      localStorage.setItem('refcode', refString);
-    }
-  },[])
+  // useEffect(()=>{
+  //   fetchCourses()
+  //   if (ref) {
+  //     const refString = Array.isArray(ref) ? ref[0] : ref; // Use the first element if it's an array
+  //     localStorage.setItem('refcode', refString);
+  //   }
+  // },[])
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({

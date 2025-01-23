@@ -1,9 +1,17 @@
-
 'use client';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../lib/hooks';
 import { setUser } from '../../../../store/slices/userSlice';
+
+// Define interfaces for the API response
+interface UserResponse {
+  user: {
+    name?: string | null;
+    referralCode?: string | null;
+  };
+  type?: string;
+}
 
 const Loader: React.FC = () => {
   const { loading } = useAppSelector((state) => state.loader);
@@ -21,33 +29,33 @@ const Loader: React.FC = () => {
       });
   
       if (!response.ok) {
-        throw new Error(`Error: ${response.status} ${response.statusText}`);
+        throw new Error(`Error: ${response.status}`);
       }
   
-      const data = await response.json();
-      console.log(data.user.referralCode);
+      const userData: UserResponse = await response.json();
       
       dispatch(setUser({
-        name: data.user.name || null,
-        refid: data.user.referralCode || null,
-        loggedIn: data && data.type === "S" ? true : false,
+        name: userData.user.name || null,
+        refid: userData.user.referralCode || null,
+        loggedIn: userData.type === "S" ? true : false,
       }));
       
-      console.log(data); // This contains the user details if successful
-    } catch (error: any) {
-      console.error('Error fetching user:', error.message);
+      console.log(userData); // This contains the user details if successful
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Error fetching user:', error.message);
+      }
       throw error;
     }
-  }, []); // Empty dependency array since it doesn't depend on external variables
+  }, [dispatch]); 
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
-    console.log(token);
     
     if (token) {
       fetchUser(token);
     }
-  }, [fetchUser]); // Add fetchUser to dependency array
+  }, [fetchUser]); 
 
   return ( 
     loading && (
@@ -62,9 +70,9 @@ const Loader: React.FC = () => {
           left: 0,
           width: '100%',
           height: '100vh',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
-          zIndex: 9999, // Ensures it is above other elements
-          pointerEvents: 'all' // Blocks interaction with underlying elements
+          backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+          zIndex: 9999,
+          pointerEvents: 'all'
         }}
       >
         <ProgressSpinner 
