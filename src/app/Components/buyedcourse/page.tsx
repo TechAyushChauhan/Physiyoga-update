@@ -1,14 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
 import { setloader } from "../../../../store/slices/loaderSlice";
 import { useAppDispatch } from "../../../../lib/hooks";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";;
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Progress } from "../ui/progress";
 import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -19,28 +17,28 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { BookOpen, User } from "lucide-react";
 
-// Dynamic imports for icons
-// const FaUserAlt = dynamic(() => import("react-icons/fa").then((mod) => mod.FaUserAlt), { ssr: false });
-// const FaBook = dynamic(() => import("react-icons/fa").then((mod) => mod.FaBook), { ssr: false });
-// const FaSignOutAlt = dynamic(() => import("react-icons/fa").then((mod) => mod.FaSignOutAlt), { ssr: false });
-// const FaBars = dynamic(() => import("react-icons/fa").then((mod) => mod.FaBars), { ssr: false });
-// const FaTimes = dynamic(() => import("react-icons/fa").then((mod) => mod.FaTimes), { ssr: false });
-// const FaBell = dynamic(() => import("react-icons/fa").then((mod) => mod.FaBell), { ssr: false });
+// Define interfaces for type safety
+interface Course {
+  _id: string;
+  title: string;
+  name: string;
+  fees: number;
+  progress: number;
+}
 
-const notifications = [
-  { id: 1, message: "New course added: Yoga for Seniors" },
-  { id: 2, message: "Your subscription is expiring soon!" },
-  { id: 3, message: "You achieved 100% progress on NeckCare Nexus!" }
-];
+interface ApiResponse {
+  data: Course[];
+}
 
 const Buyedcourses: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useAppDispatch();
-  const [userCourses, setUserCourses] = useState([]);
+  const [userCourses, setUserCourses] = useState<Course[]>([]);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
 
-  const getCourses = async (): Promise<any> => {
+  // Use useCallback to memoize the getCourses function
+  const getCourses = useCallback(async (): Promise<void> => {
     dispatch(setloader(true));
     try {
       const response = await fetch('/api/addcourse', {
@@ -51,19 +49,24 @@ const Buyedcourses: React.FC = () => {
         const error = await response.json();
         throw new Error(error.message || 'Failed to fetch courses');
       }
-      const apiResponse = await response.json();
+      const apiResponse: ApiResponse = await response.json();
       setUserCourses(apiResponse.data);
-    } catch (error: any) {
-      console.error('Error fetching courses:', error);
-      throw error;
+    } catch (error: unknown) {
+      // Use unknown instead of any for better type safety
+      if (error instanceof Error) {
+        console.error('Error fetching courses:', error.message);
+      } else {
+        console.error('An unknown error occurred');
+      }
+    } finally {
+      dispatch(setloader(false));
     }
-    dispatch(setloader(false));
-  };
+  }, [dispatch]);
 
+  // Use useEffect with all dependencies
   useEffect(() => {
-    dispatch(setloader(false));
     getCourses();
-  }, []);
+  }, [getCourses, dispatch]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -76,8 +79,6 @@ const Buyedcourses: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-  
-
       {/* Sidebar */}
       <aside
         className={`fixed left-0 top-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 ${

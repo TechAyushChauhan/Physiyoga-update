@@ -1,6 +1,7 @@
+
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCommentDots, faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import Image from 'next/image';
@@ -12,6 +13,7 @@ const Navbar: React.FC = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
   const [showNavbar, setShowNavbar] = useState<boolean>(true);
   const [lastScrollY, setLastScrollY] = useState<number>(0);
+  const [imageError, setImageError] = useState<boolean>(false);
   const router = useRouter();
 
   const openNav = (): void => {
@@ -25,7 +27,8 @@ const Navbar: React.FC = () => {
     }
   };
 
-  const handleScroll = (): void => {
+  // Use useCallback to memoize handleScroll
+  const handleScroll = useCallback((): void => {
     const currentScrollY = window.scrollY;
     if (currentScrollY > lastScrollY && currentScrollY > 50) {
       setShowNavbar(false); // Scrolling down, hide navbar
@@ -33,17 +36,15 @@ const Navbar: React.FC = () => {
       setShowNavbar(true); // Scrolling up, show navbar
     }
     setLastScrollY(currentScrollY);
-  };
+  }, [lastScrollY]);
 
+  // Update useEffect to include handleScroll in dependencies
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [lastScrollY]);
-
-  const [imageError, setImageError] = useState(false);
-
+  }, [handleScroll]);
 
   return (
     <div

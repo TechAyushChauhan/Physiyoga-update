@@ -1,7 +1,7 @@
 "use client";
 
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback  } from "react";
 import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { FaPlus } from "react-icons/fa";
@@ -62,20 +62,28 @@ console.log(refid)
 
 
 
-    const fetchCourses = async () => {
-   
+  const fetchCourses = useCallback(async () => {
     try {
-      const response = await fetch(`/api/playlist?courseId=${courseid}`); // The GET API endpoint
+      const response = await fetch(`/api/playlist?courseId=${courseid}`);
       if (!response.ok) {
         throw new Error("Failed to fetch courses");
       }
       const resultdata = await response.json();
       console.log(resultdata.data[0]); 
       setcoursedata(resultdata.data[0])
-      setPlaylist((resultdata.data[0].playlist)? resultdata.data[0].playlist: [])// Assuming data is returned as { type: 'S', data: courses }
+      setPlaylist((resultdata.data[0].playlist)? resultdata.data[0].playlist: [])
     } catch (error) {
       console.error('Error uploading video:', error);
-    }}
+    }
+  }, [courseid]);
+  
+  useEffect(() => {
+    fetchCourses();
+    if (ref) {
+      const refString = Array.isArray(ref) ? ref[0] : ref;
+      localStorage.setItem('refcode', refString);
+    }
+  }, [fetchCourses, ref]);
     
   const handleAddVideo = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { setloader } from "../../../store/slices/loaderSlice";
@@ -40,8 +40,10 @@ const Courses: React.FC = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const router = useRouter();
-  const getCourses = async (): Promise<any> => {
-    dispatch(setloader(true))
+
+  
+  const getCourses = useCallback(async (): Promise<any> => {
+    dispatch(setloader(true));
     try {
       const response = await fetch('/api/addcourse', {
         method: 'GET',
@@ -51,22 +53,19 @@ const Courses: React.FC = () => {
         const error = await response.json();
         throw new Error(error.message || 'Failed to fetch courses');
       }
- const apiresponse=await response.json()
-  setuserCourses(apiresponse.data)
-     ;
+      const apiresponse = await response.json();
+      setuserCourses(apiresponse.data);
     } catch (error: any) {
       console.error('Error fetching courses:', error);
       throw error;
+    } finally {
+      dispatch(setloader(false));
     }
-    dispatch(setloader(false))
-  };
+  }, [dispatch]);
 
   useEffect(() => {
-       dispatch(setloader(false))
-      getCourses()
-      
-     
-  }, []); // No external dependencies here
+    getCourses();
+  }, [getCourses]); 
 
   const handleLogout = () => {
       localStorage.removeItem("token");

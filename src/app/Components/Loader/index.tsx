@@ -1,15 +1,16 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 'use client';
 import { ProgressSpinner } from 'primereact/progressspinner';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../lib/hooks';
 import { setUser } from '../../../../store/slices/userSlice';
 
-
 const Loader: React.FC = () => {
-  const {loading} = useAppSelector((state)=>state.loader)
-   const dispatch = useAppDispatch()
-  async function fetchUser(token: string): Promise<any> {
+  const { loading } = useAppSelector((state) => state.loader);
+  const dispatch = useAppDispatch();
+
+  // Use useCallback to memoize the fetchUser function
+  const fetchUser = useCallback(async (token: string): Promise<void> => {
     try {
       const response = await fetch('/api/auth/login', {
         method: 'GET',
@@ -24,46 +25,57 @@ const Loader: React.FC = () => {
       }
   
       const data = await response.json();
-     console.log((data.user.referralCode))
-           dispatch(setUser({
-            name: data.user.name || null,
-            refid:data.user.referralCode || null,
-            loggedIn:(data && data.type=="S")?true:false,
-           }))
-      console.log( data); // This contains the user details if successful
+      console.log(data.user.referralCode);
+      
+      dispatch(setUser({
+        name: data.user.name || null,
+        refid: data.user.referralCode || null,
+        loggedIn: data && data.type === "S" ? true : false,
+      }));
+      
+      console.log(data); // This contains the user details if successful
     } catch (error: any) {
       console.error('Error fetching user:', error.message);
       throw error;
     }
-  }
-  useEffect(()=>{
-    const token =localStorage.getItem('authToken')
-    console.log(token)
+  }, []); // Empty dependency array since it doesn't depend on external variables
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    console.log(token);
+    
     if (token) {
-      fetchUser(token)
-      
+      fetchUser(token);
     }
-  
-  },[])
+  }, [fetchUser]); // Add fetchUser to dependency array
+
   return ( 
-  
-   ( loading && <div className="card"   style={{
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100vh',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
-    zIndex: 9999, // Ensures it is above other elements
-    pointerEvents: 'all' // Blocks interaction with underlying elements
-  }}
-  >
-            <ProgressSpinner style={{width: '50px', height: '50px'}} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
-        </div>)
-    );
+    loading && (
+      <div 
+        className="card"   
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100vh',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+          zIndex: 9999, // Ensures it is above other elements
+          pointerEvents: 'all' // Blocks interaction with underlying elements
+        }}
+      >
+        <ProgressSpinner 
+          style={{width: '50px', height: '50px'}} 
+          strokeWidth="8" 
+          fill="var(--surface-ground)" 
+          animationDuration=".5s" 
+        />
+      </div>
+    )
+  );
 };
 
 export default Loader;
