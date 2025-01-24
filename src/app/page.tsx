@@ -9,6 +9,7 @@ import Thirdpage from './Pages/HomePages/ThirdPage';
 import FourthPage from './Pages/HomePages/FourthPage';
 import FifthPage from './Pages/HomePages/FifthPage';
 import SixthPage from './Pages/HomePages/SixthPage';
+import SeventhPage from './Pages/SeventhPage';
 import LoadingSpinner from './Components/LoadingSpinner';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -43,6 +44,7 @@ const Page: React.FC = () => {
             <SecondPage />
             <Thirdpage />
             <FourthPage />
+            <SeventhPage />
             <FifthPage />
             <SixthPage />
             <Footer />

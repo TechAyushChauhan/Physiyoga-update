@@ -1,166 +1,338 @@
-import React from 'react';
-import { ShieldCheck, HeartHandshake, BicepsFlexed, Brain } from 'lucide-react';
-import { FaPrayingHands, FaYinYang } from 'react-icons/fa';
 
+'use client';
 
-const ServiceCard = ({ service }) => (
-  <div className="group relative">
-    <div className={`absolute inset-0 ${service.bgGlow} opacity-0 group-hover:opacity-100 transition-all duration-500 blur-lg`}></div>
-    
-    <div className={`relative ${service.bgColor} rounded-lg p-3 border ${service.borderColor} ${service.hoverColor} transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group backdrop-blur-sm`}>
-      <div className="flex items-start space-x-3">
-        <div className="relative">
-          <div className={`absolute inset-0 ${service.iconBg} opacity-75 blur-sm rounded-full group-hover:scale-125 transition-transform duration-300`}></div>
-          <div className={`relative rounded-full ${service.iconBg} w-10 h-10 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300 border border-white/20`}>
-            {React.cloneElement(service.icon, { className: `w-5 h-5 ${service.iconColor} group-hover:rotate-12 transition-transform duration-300` })}
-          </div>
+import React, { useState, useEffect } from 'react';
+import { 
+  Stethoscope, 
+  HeartPulse, 
+  Brain, 
+  Microscope, 
+  ShieldCheck,
+  ArrowRight,
+  Clock,
+  MessageCircle
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
+const AnimatedServiceCard = ({ service, isHovered, onMouseEnter, onMouseLeave }) => (
+  <div 
+    className={`
+      group relative overflow-hidden rounded-3xl 
+      transition-all duration-500 ease-in-out
+      ${isHovered ? 'scale-105 shadow-2xl' : 'scale-100 shadow-lg'}
+    `}
+    onMouseEnter={onMouseEnter}
+    onMouseLeave={onMouseLeave}
+  >
+    {/* Background Glow */}
+    <div 
+      className={`
+        absolute inset-0 rounded-3xl opacity-0 
+        ${service.gradientBg}
+        ${isHovered ? 'opacity-50 blur-2xl' : ''}
+        transition-all duration-500
+      `}
+    ></div>
+
+    {/* Card Content */}
+    <div 
+      className={`
+        relative z-10 bg-white p-6 rounded-3xl 
+        border border-opacity-10 overflow-hidden
+        transition-all duration-300
+        ${service.borderColor}
+        ${isHovered ? 'border-opacity-50' : 'border-opacity-10'}
+      `}
+    >
+      {/* Icon and Title Section */}
+      <div className="flex items-center justify-between mb-4">
+        <div 
+          className={`
+            p-3 rounded-full 
+            ${service.iconBg} 
+            ${service.iconShadow}
+            transform transition-transform duration-300
+            ${isHovered ? 'rotate-12 scale-110' : ''}
+          `}
+        >
+          {React.cloneElement(service.icon, { 
+            className: `w-7 h-7 ${service.iconColor}`
+          })}
         </div>
+        
+        {/* Learn More Button */}
+        <button 
+          className={`
+            p-2 rounded-full 
+            transition-all duration-300 
+            ${isHovered ? 'bg-blue-50 rotate-45' : 'bg-transparent'}
+          `}
+        >
+          <ArrowRight 
+            className={`
+              w-5 h-5 
+              ${service.iconColor} 
+              transition-all duration-300
+            `} 
+          />
+        </button>
+      </div>
 
-        <div className="flex-1 space-y-1">
-          <div className="flex items-center space-x-2">
-            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${service.tagBg} ${service.tagText}`}>
-              {service.category}
-            </span>
-            <div className={`h-px flex-1 ${service.lineBg} opacity-20`}></div>
-          </div>
+      {/* Title and Description */}
+      <div>
+        <h3 
+          className={`
+            text-xl font-bold mb-3 
+            ${service.titleColor}
+            transition-colors duration-300
+            ${isHovered ? 'text-opacity-100' : 'text-opacity-80'}
+          `}
+        >
+          {service.title}
+        </h3>
+        <p 
+          className={`
+            text-gray-600 text-sm 
+            transition-all duration-300 
+            ${isHovered ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-70'}
+          `}
+        >
+          {service.description}
+        </p>
+      </div>
+    </div>
+  </div>
+);
 
-          <h3 className="text-base font-bold text-gray-800 group-hover:text-gray-900 transition-colors duration-300">
-            {service.title}
-          </h3>
-          <p className="text-sm text-gray-600 leading-snug group-hover:text-gray-700 transition-colors duration-300">
-            {service.description}
+const HeroSection = () => {
+  const [isAnimating, setIsAnimating] = useState(false);
+
+    const router = useRouter();
+    const handleBookAppointment = () => {
+      router.push('/appointment');
+    };
+  useEffect(() => {
+    const timer = setTimeout(() => setIsAnimating(true), 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="relative bg-gradient-to-br from-blue-50 to-white overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 grid md:grid-cols-2 gap-12 items-center">
+        <div>
+          <h1 
+            className={`
+              text-4xl md:text-5xl font-extrabold text-gray-900 mb-6
+              transform transition-all duration-1000 
+              ${isAnimating ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}
+            `}
+          >
+            Compassionate <span className="text-blue-600">Healthcare</span> Solutions
+          </h1>
+          
+          <p 
+            className={`
+              text-xl text-gray-600 mb-8
+              transform transition-all duration-1000 delay-300
+              ${isAnimating ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}
+            `}
+          >
+            Combining advanced medical technologies with personalized, patient-centered care. 
+            Your health, our priority.
           </p>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-const CentralMessage = () => (
-  <div className="py-4 px-3 mb-4">
-    <div className="max-w-2xl mx-auto relative">
-      <div className="absolute inset-0 bg-gradient-to-r from-emerald-200/20 to-cyan-200/20 rounded-lg rotate-6 blur-2xl transition-transform duration-700 hover:rotate-12"></div>
-      <div className="absolute inset-0 bg-gradient-to-l from-teal-200/20 to-green-200/20 rounded-lg -rotate-6 blur-2xl transition-transform duration-700 hover:-rotate-12"></div>
-      
-      <div className="border-2 border-dashed border-emerald-400 p-4 rounded-lg">
-    <div className="relative bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 p-0.5 rounded-lg shadow-lg">
-      <div className="bg-white/95 backdrop-blur-md rounded-lg p-0.5">
-        <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 rounded-lg overflow-hidden">
-          <div className="relative px-4 py-5 text-center">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,theme(colors.emerald.400/30%)_0%,transparent_50%)]"></div>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,theme(colors.teal.400/30%)_0%,transparent_50%)]"></div>
-            
-            <div className="relative z-10 space-y-4">
-              <h1 className="text-2xl font-bold text-white">
-                Balance Your Body & Mind
-                <span className="block bg-gradient-to-r from-emerald-200 via-teal-200 to-cyan-200 bg-clip-text text-transparent mt-1 text-xl">
-                  Through PhysiYoga
-                </span>
-              </h1>
-              
-              <button className="group relative inline-flex items-center justify-center">
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 rounded-full blur-md opacity-40 group-hover:opacity-75 transition-all duration-300 animate-pulse"></div>
-                <div className="relative bg-white hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 px-6 py-2 rounded-full text-sm font-semibold text-teal-700 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-teal-500/30 border border-transparent hover:border-teal-200">
-                  Start Your Healing Journey
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-400/20 via-teal-400/20 to-cyan-400/20 blur opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </div>
-              </button>
-            </div>
+          
+          <div 
+            className={`
+              flex space-x-4
+              transform transition-all duration-1000 delay-500
+              ${isAnimating ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}
+            `}
+          >
+            <button 
+              className="
+                bg-blue-600 text-white px-8 py-3 rounded-full 
+                hover:bg-blue-700 transition-colors
+                flex items-center group
+              "
+              onClick={handleBookAppointment}
+            >
+              Book Appointment
+              <ArrowRight 
+                className="ml-2 group-hover:translate-x-1 transition-transform"
+                size={20} 
+              />
+            </button>
+            <button 
+              className="
+                border-2 border-blue-600 text-blue-600 
+                px-8 py-3 rounded-full 
+                hover:bg-blue-50 transition-colors
+              "
+            >
+              Learn More
+            </button>
           </div>
         </div>
+        
+        <div className="hidden md:block relative">
+          <div 
+            className={`
+              absolute -inset-4 bg-blue-100 rounded-3xl blur-2xl 
+              opacity-0 transition-opacity duration-1000
+              ${isAnimating ? 'opacity-50' : ''}
+            `}
+          ></div>
+          <img 
+            src="/images/curetribelogofull.png" 
+            alt="Medical Services" 
+            className={`
+              relative rounded-3xl shadow-2xl
+              transform transition-all duration-1000
+              ${isAnimating ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}
+            `}
+          />
+        </div>
       </div>
     </div>
-  </div>
-    </div>
-  </div>
-);
+  );
+};
 
-const PainManagementLanding = () => {
-  const services = [
+const QuickAccessSection = () => {
+  const quickAccess = [
     {
-      title: "Prevention",
+      icon: <Clock />,
+      title: "24/7 Support",
+      description: "Round-the-clock medical assistance and emergency services."
+    },
+    {
+      icon: <MessageCircle />,
+      title: "Telemedicine",
+      description: "Virtual consultations from the comfort of your home."
+    },
+    {
       icon: <ShieldCheck />,
-      description: "It's never too early to prevent pain. Take proactive steps towards a healthier future.",
-      category: "Mind & Body",
-      bgColor: "bg-gradient-to-br from-emerald-50/90 via-green-50/90 to-teal-100/90",
-      bgGlow: "bg-gradient-to-r from-emerald-400/30 via-green-400/30 to-teal-400/30",
-      borderColor: "border-emerald-200",
-      hoverColor: "hover:border-emerald-400",
-      iconBg: "bg-gradient-to-br from-emerald-400 to-green-500",
-      iconColor: "text-white",
-      tagBg: "bg-emerald-100",
-      tagText: "text-emerald-700",
-      lineBg: "bg-emerald-400"
-    },
-    {
-      title: "Holistic Care",
-      icon: <HeartHandshake />,
-      description: "A solution to live pain free and happy life. All conditions addressed with personalized care.",
-      category: "Wellness",
-      bgColor: "bg-gradient-to-br from-cyan-50/90 via-teal-50/90 to-emerald-100/90",
-      bgGlow: "bg-gradient-to-r from-cyan-400/30 via-teal-400/30 to-emerald-400/30",
-      borderColor: "border-cyan-200",
-      hoverColor: "hover:border-cyan-400",
-      iconBg: "bg-gradient-to-br from-cyan-400 to-teal-500",
-      iconColor: "text-white",
-      tagBg: "bg-cyan-100",
-      tagText: "text-cyan-700",
-      lineBg: "bg-cyan-400"
-    },
-    {
-      title: "Recovery",
-      icon: <BicepsFlexed />,
-      description: "Repair, recover and regain mobility. Your journey to wellness starts here.",
-      category: "Body & Soul",
-      bgColor: "bg-gradient-to-br from-teal-50/90 via-cyan-50/90 to-sky-100/90",
-      bgGlow: "bg-gradient-to-r from-teal-400/30 via-cyan-400/30 to-sky-400/30",
-      borderColor: "border-teal-200",
-      hoverColor: "hover:border-teal-400",
-      iconBg: "bg-gradient-to-br from-teal-400 to-cyan-500",
-      iconColor: "text-white",
-      tagBg: "bg-teal-100",
-      tagText: "text-teal-700",
-      lineBg: "bg-teal-400"
-    },
-    {
-      title: "Inner Peace",
-      icon: <FaYinYang />, // or could use <Lotus /> or <Heart />
-      description: "Discover tranquility through mindful meditation and gentle yogic practices that calm both mind and body.",
-      category: "Therapy & Yoga",
-      bgColor: "bg-gradient-to-br from-green-50/90 via-emerald-50/90 to-teal-100/90",
-      bgGlow: "bg-gradient-to-r from-green-400/30 via-emerald-400/30 to-teal-400/30",
-      borderColor: "border-green-200",
-      hoverColor: "hover:border-green-400",
-      iconBg: "bg-gradient-to-br from-green-400 to-emerald-500",
-      iconColor: "text-white",
-      tagBg: "bg-green-100",
-      tagText: "text-green-700",
-      lineBg: "bg-green-400"
+      title: "Safe & Secure",
+      description: "Ensuring patient privacy and top-notch medical standards."
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-100 flex items-center justify-center">
-      <div className="container mx-auto px-4 py-8 max-w-5xl">
-        <div className="flex flex-col items-center space-y-8">
-          <div className="w-full relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-100/50 via-teal-100/50 to-cyan-100/50 opacity-60 blur-2xl -z-10"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-              {services.slice(0, 2).map((service, index) => (
-                <ServiceCard key={index} service={service} />
-              ))}
+    <div className="bg-gray-50 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid md:grid-cols-3 gap-8">
+          {quickAccess.map((item, index) => (
+            <div 
+              key={index} 
+              className="
+                bg-white p-6 rounded-3xl 
+                shadow-lg hover:shadow-xl 
+                transform hover:-translate-y-2 
+                transition-all duration-300
+                group
+              "
+            >
+              <div 
+                className="
+                  p-3 rounded-full mb-4 
+                  bg-blue-50 inline-block
+                  group-hover:bg-blue-100 
+                  transition-colors
+                "
+              >
+                {React.cloneElement(item.icon, { 
+                  className: "w-7 h-7 text-blue-600 group-hover:scale-110 transition-transform"
+                })}
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-3">
+                {item.title}
+              </h3>
+              <p className="text-gray-600 text-sm">
+                {item.description}
+              </p>
             </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MedicalLanding = () => {
+  const [hoveredCard, setHoveredCard] = useState(null);
+
+  const services = [
+    {
+      title: "Diagnostic Services",
+      icon: <Stethoscope />,
+      description: "Advanced diagnostic technologies and comprehensive health screenings to detect and prevent potential health issues early.",
+      iconBg: "bg-sky-100",
+      iconColor: "text-sky-600",
+      iconShadow: "shadow-sky-200/50",
+      borderColor: "border-sky-200",
+      gradientBg: "bg-gradient-to-r from-sky-200/30 to-sky-300/30",
+      titleColor: "text-sky-700"
+    },
+    {
+      title: "Specialized Care",
+      icon: <HeartPulse />,
+      description: "Personalized treatment plans focusing on individual patient needs, combining medical expertise with compassionate care.",
+      iconBg: "bg-rose-100",
+      iconColor: "text-rose-600",
+      iconShadow: "shadow-rose-200/50",
+      borderColor: "border-rose-200",
+      gradientBg: "bg-gradient-to-r from-rose-200/30 to-rose-300/30",
+      titleColor: "text-rose-700"
+    },
+    {
+      title: "Neurology Center",
+      icon: <Brain />,
+      description: "Specialized neurological care using cutting-edge technologies and comprehensive treatment approaches.",
+      iconBg: "bg-purple-100",
+      iconColor: "text-purple-600",
+      iconShadow: "shadow-purple-200/50",
+      borderColor: "border-purple-200",
+      gradientBg: "bg-gradient-to-r from-purple-200/30 to-purple-300/30",
+      titleColor: "text-purple-700"
+    },
+    {
+      title: "Lab Services",
+      icon: <Microscope />,
+      description: "State-of-the-art laboratory facilities providing accurate and timely diagnostic testing and research support.",
+      iconBg: "bg-emerald-100",
+      iconColor: "text-emerald-600",
+      iconShadow: "shadow-emerald-200/50",
+      borderColor: "border-emerald-200",
+      gradientBg: "bg-gradient-to-r from-emerald-200/30 to-emerald-300/30",
+      titleColor: "text-emerald-700"
+    }
+  ];
+
+  return (
+    <div className="bg-gray-50 min-h-screen">
+      <HeroSection />
+      <QuickAccessSection />
+      
+      <div className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+              Our Medical Services
+            </h2>
+            <p className="mt-4 text-xl text-gray-600">
+              Comprehensive healthcare solutions for every stage of life
+            </p>
           </div>
-
-          <CentralMessage />
-
-          <div className="w-full relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-teal-100/50 via-cyan-100/50 to-emerald-100/50 opacity-60 blur-2xl -z-10"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-              {services.slice(2, 4).map((service, index) => (
-                <ServiceCard key={index} service={service} />
-              ))}
-            </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {services.map((service, index) => (
+              <AnimatedServiceCard 
+                key={index} 
+                service={service}
+                isHovered={hoveredCard === index}
+                onMouseEnter={() => setHoveredCard(index)}
+                onMouseLeave={() => setHoveredCard(null)}
+              />
+            ))}
           </div>
         </div>
       </div>
@@ -168,4 +340,4 @@ const PainManagementLanding = () => {
   );
 };
 
-export default PainManagementLanding;
+export default MedicalLanding;
