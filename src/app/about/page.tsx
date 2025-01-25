@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { motion, useInView } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import Navbar from '../Components/navbar/page';
 
 const AnimatedCounter = ({ target, duration = 2 }) => {
   const ref = useRef(null);
@@ -160,6 +161,8 @@ const AboutPage = () => {
   ];
 
   return (
+    <div>
+        <Navbar />
     <div className="bg-gray-50">
       {/* Hero Section with Animated Background */}
       <div className="relative bg-gradient-to-r from-teal-600 to-blue-700 text-white pt-24 pb-36 px-8 overflow-hidden">
@@ -288,6 +291,7 @@ const AboutPage = () => {
           </motion.div>
         </div>
       </div>
+    </div>
     </div>
   );
 };
