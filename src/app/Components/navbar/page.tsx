@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Menu, 
   X, 
+  Info,
   Home, 
   Users, 
   BookOpen, 
@@ -32,6 +33,11 @@ const Navbar: React.FC = () => {
       name: "Services", 
       href: "#services", 
       icon: Users 
+    },
+    { 
+      name: "About", 
+      href: "/about", 
+      icon: Info 
     },
     { 
       name: "Courses", 

@@ -118,7 +118,7 @@ const SeventhPage: React.FC = () => {
   };
   
   return (
-    <div className="min-h-screen py-20 bg-gradient-to-br from-gray-50 via-white to-gray-100 relative overflow-hidden">
+    <div className="min-h-screen py-20 bg-gradient-to-br from-gray-50 via-white to-gray-100 relative overflow-hidden" id="services">
       {/* Animated Background Blobs */}
       <motion.div 
         className="absolute top-0 left-0 w-[800px] h-[800px] bg-gradient-to-br from-teal-100/40 to-emerald-100/40 rounded-full blur-3xl"

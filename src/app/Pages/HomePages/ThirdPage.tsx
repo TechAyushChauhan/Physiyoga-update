@@ -48,7 +48,7 @@ const SolutionStep = ({ title, description, icon }) => (
 
 const Thirdpage = () => {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100 selection:bg-teal-100 selection:text-teal-900 perspective-1000">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100 selection:bg-teal-100 selection:text-teal-900 perspective-1000" id="about">
       {/* Animated Background Blobs with Enhanced Animation */}
       <div className="absolute pointer-events-none overflow-hidden">
         <motion.div 
