@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from "react";
@@ -44,7 +45,7 @@ const AddCourse: React.FC = () => {
       } else {
         const result = await response.json();
         console.log('Course added successfully:', result);
-        // Optional: Reset form or show success message
+        // Reset form
         resetForm();
       }
     } catch (error) {
@@ -62,10 +63,6 @@ const AddCourse: React.FC = () => {
     // Reset file input
     const fileInput = document.getElementById('photo') as HTMLInputElement;
     if (fileInput) fileInput.value = '';
-  };
-
-    
-  
   };
 
   return (
