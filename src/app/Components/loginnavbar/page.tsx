@@ -44,7 +44,11 @@ const Header: React.FC<HeaderProps> = ({
   const adminNavItems: NavItem[] = [
     { path: '/appointmentdata', label: 'Appointment Data' },
     { path: '/meetingdata', label: 'Meeting Data' },
-    { path: '/logindata', label: 'Login Data' }
+    { path: '/logindata', label: 'Login Data' },
+    { path: '/videostore', label: 'video store' },
+    { path: '/userinfo', label: 'user info' },
+    { path: '/addvideo', label: 'Add Video' },
+    { path: '/addcourse', label: 'Add Course' },
   ];
 
   useEffect(() => {

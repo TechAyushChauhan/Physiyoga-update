@@ -178,8 +178,10 @@ const Navbar: React.FC = () => {
             whileTap={{ scale: 0.95 }}
             className="bg-emerald-500 text-white px-4 py-2 rounded-full flex items-center space-x-2 hover:bg-emerald-600 transition-colors"
           >
+            <Link href="/login">
             <LogIn className="w-5 h-5" />
             <span>Login</span>
+            </Link>
           </motion.button>
         </div>
 
@@ -244,8 +246,10 @@ const Navbar: React.FC = () => {
                   whileTap={{ scale: 0.95 }}
                   className="w-full bg-emerald-500 text-white py-3 rounded-full flex items-center justify-center space-x-3 text-lg"
                 >
+                   <Link href="/login">
                   <LogIn className="w-6 h-6" />
                   <span>Login</span>
+                  </Link>
                 </motion.button>
               </motion.div>
             </div>
