@@ -1,5 +1,6 @@
 // Define the Review interface
 export interface Review {
+    rating: number;
     name: string;
     location: string;
     message: string;

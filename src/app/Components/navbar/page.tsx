@@ -1,210 +1,258 @@
-"use client";
 
-import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCommentDots, faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
+'use client';
+
+import React, { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Menu, 
+  X, 
+  Info,
+  Home, 
+  Users, 
+  BookOpen, 
+  MessageCircle, 
+  Award, 
+  LogIn 
+} from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const Navbar: React.FC = () => {
-  const [nav, setNav] = useState<boolean>(false);
-  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
-  const [showNavbar, setShowNavbar] = useState<boolean>(true);
-  const [lastScrollY, setLastScrollY] = useState<number>(0);
-  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
-  const openNav = (): void => {
-    setNav((prevState) => !prevState);
-  };
-
-  const handleLoginClick = (): void => {
-    if (!isButtonDisabled) {
-      setIsButtonDisabled(true);
-      router.push("/login");
+  // Navigation items with icons
+  const navItems = [
+    { 
+      name: "Home", 
+      href: "/", 
+      icon: Home 
+    },
+    { 
+      name: "Services", 
+      href: "#services", 
+      icon: Users 
+    },
+    { 
+      name: "About", 
+      href: "/about", 
+      icon: Info 
+    },
+    { 
+      name: "Courses", 
+      href: "/courses", 
+      icon: BookOpen 
+    },
+    { 
+      name: "Reviews", 
+      href: "#reviews", 
+      icon: MessageCircle 
+    },
+    { 
+      name: "Doctors", 
+      href: "#doctors", 
+      icon: Award 
     }
-  };
+  ];
 
-  const handleScroll = (): void => {
+  // Handle scroll effect with debounce
+  const handleScroll = useCallback(() => {
     const currentScrollY = window.scrollY;
-    if (currentScrollY > lastScrollY && currentScrollY > 50) {
-      setShowNavbar(false); // Scrolling down, hide navbar
+    
+    // Determine scroll direction
+    if (currentScrollY > lastScrollY) {
+      // Scrolling down
+      if (currentScrollY > 100) {
+        setIsVisible(false);
+      }
     } else {
-      setShowNavbar(true); // Scrolling up, show navbar
+      // Scrolling up
+      setIsVisible(true);
     }
-    setLastScrollY(currentScrollY);
-  };
 
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    // Update last scroll position
+    setLastScrollY(currentScrollY);
   }, [lastScrollY]);
 
+  // Add scroll event listener
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
+
+  // Mobile menu variants
+  const navVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: "-100%",
+      transition: {
+        type: "tween",
+        duration: 0.3
+      }
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        type: "tween",
+        duration: 0.3
+      }
+    }
+  };
+
+  const menuVariants = {
+    hidden: { 
+      opacity: 0, 
+      x: "100%",
+      transition: {
+        type: "tween"
+      }
+    },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: {
+        type: "tween",
+        delayChildren: 0.2,
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const menuItemVariants = {
+    hidden: { opacity: 0, x: 50 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: {
+        type: "spring",
+        stiffness: 300
+      }
+    }
+  };
+
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        padding: "0 32px",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        height: "80px",
-        backgroundColor: "white",
-        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-        transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
-        zIndex: 1000,
-        transform: showNavbar ? "translateY(0)" : "translateY(-100%)",
-        opacity: showNavbar ? 1 : 0,
-      }}
+    <motion.nav 
+      variants={navVariants}
+      initial="visible"
+      animate={isVisible ? "visible" : "hidden"}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 
+        ${lastScrollY > 50 ? 'bg-black/90 shadow-md backdrop-blur-md' : 'bg-transparent'}
+      `}
     >
-      <h1 style={{ fontFamily: "Poppins, sans-serif", fontSize: "24px", letterSpacing: ".6px", color: "#1A8EFD" }}>
-        <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
-          Physiyoga <span style={{ color: "#54de54", fontWeight: "bold", fontSize: "40px" }}>+</span>
+      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+        {/* Logo */}
+        <Link href="/" className="flex items-center space-x-2">
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Image 
+              src="/images/curetribelogofull.png" 
+              alt="Logo" 
+              width={150} 
+              height={50} 
+              className="object-contain"
+            />
+          </motion.div>
         </Link>
-      </h1>
 
-      {/* Desktop Navbar */}
-      <ul style={{ listStyleType: "none", display: "flex", gap: "32px", fontFamily: "Rubik, sans-serif" }}>
-        <li>
-          <Link href="/" style={{ textDecoration: "none", color: "black", fontSize: "18px", letterSpacing: ".8px" }}>
-            Home
-          </Link>
-        </li>
-        <li>
-          <a href="#services" style={{ textDecoration: "none", color: "black", fontSize: "18px", letterSpacing: ".8px" }}>
-            Services
-          </a>
-        </li>
-        <li>
-          <a href="#about" style={{ textDecoration: "none", color: "black", fontSize: "18px", letterSpacing: ".8px" }}>
-            About
-          </a>
-        </li>
-        <li>
-          <a href="#reviews" style={{ textDecoration: "none", color: "black", fontSize: "18px", letterSpacing: ".8px" }}>
-            Reviews
-          </a>
-        </li>
-        <li>
-          <a href="#doctors" style={{ textDecoration: "none", color: "black", fontSize: "18px", letterSpacing: ".8px" }}>
-            Doctors
-          </a>
-        </li>
-        <li>
-          <Link href="/contact" style={{ textDecoration: "none", color: "black", fontSize: "18px", letterSpacing: ".8px" }}>
-            Contact
-          </Link>
-        </li>
-        <li>
-          <Link href="/courses" style={{ textDecoration: "none", color: "black", fontSize: "18px", letterSpacing: ".8px" }}>
-            Courses
-          </Link>
-        </li>
-      </ul>
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center space-x-6">
+          {navItems.map((item) => (
+            <Link 
+              key={item.name}
+              href={item.href}
+              className="group flex items-center space-x-2 text-gray-100 hover:text-emerald-600 transition-colors"
+            >
+              <item.icon 
+                className="w-5 h-5 text-gray-500 group-hover:text-emerald-500 transition-colors" 
+              />
+              <span className="font-medium">{item.name}</span>
+            </Link>
+          ))}
 
-      <button
-        style={{
-          padding: "14px 20px",
-          color: "white",
-          backgroundColor: "#1A8EFD",
-          border: "1px solid transparent",
-          borderRadius: "28px",
-          fontSize: "18px",
-          fontFamily: "Rubik, sans-serif",
-          letterSpacing: ".8px",
-          cursor: "pointer",
-          transition: "all .4s ease",
-        }}
-        type="button"
-        disabled={isButtonDisabled}
-        onClick={handleLoginClick}
-      >
-        <FontAwesomeIcon icon={faCommentDots} /> Login
-      </button>
-
-      {/* Hamburger Icon for mobile */}
-      <div style={{ display: "none" }} className="mobile-nav">
-        <FontAwesomeIcon icon={faBars} onClick={openNav} className="hamb-icon" />
-      </div>
-
-      {/* Mobile Navbar */}
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          left: nav ? 0 : "-100%",
-          width: "100%",
-          height: "100vh",
-          backgroundColor: "white",
-          zIndex: 20,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          transition: "left .5s ease-in-out",
-        }}
-      >
-        <div onClick={openNav} style={{ position: "absolute", top: "28px", right: "28px" }}>
-          <FontAwesomeIcon icon={faXmark} style={{ fontSize: "26px", cursor: "pointer" }} />
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-emerald-500 text-white px-4 py-2 rounded-full flex items-center space-x-2 hover:bg-emerald-600 transition-colors"
+          >
+            <LogIn className="w-5 h-5" />
+            <span>Login</span>
+          </motion.button>
         </div>
 
-        <ul style={{ listStyleType: "none", fontSize: "24px", gap: "24px", textAlign: "center" }}>
-          <li>
-            <Link href="/" onClick={openNav} style={{ textDecoration: "none", color: "black", fontFamily: "Poppins, sans-serif", fontWeight: "bold" }}>
-              Home
-            </Link>
-          </li>
-          <li>
-            <a href="#services" onClick={openNav} style={{ textDecoration: "none", color: "black", fontFamily: "Poppins, sans-serif", fontWeight: "bold" }}>
-              Services
-            </a>
-          </li>
-          <li>
-            <a href="#about" onClick={openNav} style={{ textDecoration: "none", color: "black", fontFamily: "Poppins, sans-serif", fontWeight: "bold" }}>
-              About
-            </a>
-          </li>
-          <li>
-            <a href="#reviews" onClick={openNav} style={{ textDecoration: "none", color: "black", fontFamily: "Poppins, sans-serif", fontWeight: "bold" }}>
-              Reviews
-            </a>
-          </li>
-          <li>
-            <a href="#doctors" onClick={openNav} style={{ textDecoration: "none", color: "black", fontFamily: "Poppins, sans-serif", fontWeight: "bold" }}>
-              Doctors
-            </a>
-          </li>
-          <li>
-            <Link href="/contact" onClick={openNav} style={{ textDecoration: "none", color: "black", fontFamily: "Poppins, sans-serif", fontWeight: "bold" }}>
-              Contact
-            </Link>
-          </li>
-        </ul>
-
-        <button
-          style={{
-            padding: "14px 20px",
-            color: "white",
-            backgroundColor: "#1A8EFD",
-            border: "1px solid transparent",
-            borderRadius: "28px",
-            fontSize: "18px",
-            fontFamily: "Rubik, sans-serif",
-            letterSpacing: ".8px",
-            cursor: "pointer",
-            transition: "all .4s ease",
-          }}
-          type="button"
-          disabled={isButtonDisabled}
-        >
-          Login
-        </button>
+        {/* Mobile Menu Toggle */}
+        <div className="md:hidden">
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setIsOpen(!isOpen)}
+            className="text-white bg-emerald-500 p-2 rounded-full focus:outline-none"
+          >
+            {isOpen ? (
+              <X className="w-6 h-6 text-white" />
+            ) : (
+              <Menu className="w-6 h-6 text-white" />
+            )}
+          </motion.button>
+        </div>
       </div>
-    </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            variants={menuVariants}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            className="fixed inset-0 bg-white/95 backdrop-blur-md z-40 md:hidden"
+          >
+            {/* Close Button */}
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setIsOpen(false)}
+              className="absolute top-4 right-4 bg-emerald-500 text-white p-2 rounded-full z-50"
+            >
+              <X className="w-6 h-6" />
+            </motion.button>
+
+            <div className="container mx-auto px-4 py-16 space-y-6">
+              {navItems.map((item) => (
+                <motion.div 
+                  key={item.name}
+                  variants={menuItemVariants}
+                >
+                  <Link 
+                    href={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center space-x-4 py-3 px-4 rounded-lg hover:bg-emerald-50 transition-colors"
+                  >
+                    <item.icon className="w-6 h-6 text-emerald-500" />
+                    <span className="text-xl font-semibold text-gray-800">{item.name}</span>
+                  </Link>
+                </motion.div>
+              ))}
+
+              <motion.div 
+                variants={menuItemVariants}
+                className="pt-6"
+              >
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-full bg-emerald-500 text-white py-3 rounded-full flex items-center justify-center space-x-3 text-lg"
+                >
+                  <LogIn className="w-6 h-6" />
+                  <span>Login</span>
+                </motion.button>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.nav>
   );
 };
 

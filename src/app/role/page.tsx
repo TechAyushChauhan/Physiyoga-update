@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
@@ -7,76 +7,92 @@ import { Column } from "primereact/column";
 import { useAppDispatch, useAppSelector } from "../../../lib/hooks";
 import { setloader } from "../../../store/slices/loaderSlice";
 
-
 export default function RolesPage() {
   const [roles, setRoles] = useState([]);
   const [newRole, setNewRole] = useState("");
-const dispatch=useAppDispatch()
+  const dispatch = useAppDispatch();
+
+  // Memoize fetchRoles to prevent unnecessary re-renders
+  const fetchRoles = useCallback(async () => {
+    try {
+      dispatch(setloader(true));
+      const response = await fetch("/api/role");
+
+      if (response.ok) {
+        const data = await response.json();
+        setRoles(data.roles);
+      } else {
+        alert("Failed to fetch roles.");
+      }
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+      alert("An error occurred while fetching roles.");
+    } finally {
+      dispatch(setloader(false));
+    }
+  }, [dispatch]); // Add dispatch to the dependency array
+
+  // Use useEffect with fetchRoles in the dependency array
+  useEffect(() => {
+    fetchRoles();
+  }, [fetchRoles]);
 
   // Add a new role
   const handleAddRole = async () => {
     if (newRole.trim() && !roles.some((role) => role.role === newRole.trim().toLowerCase())) {
-      setRoles([...roles, { role: newRole.trim().toLowerCase() }]);
-      dispatch(setloader(true))
       try {
-      
+        dispatch(setloader(true));
         const response = await fetch("/api/role", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({role:newRole}),
+          body: JSON.stringify({ role: newRole }),
         });
 
         if (response.ok) {
           await response.json();
           setNewRole("");
-      
+          // Refetch roles to ensure the latest data
+          fetchRoles();
         } else {
           alert("Failed to add role.");
         }
       } catch (error) {
         console.error("Error adding role:", error);
         alert("An error occurred while adding the role.");
-      } 
+      } finally {
+        dispatch(setloader(false));
+      }
     } else {
       alert("Role already exists or is invalid.");
     }
-     
-      dispatch(setloader(false))
-  
   };
-  const fetchRoles=async()=>{
-    try {
-        // Call the POST API
-        dispatch(setloader(true))
-        const response = await fetch("/api/role");
-
-        if (response.ok) {
-          const data = await response.json();
-
-setRoles(data.roles)
-
-       
-        } else {
-          alert("Failed to add role.");
-        }
-      } catch (error) {
-        console.error("Error adding role:", error);
-        alert("An error occurred while adding the role.");
-      } 
-      dispatch(setloader(false))
-
-  }
-
-  useEffect(()=>{
-    fetchRoles()
-
-  },[])
 
   // Delete a role
-  const handleDeleteRole = (roleName) => {
-    setRoles(roles.filter((role) => role.role !== roleName));
+  const handleDeleteRole = async (roleName) => {
+    try {
+      dispatch(setloader(true));
+      const response = await fetch("/api/role", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ role: roleName }),
+      });
+
+      if (response.ok) {
+        // Refetch roles to ensure the latest data
+        fetchRoles();
+      } else {
+        alert("Failed to delete role.");
+      }
+    } catch (error) {
+      console.error("Error deleting role:", error);
+      alert("An error occurred while deleting the role.");
+    } finally {
+      dispatch(setloader(false));
+    }
   };
 
   // Render delete button in the DataTable
@@ -86,7 +102,7 @@ setRoles(data.roles)
         label="Delete"
         icon="pi pi-trash"
         className="p-button-danger p-button-sm"
-        onClick={() => handleDeleteRole(rowData.name)}
+        onClick={() => handleDeleteRole(rowData.role)}
       />
     );
   };
@@ -115,7 +131,6 @@ setRoles(data.roles)
         </div>
       </div>
 
-     
       <DataTable value={roles} className="p-datatable-striped">
         <Column field="role" header="Role Name" />
         <Column body={actionBodyTemplate} header="Actions" />

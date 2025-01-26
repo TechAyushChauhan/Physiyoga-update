@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { Button } from "../Components/ui/button";
 
 const AppointmentForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -98,6 +99,12 @@ const AppointmentForm: React.FC = () => {
   };
 
 
+  const handleBack = (e: React.FormEvent) => {
+    // Redirect to the confirmation page with query parameters
+    router.push(`/`);
+  };
+
+
   
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -168,17 +175,34 @@ const AppointmentForm: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (!validateForm()) return;
 
-  //   console.log("Form Submitted", formData);
-  //   // Add your submission logic here (e.g., API call)
-  // };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-200 via-blue-100 to-blue-50 p-4">
+   
       <div className="bg-white p-8 rounded-md shadow-lg w-full max-w-2xl">
+      <div className="mb-6">
+  <Button
+    onClick={handleBack}
+    className="flex items-center gap-2 px-4 py-2 text-white bg-black hover:bg-gray-200 rounded-lg transition-colors duration-200"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+      stroke="currentColor"
+      className="w-5 h-5"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+      />
+    </svg>
+    <span className="font-medium">Back</span>
+  </Button>
+</div>
         <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Book An Appointment</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name */}

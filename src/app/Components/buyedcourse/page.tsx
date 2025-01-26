@@ -30,13 +30,7 @@ interface ApiResponse {
   data: Course[];
 }
 
-const notifications = [
-  { id: 1, message: "New course added: Yoga for Seniors" },
-  { id: 2, message: "Your subscription is expiring soon!" },
-  { id: 3, message: "You achieved 100% progress on NeckCare Nexus!" }
-];
-
-const CoursesComponent: React.FC = () => {
+const Buyedcourses: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useAppDispatch();
   const [userCourses, setUserCourses] = useState<Course[]>([]);
@@ -184,4 +178,4 @@ const CoursesComponent: React.FC = () => {
   );
 };
 
-export default CoursesComponent;
+export default Buyedcourses;
