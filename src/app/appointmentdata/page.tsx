@@ -1,8 +1,34 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const AppointmentForm = () => {
+
+const [appointdata,setappointdata]=useState([])
+
+  const getAvailabledata = async () => {
+    try {
+      const response = await fetch(`/api/adminappoint`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok && result.type === 'S') {
+        setappointdata( result.data); // Return the list of available times
+      } else {
+        alert(result.message || 'Failed to retrieve available times.');
+        setappointdata([]);
+      }
+    } catch (error) {
+      console.error('Error fetching available times:', error);
+      alert('An error occurred while retrieving available times.');
+      setappointdata([]);
+    }
+  };
   // Dummy data initialization
   const initialDummyData = [
     {
@@ -49,6 +75,9 @@ const AppointmentForm = () => {
     appointmentDate: "",
     appointmentTime: "",
   });
+  useEffect(()=>{
+    getAvailabledata()
+  },[])
 
   const handleEdit = (index: number) => {
     setEditingIndex(index);
@@ -61,7 +90,7 @@ const AppointmentForm = () => {
 
   const handleUpdate = () => {
     if (editingIndex !== null) {
-      const updatedData = [...savedData];
+      const updatedData = [...appointdata];
       updatedData[editingIndex] = {
         ...updatedData[editingIndex],
         appointmentDate: editData.appointmentDate,
@@ -114,7 +143,7 @@ const AppointmentForm = () => {
                 </tr>
               </thead>
               <tbody>
-                {savedData.map((data, index) => (
+                {appointdata.map((data, index) => (
                   <tr key={index} className="border-b hover:bg-gray-50">
                     <td className="px-4 py-2">
                       <button
@@ -124,21 +153,21 @@ const AppointmentForm = () => {
                         Set Time
                       </button>
                     </td>
-                    <td className="px-4 py-2">{data.appointmentDate}</td>
-                    <td className="px-4 py-2">{data.appointmentTime}</td>
+                    <td className="px-4 py-2">{data.date}</td>
+                    <td className="px-4 py-2">{data.time}</td>
                     <td className="px-4 py-2 font-medium">{data.name}</td>
                     <td className="px-4 py-2">{data.gender}</td>
                     <td className="px-4 py-2">{data.birthdate}</td>
                     <td className="px-4 py-2">{data.mobile}</td>
                     <td className="px-4 py-2">{data.email}</td>
-                    <td className="px-4 py-2">{data.hearAboutUs}</td>
-                    <td className="px-4 py-2">{data.referral || "-"}</td>
-                    <td className="px-4 py-2">{data.medicalInfo}</td>
+                    <td className="px-4 py-2">{data.hereabout}</td>
+                    <td className="px-4 py-2">{data.referalname || "-"}</td>
+                    <td className="px-4 py-2">{data.medicalInformation}</td>
                     <td className="px-4 py-2">{data.city}</td>
                     <td className="px-4 py-2">{data.state}</td>
                     <td className="px-4 py-2">{data.pincode}</td>
-                    <td className="px-4 py-2">{data.currentMedications}</td>
-                    <td className="px-4 py-2">{data.allergies}</td>
+                    <td className="px-4 py-2">{data.medicines}</td>
+                    <td className="px-4 py-2">{data.allergy}</td>
                   </tr>
                 ))}
               </tbody>

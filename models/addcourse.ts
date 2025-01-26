@@ -12,5 +12,6 @@ export interface Courses {
   title: string;
   description: string;
   photo: string;
+  pay:number;
   playlist?: PlaylistItem[];
 }

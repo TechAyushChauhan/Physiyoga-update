@@ -4,7 +4,7 @@ import path from 'path';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { Courses } from './../../models/addcourse';
 import { connectToDatabase } from '../../lib/mongodb';
-
+import { ObjectId } from 'mongodb';
 // Disable Next.js's body parsing to allow Formidable to handle it
 export const config = {
   api: {
@@ -41,6 +41,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       const courseTitle = fields.title[0] as string;
       const courseDescription = fields.description[0] as string;
+      const coursepay = fields.pay[0] as string;
 
       const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
 
@@ -66,6 +67,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           title: courseTitle,
           description: courseDescription,
           photo: photoPath,
+          pay:Number(coursepay)
         });
 
         // Respond with success and the uploaded file path
@@ -80,24 +82,59 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
     });
   } else if (req.method === 'GET') {
-    try {
-      const { db } = await connectToDatabase();
-      const courses = await db.collection<Courses>('courses')
-        .find({}, { projection: { playlist: 0 } }) // Exclude playlist from the query result
-        .toArray();
+    const { db } = await connectToDatabase();
+    const { id } = req.query;
 
-      res.status(200).json({
-        type: 'S',
-        message: 'Courses retrieved successfully',
-        data: courses,
-      });
-    } catch (err) {
-      console.error('Error retrieving courses:', err);
-      res.status(500).json({ message: 'Error retrieving courses', error: err.message });
+    if (id) {
+      console.log(id, "id");
+
+  // Ensure id is a single string
+  const courseId = Array.isArray(id) ? id[0] : id;
+      // Get a specific course by ID
+      try {
+        const course = await db.collection<Courses>('courses').findOne(
+          { _id: new ObjectId(courseId) },
+          { projection: { playlist: 0 } }
+        );
+        console.log(course, 'course');
+        if (!course) {
+          return res.status(404).json({
+            type: 'E',
+            message: 'Course not found',
+          });
+        }
+
+        res.status(200).json({
+          type: 'S',
+          message: 'Course retrieved successfully',
+          data: course,
+        });
+      } catch (err) {
+        console.error('Error retrieving course:', err);
+        res.status(500).json({ message: 'Error retrieving course', error: err.message });
+      }
+    } else {
+      // Get all courses if no ID is provided
+      try {
+        const { db } = await connectToDatabase();
+        const courses = await db.collection<Courses>('courses')
+          .find({}, { projection: { playlist: 0 } })
+          .toArray();
+
+        res.status(200).json({
+          type: 'S',
+          message: 'Courses retrieved successfully',
+          data: courses,
+        });
+      } catch (err) {
+        console.error('Error retrieving courses:', err);
+        res.status(500).json({ message: 'Error retrieving courses', error: err.message });
+      }
     }
-  } else {
-    res.status(405).json({ message: 'Method Not Allowed' });
   }
-};
+      else {
+      res.status(405).json({ message: 'Method Not Allowed' });
+    }
+  };
 
 export default handler;

@@ -30,7 +30,54 @@ const AppointmentForm: React.FC = () => {
     allergy: "",
 
   });
-
+  const getAvailableTimes = async (selectedDate) => {
+    try {
+      const response = await fetch(`/api/appointment?date=${encodeURIComponent(selectedDate)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok && result.type === 'S') {
+        return result.data; // Return the list of available times
+      } else {
+        alert(result.message || 'Failed to retrieve available times.');
+        return [];
+      }
+    } catch (error) {
+      console.error('Error fetching available times:', error);
+      alert('An error occurred while retrieving available times.');
+      return [];
+    }
+  };
+  
+  const addAppointment = async () => {
+    try {
+      const response = await fetch('/api/appointment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok && result.type === 'S') {
+        alert('Appointment added successfully!');
+        return result.data; // Return appointment details or ID
+      } else {
+        alert(result.message || 'Failed to add appointment.');
+      }
+    } catch (error) {
+      console.error('Error adding appointment:', error);
+      alert('An error occurred while adding the appointment.');
+    }
+  };
+  
 
   const router = useRouter(); // Correctly use the useRouter hook
 
@@ -46,7 +93,7 @@ const AppointmentForm: React.FC = () => {
       date: formData.date, // Corrected to use formData.date instead of formData.name
       time: formData.time, // Corrected to use formData.time instead of formData.name
     }).toString();
-
+    addAppointment()
     // Redirect to the confirmation page with query parameters
     router.push(`/confirmation?${queryParams}`);
   };
@@ -63,7 +110,11 @@ const AppointmentForm: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    if (name =='date'){
+      getAvailableTimes(value)
+    }
+  
+       setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -211,7 +262,7 @@ const AppointmentForm: React.FC = () => {
               value={formData.birthdate}
               onChange={handleChange}
               className={`w-full px-4 py-2 border rounded-md text-black ${errors.birthdate ? "border-red-500" : "border-gray-300"}`}
-              required
+            
             />
             {errors.birthdate && <p className="text-red-500 text-sm mt-1">{errors.birthdate}</p>}
           </div>
@@ -343,7 +394,7 @@ const AppointmentForm: React.FC = () => {
           value={formData.date}
           onChange={handleChange}
           className={`w-full px-4 py-2 border rounded-md text-black ${errors.date ? "border-red-500" : "border-gray-300"}`}
-          required
+        required
         />
         {errors.date && <p className="text-red-500 text-sm mt-1">{errors.date}</p>}
       </div>
@@ -358,7 +409,7 @@ const AppointmentForm: React.FC = () => {
           value={formData.time}
           onChange={handleChange}
           className={`w-full px-4 py-2 border rounded-md text-black ${errors.time ? "border-red-500" : "border-gray-300"}`}
-          required
+   
         />
         {errors.time && <p className="text-red-500 text-sm mt-1">{errors.time}</p>}
       </div>
