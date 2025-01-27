@@ -37,6 +37,7 @@ console.log(refid)
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [coursedata, setcoursedata] = useState({});
     const [formData, setFormData] = useState({
+      day:0,
       title: "",
       videoFile: null,
       description: "",
@@ -100,7 +101,7 @@ console.log(refid)
       setformData.append('title', formData.title);
     setformData.append('video',formData.videoFile);
     setformData.append('description', formData.description);
-
+    setformData.append('day', formData.day.toString()); 
     try {
       // Send the FormData to the backend API
       const res = await fetch('/api/playlist', {
@@ -113,7 +114,7 @@ console.log(refid)
       if (res.ok) {
         // Add the new video to playlist after uploading
      
-        setFormData({ title: "", videoFile: null, description: "" });
+        setFormData({ title: "", videoFile: null, description: "",day: 0 });
         fetchCourses()
 
         // Reset form state
@@ -139,6 +140,7 @@ console.log(refid)
   // },[])
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    console.log(name, value)
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -337,6 +339,16 @@ console.log(refid)
            
           />
         </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Day</label>
+          <input
+            type="number"
+            name="day"
+            value={formData.day}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded mt-2"
+            required
+          /></div>
           {formData.videoFile ? (
     <p className="text-green-600 mt-2">File Selected: {formData.videoFile.name}</p>
   ) : (
