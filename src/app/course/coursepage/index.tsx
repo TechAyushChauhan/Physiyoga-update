@@ -8,7 +8,7 @@ import { useAppSelector } from "../../../../lib/hooks";
 const CoursePages: React.FC = () => {
   const { courseid, ref } = useParams();
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [playlist, setPlaylist] = useState<any>({}); // Initialize as an object
+  const [playlist, setPlaylist] = useState({}); // Initialize as an object
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [expandedDay, setExpandedDay] = useState<number | null>(null); // Track expanded day
   const { name, refid, loggedIn } = useAppSelector((state) => state.user);
@@ -21,7 +21,7 @@ const CoursePages: React.FC = () => {
     videoFile: null,
     description: "",
   });
-  const [coursedet, setcoursedet] = useState<any>({}); 
+  const [coursedet, setcoursedet] = useState({}); 
   const router = useRouter();
 
   const fetchCourses = useCallback(async () => {
