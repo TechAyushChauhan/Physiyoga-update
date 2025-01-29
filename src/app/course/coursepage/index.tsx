@@ -1,67 +1,27 @@
-"use client";
-
-
-import React, { useEffect, useState, useCallback  } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
-import { FaPlus } from "react-icons/fa";
+import { FaArrowLeft, FaPlayCircle, FaBookmark, FaPlus } from "react-icons/fa";
 import Image from "next/image";
 import Videoplayer from "./../../Components/videoplayer/vid";
 import { useAppSelector } from "../../../../lib/hooks";
-import { v4 as uuidv4 } from "uuid";
-
-
-
-
-// Dynamic imports for icons
-const FaArrowLeft = dynamic(() => import("react-icons/fa").then((mod) => mod.FaArrowLeft), { ssr: false });
-const FaPlayCircle = dynamic(() => import("react-icons/fa").then((mod) => mod.FaPlayCircle), { ssr: false });
-const FaBookmark = dynamic(() => import("react-icons/fa").then((mod) => mod.FaBookmark), { ssr: false });
 
 const CoursePages: React.FC = () => {
-  // const { courseId } = useParams();
+  const { courseid, ref } = useParams();
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const { courseid ,ref} = useParams();
-  const [playlist, setPlaylist] = useState([]);
+  const [playlist, setPlaylist] = useState<any>({}); // Initialize as an object
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
-
-  const handleVideoSelection = (id: string) => {
-    setSelectedVideoId((prevId) => (prevId === id ? null : id)); // Toggle video selection
-  };
-  const { name,refid,loggedIn} = useAppSelector((state)=>state.user)
-console.log(refid)
-  // You can now access query parameters like `query.id`
-  console.log(courseid,"ref--",ref);
-  
+  const [expandedDay, setExpandedDay] = useState<number | null>(null); // Track expanded day
+  const { name, refid, loggedIn } = useAppSelector((state) => state.user);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [coursedata, setcoursedata] = useState({});
-    const [formData, setFormData] = useState({
-      day:0,
-      title: "",
-      videoFile: null,
-      description: "",
-    });
- 
+  const [formData, setFormData] = useState({
+    day:0,
+    title: "",
+    videoFile: null,
+    description: "",
+  });
+  const [coursedet, setcoursedet] = useState<any>({}); 
   const router = useRouter();
-
-
- 
-  // Mock course details for "Yoga for Beginners"
-  const courseDetails = {
-    name: "Yoga for Beginners",
-    description:
-      "A beginner-friendly yoga course that introduces you to foundational yoga poses, breathing techniques, and mindfulness practices. Perfect for anyone starting their yoga journey.",
-    lessons: [
-      { id: 1, title: "Introduction to Yoga", duration: "10 mins" },
-      { id: 2, title: "Basic Yoga Poses", duration: "15 mins" },
-      { id: 3, title: "Yoga for Relaxation", duration: "20 mins" },
-    ],
-    progress: 80,
-    imageUrl: "https://a.storyblok.com/f/191576/1200x800/a3640fdc4c/profile_picture_maker_before.webp", // Add an image file to your public/images folder
-  };
-
-
 
   const fetchCourses = useCallback(async () => {
     try {
@@ -70,22 +30,31 @@ console.log(refid)
         throw new Error("Failed to fetch courses");
       }
       const resultdata = await response.json();
-      console.log(resultdata.data[0]); 
-      setcoursedata(resultdata.data[0])
-      setPlaylist((resultdata.data[0].playlist)? resultdata.data[0].playlist: [])
+
+      // Check if the response has the playlist structure as expected
+      const playlistData = resultdata?.data[0]?.playlist || {};
+      setcoursedet(resultdata?.data[0] || {})
+    
+      setPlaylist(playlistData);
     } catch (error) {
       console.error('Error fetching courses:', error);
     }
   }, [courseid]);
-  
+  console.log(coursedet)
   useEffect(() => {
     fetchCourses();
-    if (ref) {
-      const refString = Array.isArray(ref) ? ref[0] : ref;
-      localStorage.setItem('refcode', refString);
-    }
-  }, [fetchCourses, ref]);
-    
+  }, [fetchCourses]);
+
+  const handleVideoSelection = (id: string) => {
+    setSelectedVideoId((prevId) => (prevId === id ? null : id));
+  };
+
+  const handleDayToggle = (day: number) => {
+    // Toggle the expanded day
+    setExpandedDay((prevDay) => (prevDay === day ? null : day));
+  };
+
+  // Convert the playlist object into an array and group by day
   const handleAddVideo = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -126,18 +95,17 @@ console.log(refid)
       console.error('Failed to upload video:', error);
     }
   };
-    const handleVideoLession=(url)=>{
-      setVideoUrl(`/api/getpic?file=${url.split('/')[2]}`)
-      setIsPreviewOpen(true)
-    }
-   
-  // useEffect(()=>{
-  //   fetchCourses()
-  //   if (ref) {
-  //     const refString = Array.isArray(ref) ? ref[0] : ref; // Use the first element if it's an array
-  //     localStorage.setItem('refcode', refString);
-  //   }
-  // },[])
+  const groupedLessons = Object.keys(playlist).map((dayStr) => {
+    const day = parseInt(dayStr, 10);
+    return {
+      day,
+      lessons: playlist[dayStr],
+    };
+  });
+  const handleVideoLession=(url)=>{
+    setVideoUrl(`/api/getpic?file=${url.split('/')[2]}`)
+    setIsPreviewOpen(true)
+  }
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     console.log(name, value)
@@ -145,8 +113,7 @@ console.log(refid)
       ...prev,
       [name]: value,
     }));
-  };
-
+  }; 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
       setFormData((prev) => ({
@@ -160,126 +127,100 @@ console.log(refid)
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header */}
       <header className="bg-blue-900 text-white p-6 flex items-center space-x-4">
         <FaArrowLeft className="cursor-pointer" onClick={() => router.push("/dashboard")} />
-        <h1 className="text-xl font-bold">{coursedata?.title || ''}</h1>
+        <h1 className="text-xl font-bold">{coursedet?.title || "Course Title"}</h1>
       </header>
 
-      {/* Hero Section */}
       <div className="relative">
       <Image
-    src={coursedata.photo? `/api/getpic?file=${coursedata.photo.split('/')[2]}` :'/uploads/1734531615843-939392202.jpg'}
-    alt={coursedata?.title || ''}
-    width={1200}
-    height={800}
-    className="w-full h-64 object-cover"
-  />
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold">{coursedata?.title || ''}</h2>
-            <p className="mt-2">{coursedata.description || ''}</p>
-          </div>
-        </div>
+  src={coursedet?.photo ? `/api/getpic?file=${coursedet.photo.split('/')[2]}` : "/uploads/sample-image.jpg"}
+  alt="Course Image"
+  width={1200}
+  height={800}
+  className="w-full h-64 object-cover"
+/>
       </div>
-
-      {/* Main Content */}
-      <main className="p-6 space-y-8">
-        {/* Progress Section */}
-        <section className="bg-white shadow-md rounded-lg p-6">
-          <h3 className="text-lg font-bold text-gray-800">Your Progress</h3>
-          <progress className="w-full mt-4" max="100" value={courseDetails.progress}></progress>
-          <p className="mt-2 text-gray-600">Progress: {courseDetails.progress}%</p>
-        </section>
-        <div className="mb-6">
-<button
-  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors duration-300 flex items-center"
-  onClick={()=> setIsModalOpen(true)}
->
-  <FaPlus className="mr-2" />
-  Add New video
-</button>
-<button
-  className="flex-1 bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700"
-  onClick={() => {
-    const shareableLink = `${window.location.origin}/course/${courseid}/${refid}`;
-    const shareData = {
-      title: `Check out this course: ${coursedata?.title || "Amazing Course"}`,
-      text: `I found this great course and thought you might like it! Use my referral link to join:`,
-      url: shareableLink,
-    };
-
-    if (navigator.share) {
-      // Use the Web Share API
-      navigator
-        .share(shareData)
-        .then(() => console.log("Content shared successfully!"))
-        .catch((err) => console.error("Error sharing:", err));
-    } else {
-      // Fallback to copying the link if Web Share API is not available
-      navigator.clipboard.writeText(shareableLink)
-        .then(() => alert("Referral link copied to clipboard!"))
-        .catch(() => alert("Failed to copy the link."));
-    }
-  }}
->
-  Refer Friends
-</button>
-</div>
-        {/* Lessons Section */}
-        <section className="bg-white shadow-md rounded-lg p-6">
-          <h3 className="text-lg font-bold text-gray-800">Lessons</h3>
-          <div className="mt-4 space-y-4">
-          {playlist.map((lesson, index) => {
-  // Calculate the date for the Google Meet button
-  const today = new Date();
-  const meetDate = new Date(today);
-  meetDate.setDate(today.getDate() + 2 * Math.floor(index / 2)); // 2-day gap for every 2 lessons
-  const formattedDate = meetDate.toLocaleString('en-US', {
-    weekday: 'long',
-    hour: '2-digit',
-    minute: '2-digit',
-    month: 'long',
-    day: 'numeric',
-  });
-
-  return (
-    <React.Fragment key={lesson._id}>
-      <div className="p-4 bg-gray-50 rounded-md shadow-sm">
-        <div
-          onClick={() => handleVideoSelection(lesson._id)}
-          className="flex justify-between items-center cursor-pointer hover:bg-gray-100"
-        >
-          <div>
-            <h4 className="text-gray-800 font-semibold">{lesson.title}</h4>
-            <p className="text-gray-600 text-sm">Duration: {lesson.duration}</p>
-          </div>
-          <FaPlayCircle className="text-blue-600 text-2xl" />
-        </div>
-        {selectedVideoId === lesson._id && (
-          <div className="mt-4">
-            <Videoplayer url={`/api/getpic?file=${lesson.videoUrl.split('/')[2]}`} />
-          </div>
-        )}
-      </div>
-
-      {/* Google Meet Button */}
-      {index > 0 && (index + 1) % 2 === 0 && (
-        <div className="mt-4 text-center">
+      <div className="mb-6">
           <button
-            className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-all duration-300"
-            // onClick={() => window.open(generateGoogleMeetLink(), "_blank")}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors duration-300 flex items-center"
+            onClick={() => setIsModalOpen(true)} // Close all days when clicked
           >
-            Join Google Meet for Discussion on {formattedDate}
+            <FaPlus className="mr-2" />
+            Add New Video
+          </button>
+          <button
+            className="flex-1 bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700"
+            onClick={() => {
+              const shareableLink = `${window.location.origin}/course/${courseid}/${refid}`;
+              const shareData = {
+                title: `Check out this course: ${playlist[1]?.course?.title || "Amazing Course"}`,
+                text: `I found this great course and thought you might like it! Use my referral link to join:`,
+                url: shareableLink,
+              };
+
+              if (navigator.share) {
+                // Use the Web Share API
+                navigator
+                  .share(shareData)
+                  .then(() => console.log("Content shared successfully!"))
+                  .catch((err) => console.error("Error sharing:", err));
+              } else {
+                // Fallback to copying the link if Web Share API is not available
+                navigator.clipboard.writeText(shareableLink)
+                  .then(() => alert("Referral link copied to clipboard!"))
+                  .catch(() => alert("Failed to copy the link."));
+              }
+            }}
+          >
+            Refer Friends
           </button>
         </div>
-      )}
-    </React.Fragment>
-  );
-})}
 
+      <main className="p-6 space-y-8">
+        <section className="bg-white shadow-md rounded-lg p-6">
+          <h3 className="text-lg font-bold text-gray-800">Lessons</h3>
+
+          {/* Loop through and display lessons grouped by day */}
+          <div className="mt-4 space-y-4">
+            {groupedLessons.map(({ day, lessons }) => (
+              <div key={day}>
+                <div
+                  className="cursor-pointer text-lg font-semibold text-blue-600"
+                  onClick={() => handleDayToggle(day)}
+                >
+                  Day {day}
+                </div>
+                {/* Render lessons of the day */}
+                {expandedDay === day && (
+                  <div className="ml-4">
+                    {lessons.map((lesson) => (
+                      <div key={lesson._id} className="p-4 bg-gray-50 rounded-md shadow-sm">
+                        <div
+                          onClick={() => handleVideoSelection(lesson._id)}
+                          className="flex justify-between items-center cursor-pointer hover:bg-gray-100"
+                        >
+                          <div>
+                            <h4 className="text-gray-800 font-semibold">{lesson.title}</h4>
+                            <p className="text-gray-600 text-sm">Duration: {lesson.duration}</p>
+                          </div>
+                          <FaPlayCircle className="text-blue-600 text-2xl" />
+                        </div>
+                        {selectedVideoId === lesson._id && (
+                          <div className="mt-4">
+                            <Videoplayer url={`/api/getpic?file=${lesson.videoUrl.split('/')[2]}`} />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-        </section>  
+        </section>
+
+    
 
         {/* Actions Section */}
         <section className="flex justify-between space-x-4">
@@ -297,7 +238,7 @@ console.log(refid)
             <FaPlayCircle className="inline-block mr-2" />
             Resume Course
           </button>
-        </section>
+        </section> 
         {isPreviewOpen && (
   <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-1000">
     <div className="bg-white rounded-lg shadow-lg p-4 w-4/5 h-4/5 relative">
@@ -391,11 +332,10 @@ console.log(refid)
   </div>
 )}
 
-      
+
       </main>
     </div>
   );
 };
 
 export default CoursePages;
-

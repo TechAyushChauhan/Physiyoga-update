@@ -140,7 +140,7 @@ const CoursesComponent: React.FC = () => {
                     <Button
                       variant="secondary"
                       className="flex-1"
-                      onClick={() => router.push(`/buy?name=${course.name}&fees=${course.fees}`)}
+                      onClick={() => router.push(`/buy?courseID=${course._id}`)}
                     >
                       Buy
                     </Button>

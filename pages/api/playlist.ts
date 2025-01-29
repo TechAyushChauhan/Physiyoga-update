@@ -112,15 +112,36 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       // Convert courseId to ObjectId type
       const courseObjectId = new ObjectId(courseId);
-      const course = await db
+       const course = await db
       .collection('courses')
       .find({ _id: courseObjectId })
-      .toArray(); // Convert the cursor to an array
-
+      .toArray();// Convert the cursor to an array
+      const transformedCourse = course.map(courseItem => {
+        // Group playlist items by 'day'
+        const groupedPlaylist = courseItem.playlist.reduce((acc, item) => {
+          if (!acc[item.day]) {
+            acc[item.day] = [];
+          }
+          acc[item.day].push(item);
+          return acc;
+        }, {});
+      
+        // Construct the transformed object
+        return {
+          _id: courseItem._id,
+          title: courseItem.title,
+          description: courseItem.description,
+          photo: courseItem.photo,
+          pay: courseItem.pay,
+          playlist: groupedPlaylist
+        };
+      });
+      
+      console.log(transformedCourse);
       res.status(200).json({
         type: 'S',
         message: 'Course retrieved successfully',
-        data: course,
+        data: transformedCourse,
       });
     } catch (err) {
       console.error('Error retrieving courses:', err);
