@@ -41,32 +41,32 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const playlistTitle = fields.title[0] as string;
       const playlistDescription = fields.description[0] as string;
       const day = fields.day[0] as string; // Get the day from the form data
+      const video = fields.video[0] as string;
+      // const video = Array.isArray(files.video) ? files.video[0] : files.video;
   
-      const video = Array.isArray(files.video) ? files.video[0] : files.video;
+      // if (!video || !video.filepath) {
+      //   return res
+      //     .status(400)
+      //     .json({ message: 'Video is required or file path is missing' });
+      // }
   
-      if (!video || !video.filepath) {
-        return res
-          .status(400)
-          .json({ message: 'Video is required or file path is missing' });
-      }
-  
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      const fileExtension = path.extname(video.originalFilename || '');
-      const newFilename = uniqueSuffix + fileExtension;
-      const filePath = path.join(uploadDir, newFilename);
+      // const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      // const fileExtension = path.extname(video.originalFilename || '');
+      // const newFilename = uniqueSuffix + fileExtension;
+      // const filePath = path.join(uploadDir, newFilename);
   
       try {
         // Rename the file to the new file path
-        fs.renameSync(video.filepath, filePath);
+        // fs.renameSync(video.filepath, filePath);
   
-        const videoPath = `/uploads/${newFilename}`;
+        // const videoPath = `/uploads/${newFilename}`;
   
         // Prepare the new playlist item
         const playlistItem = {
           _id: new ObjectId(),
           title: playlistTitle,
           description: playlistDescription,
-          videoUrl: videoPath,
+          videoUrl: video,
           day:  day, // Save the day as a number
         };
   

@@ -59,7 +59,36 @@ const UserManagementDashboard: React.FC = () => {
     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.phoneNumber.includes(searchTerm)
   );
-
+  const fetchUserData = async () => {
+    const token = localStorage.getItem('authToken'); // Retrieve token from localStorage
+  
+    if (!token) {
+      console.error('No token found');
+      return;
+    }
+  
+    try {
+      const response = await fetch('/api/user', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`, // Include token in Authorization header
+        },
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        console.log('User data:', data.user);
+      } else {
+        console.error('Error:', data.msg);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+  
+  fetchUserData();
+  
   // Handle user deletion
   const handleDeleteUser = (userId: number) => {
     setUsers(users.filter(user => user.id !== userId));
