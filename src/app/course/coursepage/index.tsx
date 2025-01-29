@@ -14,6 +14,7 @@ const CoursePages: React.FC = () => {
   const { name, refid, loggedIn } = useAppSelector((state) => state.user);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [videoList ,setvideoList]= useState([]);
   const [formData, setFormData] = useState({
     day:0,
     title: "",
@@ -40,9 +41,44 @@ const CoursePages: React.FC = () => {
       console.error('Error fetching courses:', error);
     }
   }, [courseid]);
+  const handleVideoSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedVideoUrl = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      videoFile: selectedVideoUrl,
+    }));
+  };
   console.log(coursedet)
+  async function fetchAllVideos() {
+    try {
+      const response = await fetch('/api/video');  // Call the API endpoint
+  
+      // Check if the response is successful
+      if (!response.ok) {
+        throw new Error(`Error fetching videos: ${response.statusText}`);
+      }
+  
+      // Parse the response as JSON
+      const data = await response.json();
+  
+      // Log the retrieved videos
+      if (data.type === 'S' && data.data) {
+        console.log('Videos retrieved:', data.data);
+        setvideoList( data.data)
+        // Here, you can use the data (e.g., display video file URLs, filenames, etc.)
+        data.data.forEach(video => {
+          console.log(`Filename: ${video.filename}, URL: ${video.fileUrl}`);
+        });
+      } else {
+        console.log('No videos found or failed to retrieve');
+      }
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
+  }
   useEffect(() => {
     fetchCourses();
+    fetchAllVideos()
   }, [fetchCourses]);
 
   const handleVideoSelection = (id: string) => {
@@ -249,7 +285,7 @@ const CoursePages: React.FC = () => {
         Close
       </button>
       <h3 className="text-lg font-bold mb-4">Preview Video</h3>
-      <Videoplayer url={videoUrl || ""} />
+       <Videoplayer url={`/api/getpic?file=${formData.videoFile.split('/')[2]}`} />
     </div>
   </div>
 )}
@@ -272,13 +308,20 @@ const CoursePages: React.FC = () => {
         </div>
         <div className="mb-4">
           <label className="block text-gray-700">Video File</label>
-          <input
-            type="file"
-            name="videoFile"
-            onChange={handleFileChange}
-            className="w-full p-2 border rounded mt-2"
-           
-          />
+          <select
+  name="selectedVideo"
+  value={formData.videoFile || ""} // Use an empty string if value is null or undefined
+  onChange={handleVideoSelectChange}
+  className="w-full p-2 border rounded mt-2"
+  required
+>
+  <option value="">Select a Video</option>
+  {videoList.map((video) => (
+    <option key={video.fileUrl} value={video.fileUrl}>
+      {video.filename}
+    </option>
+  ))}
+</select>
         </div>
         <div className="mb-4">
           <label className="block text-gray-700">Day</label>
