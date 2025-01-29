@@ -41,7 +41,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       const courseTitle = fields.title[0] as string;
       const courseDescription = fields.description[0] as string;
-      const coursepay = fields.pay[0] as string;
+      const coursepay = fields.price[0] as string;
 
       const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
 

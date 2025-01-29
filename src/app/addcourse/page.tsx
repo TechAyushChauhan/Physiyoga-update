@@ -2,6 +2,9 @@
 "use client";
 
 import React, { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import { setloader } from "../../../store/slices/loaderSlice";
+import { useAppDispatch } from "../../../lib/hooks";
 
 const AddCourse: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -9,7 +12,7 @@ const AddCourse: React.FC = () => {
   const [price, setPrice] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
-
+const dispatch=useAppDispatch()
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -25,14 +28,13 @@ const AddCourse: React.FC = () => {
       setErrorMessage("Please enter a valid price.");
       return;
     }
-
-    setErrorMessage("");
+  
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
     formData.append("price", price);
     formData.append("photo", photo);
-
+ dispatch(setloader(true));
     try {
       const response = await fetch('/api/addcourse', {
         method: 'POST',
@@ -44,14 +46,15 @@ const AddCourse: React.FC = () => {
         setErrorMessage(errorData.message || 'Something went wrong!');
       } else {
         const result = await response.json();
-        console.log('Course added successfully:', result);
-        // Reset form
+       
+        
         resetForm();
       }
     } catch (error) {
       console.error('Error:', error);
       setErrorMessage('An error occurred while uploading the data.');
     }
+    dispatch(setloader(false));
   };
 
   // Function to reset form fields
@@ -119,7 +122,7 @@ const AddCourse: React.FC = () => {
               <input
                 id="price"
                 type="number"
-                step="0.01"
+               
                 min="0"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
@@ -151,7 +154,9 @@ const AddCourse: React.FC = () => {
             Add Course
           </button>
         </form>
+
       </div>
+        <ToastContainer autoClose={5000} limit={1} closeButton={false} />
     </div>
   );
 };
