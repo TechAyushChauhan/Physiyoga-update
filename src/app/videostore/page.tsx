@@ -33,7 +33,7 @@ const VideoManagementPage = () => {
 
   // Save videos to localStorage whenever videos change
   useEffect(() => {
-    localStorage.setItem('medical-videos', JSON.stringify(videos));
+    // localStorage.setItem('medical-videos', JSON.stringify(videos));
   }, [videos]);
 
   const handleInputChange = (e) => {
