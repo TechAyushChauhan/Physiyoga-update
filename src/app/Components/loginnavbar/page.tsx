@@ -28,7 +28,8 @@ const Header: React.FC<HeaderProps> = ({
   loggedIn = false,
   name = 'Guest',
   notifications = [],
-  handleLogout = () => console.warn('Logout handler not provided')
+  handleLogout = () => 
+    console.warn('Logout handler not provided')
 }) => {
   const router = useRouter();
   const [showNotifications, setShowNotifications] = useState(false);

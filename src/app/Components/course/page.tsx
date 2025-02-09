@@ -123,13 +123,7 @@ const CoursesComponent: React.FC = () => {
                   <CardTitle className="text-xl">{course.title}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>Progress</span>
-                      <span>{course.progress}%</span>
-                    </div>
-                    <Progress value={course.progress} className="h-2" />
-                  </div>
+                
                   <div className="flex gap-2">
                     <Button
                       className="flex-1"

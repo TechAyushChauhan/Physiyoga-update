@@ -97,14 +97,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   } else if (req.method === 'GET') {
     try {
       const { db } = await connectToDatabase();
-      const { courseId } = req.query;
+      const { courseId ,watchedBy} = req.query;
 
-      if (!courseId || typeof courseId !== 'string') {
+      if (!courseId || typeof courseId !== 'string' ) {
         return res.status(400).json({ message: 'Invalid or missing courseId' });
       }
-
+      const watchedByID =(watchedBy || typeof watchedBy !== 'string')? new ObjectId(watchedBy):'';
       const courseObjectId = new ObjectId(courseId);
-      const course = await db.collection('courses').find({ _id: courseObjectId }).toArray();
+      const datapayload ={
+        _id: courseObjectId,
+        watchedBy:watchedByID==""?false:watchedBy
+      }
+      
+      const course = await db.collection('courses').find(datapayload).toArray();
 
       const transformedCourse = course.map(courseItem => {
         const groupedPlaylist = courseItem.playlist.reduce((acc, item) => {

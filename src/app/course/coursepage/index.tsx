@@ -6,6 +6,7 @@ import Videoplayer from "./../../Components/videoplayer/vid";
 import { useAppSelector } from "../../../../lib/hooks";
 
 const CoursePages: React.FC = () => {
+
   const data = useAppSelector((state) => state.user);
   console.log(data)
   const { courseid, ref } = useParams();
@@ -52,19 +53,26 @@ const CoursePages: React.FC = () => {
   };
   const markAsWatched = async (playlistItemId:string,userId:number) => {
     try {
-      const response = await fetch('/api/watch', {
+     
+      const response = await fetch('/api/watched', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          courseid,
-          playlistItemId,
-          userId,
+          courseId:courseid,
+          playlistItemId:playlistItemId,
+          userId:userId,
         }),
       });
 
       if (response.ok) {
+        console.log(await response.json())
+        const updatedPlaylist = { ...playlist };
+
+        fetchCourses()
+        console.log(updatedPlaylist)
+        console.log(playlist)
         // setWatched(true);
       } else {
         const data = await response.json();
@@ -76,7 +84,7 @@ const CoursePages: React.FC = () => {
   };
   async function fetchAllVideos() {
     try {
-      const response = await fetch('/api/video');  // Call the API endpoint
+      const response = await fetch('/api/video');  // Call the API endpocoint
 
       // Check if the response is successful
       if (!response.ok) {
@@ -117,7 +125,8 @@ const CoursePages: React.FC = () => {
  
   const handleLongVideo = (duration: any) => {
     console.log(duration)
-    // markAsWatched(duration._id,)
+    console.log(data.id)
+     markAsWatched(duration._id,data.id)
   };
 
   // Convert the playlist object into an array and group by day
@@ -172,6 +181,7 @@ const CoursePages: React.FC = () => {
     setVideoUrl(`/api/getpic?file=${url.split('/')[2]}`)
     setIsPreviewOpen(true)
   }
+  console.log(groupedLessons)
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     console.log(name, value)
@@ -345,10 +355,10 @@ const CoursePages: React.FC = () => {
                                   <FaClock className="w-4 h-4 mr-1" />
                                   {lesson.duration}
                                 </span>
-                                <span className="flex items-center text-sm text-emerald-600">
+                            {  (lesson && lesson.watchedBy && lesson.watchedBy.length>0)  && <span className="flex items-center text-sm text-emerald-600">
                                   <FaCheckCircle className="w-4 h-4 mr-1" />
                                   Completed
-                                </span>
+                                </span>}
                               </div>
                             </div>
                             <button className="flex-shrink-0 p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors">

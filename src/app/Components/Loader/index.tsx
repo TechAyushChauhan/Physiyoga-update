@@ -33,11 +33,12 @@ const Loader: React.FC = () => {
       }
   
       const userData: UserResponse = await response.json();
-      
+      console.log(userData)
       dispatch(setUser({
         name: userData.user.name || null,
         refid: userData.user.referralCode || null,
         loggedIn: userData.type === "S" ? true : false,
+        id:userData.user.id || null,
       }));
       
       console.log(userData); // This contains the user details if successful

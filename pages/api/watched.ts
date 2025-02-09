@@ -23,11 +23,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           $addToSet: { 'playlist.$.watchedBy': userId } // Use $addToSet to avoid duplicate userIds
         }
       );
-
-      if (!updatedCourse.modifiedCount) {
-        return res.status(404).json({ message: 'Course or playlist item not found' });
-      }
-
+  
       res.status(200).json({
         type: 'S',
         message: 'User marked as watched successfully',
