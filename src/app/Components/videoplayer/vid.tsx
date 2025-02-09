@@ -19,14 +19,15 @@ const formatTime = (seconds: number) => {
     .toString()
     .padStart(2, "0")}`;
 };
-// const proxyUrl = `/api/test`; 
 
-const Videoplayer = ({ url =''}: { url: string | null }) => {
-//   const [url, setUrl] = useState<string>(
-//    'http://localhost:3000/api/test'
-//   );
+const Videoplayer = ({ 
+  url = '', 
+  onLongVideo = (duration: number) => {}  // Optional callback when video exceeds 100 seconds
+}: { 
+  url: string | null; 
+  onLongVideo?: (duration: number) => void;  // Optional callback
+}) => {
   const [playing, setPlaying] = useState<boolean>(false);
-  // const [volume, setVolume] = useState<number>(0.8);
   const [muted, setMuted] = useState<boolean>(false);
   const [loop, setLoop] = useState<boolean>(false);
   const [duration, setDuration] = useState<number>(0);
@@ -39,26 +40,6 @@ const Videoplayer = ({ url =''}: { url: string | null }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const clickTimeout = useRef<NodeJS.Timeout | null>(null);
   const [skipMessage, setSkipMessage] = useState<string | null>(null);
-  const TELEGRAM_API_URL = 'https://api.telegram.org/bot7580167715:AAEqAfsidqgvNtqvPsxnUSs9UqBbRiiWqLA/';
-
-async function getTelegramFileUrl() {
-  const fileId='BAACAgUAAxkDAAMHZ10vfzuHT0WL903yQb_Fw2dFJVkAAt4RAALFSelWHglmJ05JzAo2BA'
-  const response = await fetch(`${TELEGRAM_API_URL}getFile?file_id=${fileId}`);
-  const data = await response.json();
-  console.log(data);
-  // setUrl(`https://api.telegram.org/file/7580167715:AAEqAfsidqgvNtqvPsxnUSs9UqBbRiiWqLA/videos/file_0.mp4`)
-  if (data.ok) {
-    return `https://api.telegram.org/file/7580167715:AAEqAfsidqgvNtqvPsxnUSs9UqBbRiiWqLA/videos/file_0.mp4`;
-  } else {
-    throw new Error('Failed to fetch file from Telegram');
-  }
-}
-useEffect(()=>{
-  getTelegramFileUrl()
-},[])
-
-
-  
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = parseFloat(e.target.value);
@@ -66,7 +47,6 @@ useEffect(()=>{
     if (playerRef.current) {
       playerRef.current.seekTo(newTime);
     }
-  
   };
 
   const handlePlayPause = () => setPlaying((prev) => !prev);
@@ -76,9 +56,17 @@ useEffect(()=>{
   const handleProgress = (state: { played: number }) => {
     if (!controlsVisible) setControlsVisible(true);
     setPlayed(state.played);
+  
+    // Check if the video has reached over 90% of the total duration
+    if (state.played * duration > 0.9 * duration && onLongVideo) {
+      onLongVideo(duration); // Call the callback if the video has passed 90% of its duration
+    }
   };
 
-  const handleDuration = (duration: number) => setDuration(duration);
+  const handleDuration = (duration: number) => {
+    setDuration(duration);
+   
+  };
 
   const toggleFullscreen = () => {
     if (!isFullscreen) {
@@ -90,41 +78,37 @@ useEffect(()=>{
         document.exitFullscreen().catch((err) => {
           console.error("Failed to exit fullscreen:", err);
         });
-      } else {
-        console.log("Document is not in fullscreen mode");
       }
     }
     setIsFullscreen((prev) => !prev);
   };
 
-  // Skip Backward 10 Seconds
   const handleSkipBackward = () => {
     if (playerRef.current) {
-    const currentTime = playerRef.current.getCurrentTime();
-    const newTime = Math.max(currentTime - 10, 0);
-    setSkipMessage("Skipped Backward 10 Seconds");
-    playerRef.current.seekTo(newTime);
-    setPlayed(newTime / duration);
-    setTimeout(() => setSkipMessage(null), 2000);}
+      const currentTime = playerRef.current.getCurrentTime();
+      const newTime = Math.max(currentTime - 10, 0);
+      setSkipMessage("Skipped Backward 10 Seconds");
+      playerRef.current.seekTo(newTime);
+      setPlayed(newTime / duration);
+      setTimeout(() => setSkipMessage(null), 2000);
+    }
   };
 
-  // Skip Forward 10 Seconds
   const handleSkipForward = () => {
     if (playerRef.current) {
-    const currentTime = playerRef.current.getCurrentTime();
-    const newTime = Math.min(currentTime + 10, duration);
-    playerRef.current.seekTo(newTime);
-    setPlayed(newTime / duration);
-    setSkipMessage("Skipped Forward 10 Seconds");
-  setTimeout(() => setSkipMessage(null), 2000); }
+      const currentTime = playerRef.current.getCurrentTime();
+      const newTime = Math.min(currentTime + 10, duration);
+      playerRef.current.seekTo(newTime);
+      setPlayed(newTime / duration);
+      setSkipMessage("Skipped Forward 10 Seconds");
+      setTimeout(() => setSkipMessage(null), 2000);
+    }
   };
 
-  // Handle Clicks
   const handleClick = (e: React.MouseEvent) => {
     if (clickTimeout.current) {
       clearTimeout(clickTimeout.current);
       clickTimeout.current = null;
-      // Double Click: Forward or Backward
       const rect = containerRef.current?.getBoundingClientRect();
       if (rect) {
         if (e.clientX < rect.width / 2) {
@@ -134,15 +118,13 @@ useEffect(()=>{
         }
       }
     } else {
-      // Single Click: Show Play Overlay
       clickTimeout.current = setTimeout(() => {
         setShowPlayOverlay(true);
-        setTimeout(() => setShowPlayOverlay(false), 4000); // Hide after 1 second
+        setTimeout(() => setShowPlayOverlay(false), 4000); 
         clickTimeout.current = null;
-      }, 300); 
+      }, 300);
     }
   };
-  console.log(showPlayOverlay ,playing)
 
   return (
     <div style={{ padding: "20px" }}>
@@ -171,69 +153,60 @@ useEffect(()=>{
           width="100%"
           height="100%"
           controls={false}
-           config={{
-          youtube: {
-            playerVars: {
-              modestbranding: 1, // Minimizes the YouTube logo
-              rel: 0, // Prevents showing related videos
-              showinfo: 0, // Hides video title and uploader
-              controls: 0, // Hides player controls
-              autoplay: 0, // Prevents auto-play
-            },
-          },
-        }}
         />
+        
+        {/* Skip Message */}
         {skipMessage && (
-  <div
-    style={{
-      position: "absolute",
-      top: "10%",
-      left: "50%",
-      transform: "translateX(-50%)",
-      background: "rgba(0, 0, 0, 0.7)",
-      color: "white",
-      padding: "10px 20px",
-      borderRadius: "5px",
-      zIndex: 20,
-      fontSize: "16px",
-    }}
-  >
-    {skipMessage}
-  </div>
-)}
+          <div
+            style={{
+              position: "absolute",
+              top: "10%",
+              left: "50%",
+              transform: "translateX(-50%)",
+              background: "rgba(0, 0, 0, 0.7)",
+              color: "white",
+              padding: "10px 20px",
+              borderRadius: "5px",
+              zIndex: 20,
+              fontSize: "16px",
+            }}
+          >
+            {skipMessage}
+          </div>
+        )}
 
         {/* Play Overlay */}
-        {(showPlayOverlay|| !playing )&& (
+        {(showPlayOverlay || !playing) && (
           <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            zIndex: 10,
-            cursor: "pointer",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            width: "150px",
-            height: "150px",
-            backgroundColor: "rgba(0, 0, 0, 0.5)", 
-            borderRadius: "50%", 
-          }}
-          onClick={(e) => {
-            e.stopPropagation(); 
-            handlePlayPause(); 
-          }}
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              zIndex: 10,
+              cursor: "pointer",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "150px",
+              height: "150px",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              borderRadius: "50%",
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handlePlayPause();
+            }}
           >
             {playing ? (
-              <PauseIcon  style={{ fontSize: 100, color: "white" }} />
+              <PauseIcon style={{ fontSize: 100, color: "white" }} />
             ) : (
               <PlayArrowIcon style={{ fontSize: 100, color: "white" }} />
             )}
           </div>
         )}
 
-        {(showPlayOverlay ) && (
+        {(showPlayOverlay) && (
           <div
             style={{
               position: "absolute",
@@ -245,7 +218,6 @@ useEffect(()=>{
               zIndex: 10,
             }}
           >
-            {/* Progress Bar */}
             <input
               type="range"
               min="0"
@@ -255,8 +227,6 @@ useEffect(()=>{
               onChange={handleSeek}
               style={{ width: "100%" }}
             />
-
-            {/* Control Buttons */}
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div>
                 <button onClick={handlePlayPause}>
@@ -298,9 +268,6 @@ useEffect(()=>{
           </div>
         )}
       </div>
-
-  
-        
     </div>
   );
 };

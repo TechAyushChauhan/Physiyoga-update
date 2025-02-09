@@ -6,6 +6,8 @@ import Videoplayer from "./../../Components/videoplayer/vid";
 import { useAppSelector } from "../../../../lib/hooks";
 
 const CoursePages: React.FC = () => {
+  const data = useAppSelector((state) => state.user);
+  console.log(data)
   const { courseid, ref } = useParams();
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [playlist, setPlaylist] = useState({}); // Initialize as an object
@@ -48,7 +50,30 @@ const CoursePages: React.FC = () => {
       videoFile: selectedVideoUrl,
     }));
   };
-  console.log(coursedet)
+  const markAsWatched = async (playlistItemId:string,userId:number) => {
+    try {
+      const response = await fetch('/api/watch', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          courseid,
+          playlistItemId,
+          userId,
+        }),
+      });
+
+      if (response.ok) {
+        // setWatched(true);
+      } else {
+        const data = await response.json();
+        console.error('Error:', data.message);
+      }
+    } catch (error) {
+      console.error('Error marking as watched:', error);
+    }
+  };
   async function fetchAllVideos() {
     try {
       const response = await fetch('/api/video');  // Call the API endpoint
@@ -88,6 +113,11 @@ const CoursePages: React.FC = () => {
   const handleDayToggle = (day: number) => {
     // Toggle the expanded day
     setExpandedDay((prevDay) => (prevDay === day ? null : day));
+  };
+ 
+  const handleLongVideo = (duration: any) => {
+    console.log(duration)
+    // markAsWatched(duration._id,)
   };
 
   // Convert the playlist object into an array and group by day
@@ -244,7 +274,7 @@ const CoursePages: React.FC = () => {
                         </div>
                         {selectedVideoId === lesson._id && (
                           <div className="mt-4">
-                            <Videoplayer url={`/api/getpic?file=${lesson.videoUrl.split('/')[2]}`} />
+                            <Videoplayer url={`/api/getpic?file=${lesson.videoUrl.split('/')[2]}`}  onLongVideo={()=>(handleLongVideo(lesson))} />
                           </div>
                         )}
                       </div>
