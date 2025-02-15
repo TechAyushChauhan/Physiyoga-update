@@ -50,6 +50,10 @@ const Header: React.FC<HeaderProps> = ({
     { path: '/userinfo', label: 'user info' },
     { path: '/addvideo', label: 'Add Video' },
     { path: '/addcourse', label: 'Add Course' },
+    { path: '/dailymeeting', label: 'Yoga Batch' },
+    { path: '/approverejectuser', label: 'Yoga Batch' },
+    
+    
   ];
 
   useEffect(() => {

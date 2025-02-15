@@ -92,7 +92,8 @@ const dispatch=useAppDispatch()
 
   const handleConfirm = () => {
     handlePayment()
-  
+    router.push("/buyconfirm"); // Redirects to the payment page
+
   };
 
   const handleCancel = () => {
