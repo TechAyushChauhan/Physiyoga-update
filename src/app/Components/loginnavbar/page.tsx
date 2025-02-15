@@ -51,8 +51,8 @@ const Header: React.FC<HeaderProps> = ({
     { path: '/addvideo', label: 'Add Video' },
     { path: '/addcourse', label: 'Add Course' },
     { path: '/dailymeeting', label: 'Yoga Batch' },
-    { path: '/approverejectuser', label: 'Yoga Batch' },
-    
+    { path: '/approverejectuser', label: 'Approve Reject user' },
+
     
   ];
 
