@@ -21,37 +21,37 @@ import { progress } from 'framer-motion';
 // Set up AWS S3 client
 const s3 = new AWS.S3();
 
-// Define the file to upload
-const filePath = path.join(__dirname, 'myfile.txt');
-const bucketName = 'curetribevideo';
-const keyName = '6GitgH1vV5vHuVsJk/0MWZfrSfDGbTGYI2GOPWX9';
+// // Define the file to upload
+// const filePath = path.join(__dirname, 'myfile.txt');
+// const bucketName = 'curetribevideo';
+// const keyName = '6GitgH1vV5vHuVsJk/0MWZfrSfDGbTGYI2GOPWX9';
 
 // Function to upload the file
-const uploadFile = async (file,filename) => {
-  try {
-    console.log('File details:', file); // Add this to log the file object
+// const uploadFile = async (file,filename) => {
+//   try {
+//     console.log('File details:', file); // Add this to log the file object
     
-    if (!file || !file.filepath) {
-      throw new Error('File path is missing');
-    }
+//     if (!file || !file.filepath) {
+//       throw new Error('File path is missing');
+//     }
 
-    // Read the file content as a buffer
-    const fileBuffer = fs.readFileSync(file.filepath);
+//     // Read the file content as a buffer
+//     const fileBuffer = fs.readFileSync(file.filepath);
     
-    const obj = {
-      Bucket: process.env.AWS_BUCKET_NAME,
-      Key: filename, // Ensure the key has a proper path
-      Body: fileBuffer, // Use fileBuffer here
-      ContentType: file.mimetype, // Optional, but good to specify
-    };
+//     const obj = {
+//       Bucket: process.env.AWS_BUCKET_NAME,
+//       Key: filename, // Ensure the key has a proper path
+//       Body: fileBuffer, // Use fileBuffer here
+//       ContentType: file.mimetype, // Optional, but good to specify
+//     };
 
-    // Upload the file to S3
-    return await s3.upload(obj).promise();
-    console.log(`File uploaded successfully: ${data.Location}`);
-  } catch (error) {
-   return false
-  }
-};
+//     // Upload the file to S3
+//     return await s3.upload(obj).promise();
+//     console.log(`File uploaded successfully: ${data.Location}`);
+//   } catch (error) {
+//    return false
+//   }
+// };
 
 
 
