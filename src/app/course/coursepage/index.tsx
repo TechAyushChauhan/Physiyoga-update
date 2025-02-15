@@ -4,20 +4,25 @@ import { FaArrowLeft, FaPlayCircle, FaBookmark, FaPlus, FaShare, FaClock, FaChec
 import Image from "next/image";
 import Videoplayer from "./../../Components/videoplayer/vid";
 import { useAppSelector } from "../../../../lib/hooks";
-
+import { setUser } from '../../../../store/slices/userSlice';
 const CoursePages: React.FC = () => {
 
   const data = useAppSelector((state) => state.user);
-  console.log(data)
+  
   const { courseid, ref } = useParams();
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [playlist, setPlaylist] = useState({}); // Initialize as an object
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [expandedDay, setExpandedDay] = useState<number | null>(null); // Track expanded day
-  const { name, refid, loggedIn } = useAppSelector((state) => state.user);
+  const { name, refid, loggedIn,id } = useAppSelector((state) => state.user);
+  const userid= useAppSelector((state) => state.user);
+  console.log(userid.id,"id outside")
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { loading } = useAppSelector((state) => state.loader);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [videoList, setvideoList] = useState([]);
+  // const [userid, setuserid] = useState([]);
   const [formData, setFormData] = useState({
     day: 0,
     title: "",
@@ -27,9 +32,16 @@ const CoursePages: React.FC = () => {
   const [coursedet, setcoursedet] = useState({});
   const router = useRouter();
 
-  const fetchCourses = useCallback(async () => {
+  const fetchCourses = useCallback(async (ids) => {
     try {
-      const response = await fetch(`/api/playlist?courseId=${courseid}`);
+      console.log(userid.id,"id")
+      let data= `courseId=${courseid}`
+      if (ids!=null) {
+        console.log(ids,"id")
+        data=data+`&watchedBy=${ids}`
+      }
+      
+      const response = await fetch(`/api/playlist?${data}`);
       if (!response.ok) {
         throw new Error("Failed to fetch courses");
       }
@@ -51,9 +63,23 @@ const CoursePages: React.FC = () => {
       videoFile: selectedVideoUrl,
     }));
   };
+  useEffect(() => {
+   
+    if (userid.id!=null) {
+   
+      // Make the API call or proceed with logic'
+      setTimeout(() => {
+        fetchCourses(userid.id);
+      }, 3000);
+     
+    } else {
+      // Handle the case where `id` is null (e.g., show a loading spinner or redirect)
+    }
+  }, [userid.id]);
+  
   const markAsWatched = async (playlistItemId:string,userId:number) => {
     try {
-     
+     console.log(playlistItemId,'watchedid')
       const response = await fetch('/api/watched', {
         method: 'POST',
         headers: {
@@ -70,7 +96,7 @@ const CoursePages: React.FC = () => {
         console.log(await response.json())
         const updatedPlaylist = { ...playlist };
 
-        fetchCourses()
+        fetchCourses(userId)
         console.log(updatedPlaylist)
         console.log(playlist)
         // setWatched(true);
@@ -84,7 +110,7 @@ const CoursePages: React.FC = () => {
   };
   async function fetchAllVideos() {
     try {
-      const response = await fetch('/api/video');  // Call the API endpocoint
+      const response = await fetch('/api/appurl');  // Call the API endpocoint
 
       // Check if the response is successful
       if (!response.ok) {
@@ -93,14 +119,14 @@ const CoursePages: React.FC = () => {
 
       // Parse the response as JSON
       const data = await response.json();
-
+console.log(data)
       // Log the retrieved videos
-      if (data.type === 'S' && data.data) {
-        console.log('Videos retrieved:', data.data);
-        setvideoList(data.data)
+      if (data.type === 'S' && data.videos) {
+        console.log('Videos retrieved:', data.videos);
+        setvideoList(data.videos)
         // Here, you can use the data (e.g., display video file URLs, filenames, etc.)
-        data.data.forEach(video => {
-          console.log(`Filename: ${video.filename}, URL: ${video.fileUrl}`);
+        data.videos.forEach(video => {
+          console.log(`Filename: ${video.title}, URL: ${video.videoLink}`);
         });
       } else {
         console.log('No videos found or failed to retrieve');
@@ -355,7 +381,7 @@ const CoursePages: React.FC = () => {
                                   <FaClock className="w-4 h-4 mr-1" />
                                   {lesson.duration}
                                 </span>
-                            {  (lesson && lesson.watchedBy && lesson.watchedBy.length>0)  && <span className="flex items-center text-sm text-emerald-600">
+                            {  ( (userid.id!=null)&&lesson && lesson.watchedBy && lesson.watchedBy.length>0)  && <span className="flex items-center text-sm text-emerald-600">
                                   <FaCheckCircle className="w-4 h-4 mr-1" />
                                   Completed
                                 </span>}
@@ -368,7 +394,7 @@ const CoursePages: React.FC = () => {
                         </div>
                         {selectedVideoId === lesson._id && (
                           <div className="mt-4">
-                            <Videoplayer url={`/api/getpic?file=${lesson.videoUrl.split('/')[2]}`}  onLongVideo={()=>(handleLongVideo(lesson))} />
+                            <Videoplayer url={`/api/getpic?file=${lesson.videoUrl}`}  onLongVideo={()=>(handleLongVideo(lesson))} />
                           </div>
                         )}
                       </div>
@@ -396,7 +422,7 @@ const CoursePages: React.FC = () => {
                 </button>
               </div>
               <div className="p-6">
-                <Videoplayer url={`/api/getpic?file=${formData.videoFile.split('/')[2]}`} />
+                <Videoplayer url={`/api/getpic?file=${formData.videoFile}`} />
               </div>
             </div>
           </div>
@@ -436,8 +462,8 @@ const CoursePages: React.FC = () => {
                   >
                     <option value="">Choose a video file</option>
                     {videoList.map((video) => (
-                      <option key={video.fileUrl} value={video.fileUrl}>
-                        {video.filename}
+                      <option key={video.videoLink +video.title} value={video.videoLink}>
+                        {video.title}
                       </option>
                     ))}
                   </select>

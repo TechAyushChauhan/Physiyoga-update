@@ -17,17 +17,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     const form = new IncomingForm();
     const { db } = await connectToDatabase();
-    const uploadDir =
-      process.env.NODE_ENV_test === 'production'
-        ? '/tmp/uploads'
-        : path.join(process.cwd(), 'uploads');
-
-    form.uploadDir = uploadDir;
-    form.keepExtensions = true;
-
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
+   
 
     form.parse(req, async (err, fields, files) => {
       if (err) {
@@ -41,29 +31,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const playlistTitle = fields.title[0] as string;
       const playlistDescription = fields.description[0] as string;
       const day = fields.day[0] as string;
-      const video = Array.isArray(files.video) ? files.video[0] : files.video;
-
-      if (!video || !video.filepath) {
-        return res.status(400).json({ message: 'Video file is required' });
-      }
-
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      const fileExtension = path.extname(video.originalFilename || '');
-      const newFilename = uniqueSuffix + fileExtension;
-      const filePath = path.join(uploadDir, newFilename);
+      const video =fields.video[0] as string;
 
       try {
-        // Rename the file to the new file path
-        fs.renameSync(video.filepath, filePath);
-
-        const videoPath = `/uploads/${newFilename}`;
-
-        // Prepare the new playlist item
+     
         const playlistItem = {
           _id: new ObjectId(),
           title: playlistTitle,
           description: playlistDescription,
-          videoUrl: videoPath, // Store the relative video path
+          videoUrl: video, // Store the relative video path
           day: day, // Store the day
         };
 
@@ -94,42 +70,66 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         });
       }
     });
-  } else if (req.method === 'GET') {
+  } else 
+
+  if (req.method === 'GET') {
     try {
       const { db } = await connectToDatabase();
-      const { courseId ,watchedBy} = req.query;
-
-      if (!courseId || typeof courseId !== 'string' ) {
+      const { courseId, watchedBy } = req.query;
+  
+      if (!courseId || typeof courseId !== 'string') {
         return res.status(400).json({ message: 'Invalid or missing courseId' });
       }
-      const watchedByID =(watchedBy || typeof watchedBy !== 'string')? new ObjectId(watchedBy):'';
+  
+      // Validate watchedBy, ensure it's a valid ObjectId if provided
+      const watchedByID = watchedBy && typeof watchedBy === 'string' ? new ObjectId(watchedBy) : null;
+    
       const courseObjectId = new ObjectId(courseId);
-      const datapayload ={
-        _id: courseObjectId,
-        watchedBy:watchedByID==""?false:watchedBy
+    
+      const course = await db.collection('courses').find({ _id: courseObjectId }).toArray();
+    
+      if (course.length === 0) {
+        return res.status(404).json({ message: 'Course not found' });
       }
-      
-      const course = await db.collection('courses').find(datapayload).toArray();
-
+  
       const transformedCourse = course.map(courseItem => {
         const groupedPlaylist = courseItem.playlist.reduce((acc, item) => {
-          if (!acc[item.day]) {
-            acc[item.day] = [];
+          const normalizedDay = item.day.padStart(2, '0'); // Ensure day is always 2 digits
+          if (!acc[normalizedDay]) {
+            acc[normalizedDay] = [];
           }
-          acc[item.day].push(item);
+  
+          // If `watchedBy` is provided, filter the items by the user
+          if (watchedByID) {
+            if (item.watchedBy && item.watchedBy.includes(watchedByID.toString())) {
+              // If the user has watched the video, include the `watchedBy` field
+              acc[normalizedDay].push(item);
+            } else {
+              // If the user hasn't watched it, set watchedBy to an empty array
+              const { watchedBy, ...itemWithoutWatchedBy } = item;
+              acc[normalizedDay].push({
+                ...itemWithoutWatchedBy,
+                watchedBy: [] // Set watchedBy to an empty array for unwatched videos
+              });
+            }
+          } else {
+            // If no `watchedBy` is provided, include all items for that day
+            acc[normalizedDay].push(item);
+          }
+  
           return acc;
         }, {});
-
+  
         return {
           _id: courseItem._id,
           title: courseItem.title,
           description: courseItem.description,
           photo: courseItem.photo,
           pay: courseItem.pay,
-          playlist: groupedPlaylist,
+          playlist: groupedPlaylist, // Return the grouped playlist for the course
         };
       });
-
+  
       res.status(200).json({
         type: 'S',
         message: 'Course retrieved successfully',
@@ -139,7 +139,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       console.error('Error retrieving courses:', err);
       res.status(500).json({ message: 'Error retrieving courses', error: err.message });
     }
-  } else if (req.method === 'DELETE') {
+  }
+  
+  
+    else if (req.method === 'DELETE') {
     try {
       const { db } = await connectToDatabase();
       const { courseId, playlistItemId } = req.query;

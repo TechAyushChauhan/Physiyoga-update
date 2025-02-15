@@ -1,9 +1,7 @@
 "use client"
-
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Users, Edit, Trash2, Search, GraduationCap, BookOpen, Clock } from 'lucide-react';
 
-// Mock user data (in a real application, this would come from a backend)
 const initialUsers = [
   {
     id: 1,
@@ -53,14 +51,15 @@ const UserManagementDashboard: React.FC = () => {
   const [users, setUsers] = useState(initialUsers);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Filter users based on search term
   const filteredUsers = users.filter(user => 
-    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.phoneNumber.includes(searchTerm)
+    (user._id && user._id.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (user.username && user.username.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (user.phoneNumber && user.phoneNumber.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
   const fetchUserData = async () => {
-    const token = localStorage.getItem('authToken'); // Retrieve token from localStorage
+    const token = localStorage.getItem('authToken');
   
     if (!token) {
       console.error('No token found');
@@ -71,14 +70,15 @@ const UserManagementDashboard: React.FC = () => {
       const response = await fetch('/api/user', {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`, // Include token in Authorization header
+          'Authorization': `Bearer ${token}`,
         },
       });
   
       const data = await response.json();
   
       if (response.ok) {
-        console.log('User data:', data.user);
+        console.log('User data:', data.data);
+        setUsers(data.data);
       } else {
         console.error('Error:', data.msg);
       }
@@ -86,10 +86,11 @@ const UserManagementDashboard: React.FC = () => {
       console.error('Error fetching user data:', error);
     }
   };
-  
-  fetchUserData();
-  
-  // Handle user deletion
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
   const handleDeleteUser = (userId: number) => {
     setUsers(users.filter(user => user.id !== userId));
   };
@@ -97,13 +98,11 @@ const UserManagementDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-emerald-100 p-8 font-sans">
       <div className="container mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden max-w-6xl">
-        {/* Header */}
         <div className="bg-emerald-600 text-white p-6 flex items-center shadow-md">
           <Users className="w-10 h-10 mr-4 text-emerald-100" />
           <h1 className="text-3xl font-extrabold tracking-tight">User Management Dashboard</h1>
         </div>
 
-        {/* Search Bar */}
         <div className="p-6 bg-gray-100">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-emerald-500" />
@@ -117,85 +116,85 @@ const UserManagementDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* User Table */}
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-emerald-50">
-              <tr>
-                {['ID', 'Username', 'Email/Phone', 'Registered At', 'Courses', 'Actions'].map((header) => (
-                  <th 
-                    key={header} 
-                    className="px-6 py-4 text-left text-emerald-800 font-semibold uppercase tracking-wider text-sm"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map((user) => (
-                <tr 
-                  key={user.id} 
-                  className="border-b border-gray-200 hover:bg-emerald-50 transition-colors duration-200"
-                >
-                  <td className="px-6 py-4 text-gray-700">{user.id}</td>
-                  <td className="px-6 py-4 font-medium text-emerald-900">{user.username}</td>
-                  <td className="px-6 py-4">
-                    <div className="text-gray-800">{user.email}</div>
-                    <div className="text-sm text-gray-500">{user.phoneNumber}</div>
-                  </td>
-                  <td className="px-6 py-4 text-gray-700">{user.registeredAt}</td>
-                  <td className="px-6 py-4">
-                    <div className="space-y-2">
-                      {user.courses.map((course) => (
-                        <div 
-                          key={course.id} 
-                          className="bg-indigo-50 rounded-lg p-2 flex items-center"
-                        >
-                          <BookOpen className="w-5 h-5 mr-2 text-indigo-600" />
-                          <div className="flex-grow">
-                            <div className="text-sm font-medium text-indigo-900">{course.name}</div>
-                            <div className="w-full bg-indigo-200 rounded-full h-2 mt-1">
-                              <div 
-                                className="bg-indigo-600 h-2 rounded-full" 
-                                style={{width: `${course.progress}%`}}
-                              ></div>
-                            </div>
-                          </div>
-                          <span className="text-xs text-indigo-700 ml-2">{course.progress}%</span>
-                        </div>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <div className="flex justify-center space-x-3">
-                      <button 
-                        className="text-emerald-600 hover:text-emerald-800 transition-colors duration-200 p-2 rounded-full hover:bg-emerald-100"
-                        title="Edit User"
-                      >
-                        <Edit className="w-6 h-6" />
-                      </button>
-                      <button 
-                        className="text-red-500 hover:text-red-700 transition-colors duration-200 p-2 rounded-full hover:bg-red-100"
-                        title="Delete User"
-                        onClick={() => handleDeleteUser(user.id)}
-                      >
-                        <Trash2 className="w-6 h-6" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+          <thead className="bg-emerald-50">
+  <tr>
+    {['ID', 'Username', 'Email/Phone', 'Password', 'Courses', 'Actions'].map((header, index) => (
+      <th 
+        key={index} // Using the index as a key here
+        className="px-6 py-4 text-left text-emerald-800 font-semibold uppercase tracking-wider text-sm"
+      >
+        {header}
+      </th>
+    ))}
+  </tr>
+</thead>
+
+          <tbody>
+  {filteredUsers.map((user) => (
+    <tr 
+      key={user.id} // Use user.id as the key here instead of user._id
+      className="border-b border-gray-200 hover:bg-emerald-50 transition-colors duration-200"
+    >
+      <td className="px-6 py-4 text-gray-700">{user.id}</td>
+      <td className="px-6 py-4 font-medium text-emerald-900">{user.username}</td>
+      <td className="px-6 py-4">
+        <div className="text-gray-800">{user.email}</div>
+        <div className="text-sm text-gray-500">{user.mobileOrEmail}</div>
+      </td>
+      <td className="px-6 py-4 text-gray-700">{user.password}</td>
+      <td className="px-6 py-4">
+        <div className="space-y-2">
+          {(user.courses || []).map((course) => (
+            <div 
+              key={`${user.id}-${course.id}`} // Combine user.id and course.id for a unique key
+              className="bg-indigo-50 rounded-lg p-2 flex items-center"
+            >
+              <BookOpen className="w-5 h-5 mr-2 text-indigo-600" />
+              <div className="flex-grow">
+                <div className="text-sm font-medium text-indigo-900">{course.name}</div>
+                <div className="w-full bg-indigo-200 rounded-full h-2 mt-1">
+                  <div 
+                    className="bg-indigo-600 h-2 rounded-full" 
+                    style={{width: `${course.progress}%`}}
+                  ></div>
+                </div>
+              </div>
+              <span className="text-xs text-indigo-700 ml-2">{course.progress}%</span>
+            </div>
+          ))}
+        </div>
+      </td>
+      <td className="px-6 py-4 text-center">
+        <div className="flex justify-center space-x-3">
+          <button 
+            className="text-emerald-600 hover:text-emerald-800 transition-colors duration-200 p-2 rounded-full hover:bg-emerald-100"
+            title="Edit User"
+          >
+            <Edit className="w-6 h-6" />
+          </button>
+          <button 
+            className="text-red-500 hover:text-red-700 transition-colors duration-200 p-2 rounded-full hover:bg-red-100"
+            title="Delete User"
+            onClick={() => handleDeleteUser(user.id)}
+          >
+            <Trash2 className="w-6 h-6" />
+          </button>
+        </div>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
           </table>
         </div>
 
-        {/* User and Course Count */}
         <div className="p-6 bg-gray-100 flex justify-between items-center">
           <div>
             <span className="text-emerald-800 font-semibold text-lg mr-4">
               <GraduationCap className="inline-block mr-2 text-emerald-600" />
-              Total Courses: {filteredUsers.reduce((total, user) => total + user.courses.length, 0)}
+              Total Courses: {filteredUsers.reduce((total, user) => total + (user.courses ? user.courses.length : 0), 0)}
             </span>
           </div>
           <div>

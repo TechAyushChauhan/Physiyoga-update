@@ -25,6 +25,7 @@
     "@types/react-calendar": "^4.1.0",
     "@types/styled-components": "^5.1.34",
     "aos": "^2.3.4",
+    "aws-sdk": "^2.1692.0",
     "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -48,8 +49,6 @@
     "primereact": "^10.8.5",
     "qrcode-terminal": "^0.12.0",
     "razorpay": "^2.9.5",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
     "react": "^18.2.0",
     "react-calendar": "^5.1.0",
     "react-countup": "^6.5.3",
@@ -63,10 +62,10 @@
     "react-tsparticles": "^2.12.2",
     "redux": "^5.0.1",
     "sha256": "^0.2.0",
-    "uuid": "^11.0.3",
     "styled-components": "^6.1.14",
     "tailwind-merge": "^2.6.0",
     "tsparticles": "^3.7.1",
+    "uuid": "^11.0.3",
     "whatsapp-web.js": "^1.26.0"
   },
   "devDependencies": {
