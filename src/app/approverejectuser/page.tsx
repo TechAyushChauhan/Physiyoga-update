@@ -1,46 +1,46 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AlertCircle, CheckCircle, XCircle, Search, Filter, MoreVertical } from 'lucide-react';
 import LoginNavbar from "../Components/loginnavbar/page";
 import LoginFooter from "../Components/loginfooter/page";
 
 const AdminPaymentDashboard = () => {
   // Mock payment requests data
+
   const [paymentRequests, setPaymentRequests] = useState([
-    {
-      id: 'REQ001',
-      userId: 'USR123',
-      userName: 'John Doe',
-      email: 'john.doe@example.com',
-      courseId: 'CRS001',
-      courseName: 'Advanced Web Development',
-      amount: 99.00,
-      transactionId: 'TXN78901234',
-      status: 'pending',
-      submittedAt: '2025-02-15T10:30:00Z',
-      screenshot: '/api/placeholder/100/100',
-      notes: 'Payment made via bank transfer'
-    },
-    {
-      id: 'REQ002',
-      userId: 'USR124',
-      userName: 'Jane Smith',
-      email: 'jane.smith@example.com',
-      courseId: 'CRS002',
-      courseName: 'Mobile App Development',
-      amount: 149.00,
-      transactionId: 'TXN78901235',
-      status: 'pending',
-      submittedAt: '2025-02-15T11:45:00Z',
-      screenshot: '/api/placeholder/100/100',
-      notes: 'Please verify ASAP'
-    },
-    // Add more mock data as needed
+   
   ]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedRequest, setSelectedRequest] = useState(null);
+    const fetchCourses = async () => {
+      try {
+        // console.log(userid.id,"id")
+        // let data= `courseId=${courseid}`
+        // if (ids!=null) {
+        //   console.log(ids,"id")
+        //   data=data+`&watchedBy=${ids}`
+        // }
+        
+        const response = await fetch(`/api/approve`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch courses");
+        }
+        const resultdata = await response.json();
+  
+        // Check if the response has the playlist structure as expected
+        const playlistData = resultdata?.data ||  [];
+        setPaymentRequests(playlistData)
+       console.log(playlistData,"data")
+        // setcoursedet(resultdata?.data[0] || {})
+  
+        // setPlaylist(playlistData);
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      }
+    };
+  
 
   const handleStatusChange = (requestId, newStatus) => {
     setPaymentRequests(requests =>
@@ -55,15 +55,19 @@ const AdminPaymentDashboard = () => {
 
   const filteredRequests = paymentRequests.filter(request => {
     const matchesSearch = 
-      request.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      request.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      request.courseName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      request.transactionId.toLowerCase().includes(searchTerm.toLowerCase());
+      request.transactionId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      request?.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      request.transactionId.toLowerCase().includes(searchTerm.toLowerCase())
+      //  ||      request.transactionId.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesStatus = statusFilter === 'all' || request.status === statusFilter;
     
     return matchesSearch && matchesStatus;
   });
+  useEffect(()=>{
+    fetchCourses()
+  },[])
+  
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -133,28 +137,28 @@ const AdminPaymentDashboard = () => {
                     <div className="flex items-center">
                       <div>
                         <div className="text-sm font-medium text-gray-900">{request.userName}</div>
-                        <div className="text-sm text-gray-500">{request.email}</div>
+                        <div className="text-sm text-gray-500">{request.additionalNotes}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{request.courseName}</div>
-                    <div className="text-xs text-gray-500">ID: {request.courseId}</div>
+                    <div className="text-sm text-gray-900">{request.transactionId}</div>
+                    {/* <div className="text-xs text-gray-500">ID: {request.courseId}</div> */}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  {/* <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">${request.amount.toFixed(2)}</div>
-                  </td>
+                  </td> */}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">{request.transactionId}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                  {/* <td className="px-6 py-4 whitespace-nowrap"> */}
+                    {/* <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                       ${request.status === 'approved' ? 'bg-green-100 text-green-800' : 
                         request.status === 'rejected' ? 'bg-red-100 text-red-800' :
                         'bg-yellow-100 text-yellow-800'}`}>
                       {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
                     </span>
-                  </td>
+                  </td> */}
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(request.submittedAt).toLocaleString()}
                   </td>

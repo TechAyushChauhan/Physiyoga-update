@@ -1,15 +1,24 @@
 'use client'
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { setloader } from '../../../store/slices/loaderSlice';
+import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
 
 const PaymentDetailsPage = () => {
   const router = useRouter();
+   const userid= useAppSelector((state) => state.user);
   const [paymentStatus, setPaymentStatus] = useState('pending');
   const [transactionId, setTransactionId] = useState('');
+    const [courseName, setCourseName] = useState<string>("");
+    const [courseFees, setCourseFees] = useState<string>("");
+    const [timestamp, setTimestamp] = useState<string>("");
+    const [referralCode, setReferralCode] = useState<string>("");
   const [paymentScreenshot, setPaymentScreenshot] = useState(null);
+  // const [transactionId, setPaymentScreenshot] = useState(null);
   const [notes, setNotes] = useState('');
+  const dispatch=useAppDispatch()
   const [loading, setLoading] = useState(false);
-  
+  const { courseid } = useParams();
   const notifyAdmin = async () => {
     console.log('Notifying admin about payment:', {
       transactionId,
@@ -19,7 +28,78 @@ const PaymentDetailsPage = () => {
     });
     return new Promise(resolve => setTimeout(resolve, 1500));
   };
+  const createPayment = async ( ) => {
+   
+    const formData = new FormData();
   
+    formData.append('transactionId', transactionId);
+    
+     formData.append('userId', userid.id);
+    formData.append('additionalNotes', notes);
+    formData.append('file', paymentScreenshot);
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get("name");
+    const courseID = params.get("courseID");
+    formData.append('course', courseID);
+    
+ 
+    try {
+      const response = await fetch('/api/approve', {
+        method: 'POST',
+        body: formData,  // Send form data including file
+      });
+  
+      const data = await response.json();
+      if (response.ok) {
+        console.log('Payment created:', data);
+      } else {
+        console.error('Error creating payment:', data.msg);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  useEffect(()=>{
+    // createPayment()
+  },[])
+  
+    const fetchAllCourses = async (courseID) => {
+      try {
+          dispatch(setloader(true))
+        const response = await fetch('/api/addcourse?id='+courseID, {
+          method: 'GET',
+        });
+  
+    
+        if (!response.ok) {
+          throw new Error('Failed to fetch courses');
+        }
+       
+    
+        const data = await response.json();
+        if (data.type="S") {
+          console.log(data)
+          setCourseName(data.data.title)
+          setCourseFees(data.data.pay)
+          const refral = localStorage.getItem('refcode');
+          if (refral) {
+            setReferralCode(refral)
+          }
+        }
+  
+      
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      }
+      dispatch(setloader(false))
+    };
+    useEffect(()=>{
+      const params = new URLSearchParams(window.location.search);
+    const name = params.get("name");
+    const courseID = params.get("courseID");
+      fetchAllCourses(courseID)
+    },[])
+  console.log(transactionId)
   const handlePaymentSubmit = async () => {
     if (!transactionId || !paymentScreenshot) {
       alert('Please provide both transaction ID and payment screenshot');
@@ -163,10 +243,10 @@ const PaymentDetailsPage = () => {
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-6">
               <div className="bg-blue-50 p-5 rounded-lg border border-blue-200 shadow-sm">
-                <h3 className="font-semibold text-blue-800 mb-2 text-lg">Course: Advanced Web Development</h3>
+                <h3 className="font-semibold text-blue-800 mb-2 text-lg">Course: {courseName}</h3>
                 <div className="flex justify-between items-center mb-3">
                   <p className="text-black text-sm">Price:</p>
-                  <p className="text-black font-bold text-lg">$99.00</p>
+                  <p className="text-black font-bold text-lg">${courseFees}</p>
                 </div>
                 <div className="pt-3 border-t border-blue-200">
                   <h4 className="font-medium text-blue-800 mb-2">Payment Instructions:</h4>
@@ -267,23 +347,15 @@ const PaymentDetailsPage = () => {
               </div>
               <div className="flex flex-col space-y-3 mt-8">
               <button
-                onClick={handlePaymentSubmit}
-                disabled={loading || !transactionId || !paymentScreenshot || paymentStatus === 'processing' || paymentStatus === 'pending_approval'}
+                onClick={createPayment}
+                // disabled={loading || !transactionId || !paymentScreenshot || paymentStatus === 'processing' || paymentStatus === 'pending_approval'}
                 className={`w-full px-6 py-3 text-white bg-green-600 rounded-md hover:bg-green-700 transition-all focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 font-medium shadow-sm ${
                   (loading || !transactionId || !paymentScreenshot || paymentStatus === 'processing' || paymentStatus === 'pending_approval') 
                     ? 'opacity-50 cursor-not-allowed' 
                     : ''
                 }`}
               >
-                {loading ? (
-                  <span className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Processing...
-                  </span>
-                ) : 'Submit Payment Details'}
+              Submit Payment Details
               </button>
               {paymentStatus === 'pending' && (
                 <button

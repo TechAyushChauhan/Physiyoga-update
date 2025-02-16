@@ -17,6 +17,7 @@ const dispatch=useAppDispatch()
 
   const fetchAllCourses = async (courseID) => {
     try {
+      
         dispatch(setloader(true))
       const response = await fetch('/api/addcourse?id='+courseID, {
         method: 'GET',
@@ -91,8 +92,10 @@ const dispatch=useAppDispatch()
   };
 
   const handleConfirm = () => {
-    handlePayment()
-    router.push("/buyconfirm"); // Redirects to the payment page
+    // handlePayment()
+    const params = new URLSearchParams(window.location.search);
+    const courseID = params.get("courseID");
+    router.push(`/buyconfirm?courseID=${courseID}`); // Redirects to the payment page
 
   };
 
