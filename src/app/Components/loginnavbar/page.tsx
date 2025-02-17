@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -28,8 +29,7 @@ const Header: React.FC<HeaderProps> = ({
   loggedIn = false,
   name = 'Guest',
   notifications = [],
-  handleLogout = () => 
-    console.warn('Logout handler not provided')
+  handleLogout
 }) => {
   const router = useRouter();
   const [showNotifications, setShowNotifications] = useState(false);
@@ -52,8 +52,6 @@ const Header: React.FC<HeaderProps> = ({
     { path: '/addcourse', label: 'Add Course' },
     { path: '/dailymeeting', label: 'Yoga Batch' },
     { path: '/approverejectuser', label: 'Approve Reject user' },
-
-    
   ];
 
   useEffect(() => {
@@ -80,6 +78,29 @@ const Header: React.FC<HeaderProps> = ({
     setShowMobileMenu(false);
     setShowAdminDropdown(false);
     router.push(path);
+  };
+
+  const handleLogoutClick = () => {
+    // Clear all tokens from localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    // Clear any other tokens or user data you might have stored
+    
+    // Clear cookies if you're using them
+    document.cookie.split(";").forEach((c) => {
+      document.cookie = c
+        .replace(/^ +/, "")
+        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+    
+    // Call the provided handleLogout function if it exists
+    if (handleLogout) {
+      handleLogout();
+    }
+    
+    // Redirect to login page
+    router.push('/login');
   };
 
   const NavigationLinks = () => (
@@ -234,7 +255,7 @@ const Header: React.FC<HeaderProps> = ({
                     </li>
                     <li
                       className="p-3 hover:bg-gray-50 cursor-pointer text-gray-700 transition-colors duration-200 ease-in-out"
-                      onClick={handleLogout}
+                      onClick={handleLogoutClick}
                     >
                       Log Out
                     </li>
@@ -248,5 +269,5 @@ const Header: React.FC<HeaderProps> = ({
     </div>
   );
 };
-
+  
 export default Header;
