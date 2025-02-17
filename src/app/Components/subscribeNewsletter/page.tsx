@@ -43,7 +43,7 @@ const SubscribeNewsletter: React.FC = () => {
 
   return (
     <div className="ft-info-p2">
-      <p className="ft-input-title">Stay Updated with our Newsletter</p>
+      <p className="ft-input-title">Subscribe for expert tips on health, therapy, nutrition, and mindfulness.</p>
       <input
         type="email"
         className="ft-input"

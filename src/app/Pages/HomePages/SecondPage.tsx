@@ -127,7 +127,7 @@ const HeroSection = () => {
               ${isAnimating ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}
             `}
           >
-            Compassionate <span className="text-blue-600">Healthcare</span> Solutions
+            Move Better. <span className="text-blue-600"><br></br>Eat Smarter.</span> <br></br>Think Stronger. 
           </h1>
           
           <p 
@@ -137,8 +137,7 @@ const HeroSection = () => {
               ${isAnimating ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}
             `}
           >
-            Combining advanced medical technologies with personalized, patient-centered care. 
-            Your health, our priority.
+            Empowering you with expert physiotherapy, personalized nutrition, and mental wellness support—because true health is a balance of body and mind. Your well-being, our mission.
           </p>
           
           <div 
@@ -156,13 +155,13 @@ const HeroSection = () => {
               "
               onClick={handleBookAppointment}
             >
-              Book Appointment
+              Book Consultation 
               <ArrowRight 
                 className="ml-2 group-hover:translate-x-1 transition-transform"
                 size={20} 
               />
             </button>
-            <button 
+            {/* <button 
               className="
                 border-2 border-blue-600 text-blue-600 
                 px-8 py-3 rounded-full 
@@ -170,7 +169,7 @@ const HeroSection = () => {
               "
             >
               Learn More
-            </button>
+            </button> */}
           </div>
         </div>
         
@@ -201,18 +200,18 @@ const QuickAccessSection = () => {
   const quickAccess = [
     {
       icon: <Clock />,
-      title: "24/7 Support",
-      description: "Round-the-clock medical assistance and emergency services."
+      title: "24/7 Holistic Care",
+      description: "Your health never sleeps, and neither do we! Get round-the-clock support in physiotherapy, nutrition, yoga, and mental well-being."
     },
     {
       icon: <MessageCircle />,
-      title: "Telemedicine",
-      description: "Virtual consultations from the comfort of your home."
+      title: "Heal from Home",
+      description: "Expert-led online sessions for movement, mindfulness, and nutrition—because wellness should be just a click away."
     },
     {
       icon: <ShieldCheck />,
-      title: "Safe & Secure",
-      description: "Ensuring patient privacy and top-notch medical standards."
+      title: "Your Health, Your Privacy",
+      description: "Confidential, secure, and top-notch care for your body and mind—because you deserve the best."
     }
   ];
 
@@ -262,9 +261,9 @@ const MedicalLanding = () => {
 
   const services = [
     {
-      title: "Diagnostic Services",
+      title: "Physiotherapy Services",
       icon: <Stethoscope />,
-      description: "Advanced diagnostic technologies and comprehensive health screenings to detect and prevent potential health issues early.",
+      description: "Expert physiotherapy treatments designed to improve mobility, reduce pain, and enhance physical well-being.",
       iconBg: "bg-sky-100",
       iconColor: "text-sky-600",
       iconShadow: "shadow-sky-200/50",
@@ -273,9 +272,9 @@ const MedicalLanding = () => {
       titleColor: "text-sky-700"
     },
     {
-      title: "Specialized Care",
+      title: "Dietary Guidance",
       icon: <HeartPulse />,
-      description: "Personalized treatment plans focusing on individual patient needs, combining medical expertise with compassionate care.",
+      description: "Personalized nutrition plans tailored to individual health goals, ensuring a balanced and sustainable lifestyle.",
       iconBg: "bg-rose-100",
       iconColor: "text-rose-600",
       iconShadow: "shadow-rose-200/50",
@@ -284,9 +283,9 @@ const MedicalLanding = () => {
       titleColor: "text-rose-700"
     },
     {
-      title: "Neurology Center",
+      title: "Yoga Classes",
       icon: <Brain />,
-      description: "Specialized neurological care using cutting-edge technologies and comprehensive treatment approaches.",
+      description: "Holistic yoga sessions to improve flexibility, strength, and mental clarity while promoting overall wellness.",
       iconBg: "bg-purple-100",
       iconColor: "text-purple-600",
       iconShadow: "shadow-purple-200/50",
@@ -295,9 +294,9 @@ const MedicalLanding = () => {
       titleColor: "text-purple-700"
     },
     {
-      title: "Lab Services",
+      title: "Psychology Support",
       icon: <Microscope />,
-      description: "State-of-the-art laboratory facilities providing accurate and timely diagnostic testing and research support.",
+      description: "Compassionate counseling and psychological support to foster emotional resilience and mental health.",
       iconBg: "bg-emerald-100",
       iconColor: "text-emerald-600",
       iconShadow: "shadow-emerald-200/50",
@@ -319,7 +318,7 @@ const MedicalLanding = () => {
               Our Medical Services
             </h2>
             <p className="mt-4 text-xl text-gray-600">
-              Comprehensive healthcare solutions for every stage of life
+            Comprehensive wellness solutions for every aspect of life
             </p>
           </div>
           
