@@ -93,6 +93,9 @@ const dispatch=useAppDispatch()
 
   const handleConfirm = () => {
     // handlePayment()
+
+    localStorage.setItem('refcode', referralCode);
+
     const params = new URLSearchParams(window.location.search);
     const courseID = params.get("courseID");
     router.push(`/buyconfirm?courseID=${courseID}`); // Redirects to the payment page

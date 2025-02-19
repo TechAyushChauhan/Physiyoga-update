@@ -26,7 +26,7 @@ const keyName = '6GitgH1vV5vHuVsJk/0MWZfrSfDGbTGYI2GOPWX9';
 // Function to upload the file
 const uploadFile = async (file,filename) => {
   try {
-    console.log('File details:', file); // Add this to log the file object
+ // Add this to log the file object
     
     if (!file || !file.filepath) {
       throw new Error('File path is missing');
@@ -78,11 +78,36 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const course = fields.course[0] as string;
       const additionalNotes = fields.additionalNotes[0] as string;
       const photo = Array.isArray(files.file) ? files.file[0] : files.file;
-
+      const refral = fields.refral[0] as string;
       if (!photo || !photo.filepath) {
         return res.status(400).json({ message: 'Photo is required or file path is missing' });
       }
+      if(refral && refral!==''){
+        
+        const user = await db.collection('users').findOne({ referralCode: refral });
+console.log(user);
 
+if (user) {
+  // Check if 'referred' exists
+  if (user.referred !== undefined) {
+    // If 'referred' exists, increment it by 1
+    const updatedUser = await db.collection('users').updateOne(
+      { referralCode: refral },
+      { $inc: { referred: 1 } }  // Increment referred by 1
+    );
+    console.log('User referral count incremented:', updatedUser);
+  } else {
+    // If 'referred' does not exist, initialize it to 1
+    const updatedUser = await db.collection('users').updateOne(
+      { referralCode: refral },
+      { $set: { referred: 1 } }  // Initialize referred field to 1
+    );
+    console.log('User referred initialized:', updatedUser);
+  }
+} else {
+  console.log('User not found');
+}
+}
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
       const fileExtension = path.extname(photo.originalFilename || '');
       const newFilename = uniqueSuffix + fileExtension;
@@ -116,6 +141,7 @@ console.log(course ,"course")
     });
   
   } 
+
   else 
   
   

@@ -41,7 +41,10 @@ const PaymentDetailsPage = () => {
     const name = params.get("name");
     const courseID = params.get("courseID");
     formData.append('course', courseID);
-    
+    const refral = localStorage.getItem('refcode');
+    if (refral) {
+      formData.append('refral', refral);
+    }
  
     try {
       const response = await fetch('/api/approve', {
@@ -51,6 +54,8 @@ const PaymentDetailsPage = () => {
   
       const data = await response.json();
       if (response.ok) {
+        localStorage.removeItem('refcode');
+
         console.log('Payment created:', data);
       } else {
         console.error('Error creating payment:', data.msg);
