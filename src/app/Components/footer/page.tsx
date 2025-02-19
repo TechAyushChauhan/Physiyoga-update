@@ -13,10 +13,10 @@ const Footer: React.FC = () => {
         <div className="ft-info">
           <div className="ft-info-p1">
             <p className="ft-title">
-              Physiyoga <span className="ft-sign">+</span>
+               <span className="ft-sign">Cure Tribe</span>
             </p>
             <p className="ft-description">
-              Talk to online doctors and get medical advice, online prescriptions, refills and medical notes within minutes. On-demand healthcare services at your fingertips.
+            Your one-stop solution for physiotherapy, psychology, yoga, and diet. We provide expert guidance to help you heal, strengthen, and achieve overall well-being through a holistic approach.
             </p>
           </div>
 
@@ -24,31 +24,34 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="ft-list">
-          <p className="ft-list-title">Services</p>
+          <p className="ft-list-title">Our Services</p>
           <ul className="ft-list-items">
             <li>
-              <a href="#services">Emergency Care</a>
+              <a href="#services">Physiotherapy & Rehabilitation</a>
             </li>
             <li>
-              <a href="#services">Heart Disease</a>
+              <a href="#services">Posture & Mobility Therapy</a>
             </li>
             <li>
-              <a href="#services">Dental Care</a>
+              <a href="#services">Mental Health Counseling</a>
             </li>
             <li>
-              <a href="#services">Prescription</a>
+              <a href="#services">Yoga for Physical & Mental Well-being</a>
             </li>
             <li>
-              <a href="#services">Insights for doctors</a>
+              <a href="#services">Stress and anxiety management </a>
+            </li>
+            <li>
+              <a href="#services">Diet & Nutrition Planning</a>
             </li>
           </ul>
         </div>
 
         <div className="ft-list">
-          <p className="ft-list-title">Legal</p>
+          <p className="ft-list-title">Legal & Information</p>
           <ul className="ft-list-items">
             <li>
-              <Link href="/legal">General Info</Link>
+              <Link href="/legal">General Information</Link>
             </li>
             <li>
               <Link href="/legal">Privacy Policy</Link>
@@ -57,10 +60,7 @@ const Footer: React.FC = () => {
               <Link href="/legal">Terms of Services</Link>
             </li>
             <li>
-              <Link href="/legal">Consultations</Link>
-            </li>
-            <li>
-              <Link href="/legal">How it Works</Link>
+              <Link href="/legal">Consultation Guidelines</Link>
             </li>
           </ul>
         </div>

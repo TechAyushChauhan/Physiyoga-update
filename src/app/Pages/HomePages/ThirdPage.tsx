@@ -118,11 +118,9 @@ const Thirdpage = () => {
             >
               <div className="space-y-6">
                 <p className="text-xl text-gray-800 leading-relaxed font-light tracking-wide">
-                  Welcome to <HighlightedText>CureTribe</HighlightedText>, your trusted partner for 
+                  Welcome to <HighlightedText>CureTribe </HighlightedText>– your go-to partner for 
                   <HighlightedText> accessible</HighlightedText> and
-                  <HighlightedText> personalized healthcare</HighlightedText>. Our expert doctors offer 
-                  <HighlightedText> online consultations </HighlightedText>
-                  and specialized services, prioritizing your well-being.
+                  <HighlightedText> personalized healthcare</HighlightedText>. With expert doctors offering <HighlightedText> online consultations </HighlightedText> and <HighlightedText> tailored services </HighlightedText>, we’re here to prioritize your health and help you thrive.
                 </p>
               </div>
 
@@ -141,8 +139,8 @@ const Thirdpage = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 8v13H3V8M1 3h22v5H1z" />
                       </svg>
                     }
-                    title="Choose a Specialist"
-                    description="Find your perfect specialist and book with ease at CureTribe. Expert doctors prioritize your health, offering tailored care."
+                    title="Find Your Specialist"
+                    description="Discover expert physiotherapists and psychologists tailored to your needs. Whether you’re managing pain or enhancing mental well-being, our professionals provide focused, individualized care."
                   />
 
                   <SolutionStep
@@ -151,8 +149,8 @@ const Thirdpage = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     }
-                    title="Make a Schedule"
-                    description="Choose the date and time that suits you best, and let our dedicated team of medical professionals ensure your well-being."
+                    title="Book Your Schedule"
+                    description="Pick a date and time that fits your routine and connect with dedicated specialists who prioritize your recovery, growth, and holistic health."
                   />
 
                   <SolutionStep
@@ -161,8 +159,8 @@ const Thirdpage = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     }
-                    title="Get Your Solutions"
-                    description="Our experienced doctors and specialists are here to provide expert advice and personalized treatment plans for your health."
+                    title="Get Personalized Care"
+                    description="Receive expert advice and customized treatment plans from our experienced team to achieve both physical and mental balance. We’re here to help you heal, grow, and thrive."
                   />
                 </div>
               </div>

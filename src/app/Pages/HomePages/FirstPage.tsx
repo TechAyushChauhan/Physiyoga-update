@@ -69,18 +69,18 @@ const FirstPage: React.FC = () => {
 
           <div className="flex justify-center space-x-8 mt-24 p-5 bg-gray-200 bg-opacity-25 rounded-3xl shadow-md">
             <div className="text-center">
-              <p className="text-4xl font-semibold text-green-200">145k+</p>
-              <p className="text-lg text-white">Happy Clients</p>
+              <p className="text-4xl font-semibold text-green-200">2+</p>
+              <p className="text-lg text-white">Experts</p>
             </div>
 
             <div className="text-center">
               <p className="text-4xl font-semibold text-green-200">50+</p>
-              <p className="text-lg text-white">Expert Instructors</p>
+              <p className="text-lg text-white">Lives Transformed</p>
             </div>
 
             <div className="text-center">
-              <p className="text-4xl font-semibold text-green-200">10+</p>
-              <p className="text-lg text-white">Years of Service</p>
+              <p className="text-4xl font-semibold text-green-200">100+</p>
+              <p className="text-lg text-white">Personalized Care</p>
             </div>
           </div>
         </div>

@@ -126,40 +126,40 @@ const FourthPage: React.FC = () => {
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
             Why Choose{" "}
             <span className="bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
-              Health Plus
+            Cure Tribe?
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Experience healthcare excellence with our comprehensive services and dedicated team of professionals.
+          At Cure Tribe, we specialize in physiotherapy and psychology, delivering expert care that transforms lives.
           </p>
         </motion.div>
 
         {/* Stats Section */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-          <StatsCard value="1000+" label="Happy Patients" icon={<Stars className="w-7 h-7" />} />
-          <StatsCard value="50+" label="Expert Doctors" icon={<Shield className="w-7 h-7" />} />
-          <StatsCard value="24/7" label="Available" icon={<Clock className="w-7 h-7" />} />
-          <StatsCard value="15+" label="Years Experience" icon={<Sparkles className="w-7 h-7" />} />
+          <StatsCard value="98%" label="Recovery Rate" icon={<Stars className="w-7 h-7" />} />
+          <StatsCard value="100%" label="Client Trust" icon={<Shield className="w-7 h-7" />} />
+          <StatsCard value="24/7" label="Support Your Well-being" icon={<Clock className="w-7 h-7" />} />
+          <StatsCard value="5+" label="Years Experience" icon={<Sparkles className="w-7 h-7" />} />
         </div>
 
         {/* Features Grid */}
         <div className="grid md:grid-cols-2 gap-8 mb-16">
           <FeatureCard
             icon={<FontAwesomeIcon icon={faUserMd} className="w-7 h-7" />}
-            title="Expert Medical Team"
-            description="Access to highly qualified and experienced healthcare professionals dedicated to your well-being."
+            title="Expert Care Team"
+            description="Access personalized care from a team of highly skilled physiotherapy and psychology professionals dedicated to your well-being."
             gradient="bg-gradient-to-br from-teal-100/50 to-emerald-100/50"
           />
           <FeatureCard
             icon={<FontAwesomeIcon icon={faAmbulance} className="w-7 h-7" />}
-            title="Emergency Care"
-            description="24/7 emergency medical services with rapid response times and expert care when you need it most."
+            title="Holistic Health Support"
+            description="Round-the-clock guidance to ensure your physical and mental health needs are met whenever you need us."
             gradient="bg-gradient-to-br from-emerald-100/50 to-teal-100/50"
           />
           <FeatureCard
             icon={<FontAwesomeIcon icon={faHeadset} className="w-7 h-7" />}
-            title="24/7 Support"
-            description="Round-the-clock customer support and medical assistance through our live chat system."
+            title="24/7 Availability"
+            description="Dedicated support to help you on your journey toward recovery and wellness, any time of the day."
             gradient="bg-gradient-to-br from-teal-100/50 to-emerald-100/50"
           />
           <FeatureCard
