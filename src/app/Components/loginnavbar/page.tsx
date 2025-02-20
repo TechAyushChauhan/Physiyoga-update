@@ -1,6 +1,5 @@
 
 "use client";
-
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -81,25 +80,20 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   const handleLogoutClick = () => {
-    // Clear all tokens from localStorage
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
-    // Clear any other tokens or user data you might have stored
     
-    // Clear cookies if you're using them
     document.cookie.split(";").forEach((c) => {
       document.cookie = c
         .replace(/^ +/, "")
         .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
     });
     
-    // Call the provided handleLogout function if it exists
     if (handleLogout) {
       handleLogout();
     }
     
-    // Redirect to login page
     router.push('/login');
   };
 
@@ -107,35 +101,35 @@ const Header: React.FC<HeaderProps> = ({
     <>
       <button
         onClick={() => handleNavigation('/dashboard')}
-        className="text-gray-600 hover:text-blue-600 w-full text-left px-4 py-2 transition-colors duration-200 ease-in-out rounded-lg hover:bg-gray-50"
+        className="text-gray-700 hover:text-blue-600 w-full text-left px-4 py-3 transition-colors duration-200 ease-in-out hover:bg-blue-50 flex items-center space-x-2 rounded-lg"
       >
         Dashboard
       </button>
       <button
         onClick={() => handleNavigation('/courses')}
-        className="text-gray-600 hover:text-blue-600 w-full text-left px-4 py-2 transition-colors duration-200 ease-in-out rounded-lg hover:bg-gray-50"
+        className="text-gray-700 hover:text-blue-600 w-full text-left px-4 py-3 transition-colors duration-200 ease-in-out hover:bg-blue-50 flex items-center space-x-2 rounded-lg"
       >
         Courses
       </button>
-      <div className="relative inline-block" ref={adminDropdownRef}>
+      <div className="relative w-full" ref={adminDropdownRef}>
         <button
           onClick={() => setShowAdminDropdown(!showAdminDropdown)}
-          className="text-gray-600 hover:text-blue-600 w-full text-left px-4 py-2 flex items-center justify-between transition-colors duration-200 ease-in-out rounded-lg group hover:bg-gray-50"
+          className="text-gray-700 hover:text-blue-600 w-full text-left px-4 py-3 transition-colors duration-200 ease-in-out hover:bg-blue-50 flex items-center justify-between rounded-lg"
         >
           <span>Admin</span>
           <ChevronDown
-            className={`transform transition-transform duration-200 w-4 h-4 group-hover:text-blue-600 ${
-              showAdminDropdown ? 'rotate-180' : ''
+            className={`transform transition-transform duration-200 w-4 h-4 ${
+              showAdminDropdown ? 'rotate-180 text-blue-600' : ''
             }`}
           />
         </button>
         {showAdminDropdown && (
-          <div className="absolute left-0 w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+          <div className="md:absolute relative w-full md:w-56 mt-1 bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden z-50">
             {adminNavItems.map(({ path, label }) => (
               <button
                 key={path}
                 onClick={() => handleNavigation(path)}
-                className="w-full text-left px-6 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200 ease-in-out"
+                className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 ease-in-out border-b border-gray-50 last:border-0"
               >
                 {label}
               </button>
@@ -147,44 +141,60 @@ const Header: React.FC<HeaderProps> = ({
   );
 
   return (
-    <div className="flex bg-white">
-      <div
-        className={`flex-grow flex flex-col ${
-          isCollapsed ? 'ml-0 md:ml-20' : 'ml-0 md:ml-64'
-        } transition-all duration-300 ease-in-out`}
-      >
-        <header className="bg-white shadow-md p-4 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center sticky top-0 z-20 w-full transition-colors duration-200 ease-in-out">
+    <header className="sticky top-0 z-20 w-full bg-white shadow-md">
+      <div className="max-w-full mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-4">
           <div className="flex items-center justify-between w-full md:w-auto">
-            <h1 className="text-xl font-semibold text-gray-800">
-              Welcome, {loggedIn ? name : 'Guest'}
-            </h1>
+            <div className="flex items-center space-x-3">
+              <h1 className="text-xl font-semibold text-gray-800 tracking-tight">
+                Welcome, {loggedIn ? name : 'Guest'}
+              </h1>
+            </div>
             
-            <button
-              className="md:hidden text-gray-600 hover:text-blue-600 transition-colors duration-200 ease-in-out p-2 rounded-lg hover:bg-gray-50"
-              onClick={() => setShowMobileMenu(!showMobileMenu)}
-              aria-label="Toggle mobile menu"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
+            <div className="flex items-center space-x-2 md:hidden">
+              <button
+                className="relative p-2 text-gray-600 hover:text-blue-600 transition-colors duration-200 ease-in-out rounded-full hover:bg-blue-50"
+                onClick={() => setShowNotifications(!showNotifications)}
+                aria-label="Toggle notifications"
+              >
+                <Bell className="w-6 h-6" />
+                {notifications.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {notifications.length}
+                  </span>
+                )}
+              </button>
+              
+              <button
+                className="p-2 text-gray-600 hover:text-blue-600 transition-colors duration-200 ease-in-out rounded-full hover:bg-blue-50"
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
+                aria-label="Toggle mobile menu"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+            </div>
           </div>
 
+          {/* Mobile Menu */}
           <div
             ref={mobileMenuRef}
             className={`${
               showMobileMenu ? 'flex' : 'hidden'
-            } md:hidden flex-col w-full mt-4 bg-white rounded-lg space-y-1`}
+            } md:hidden flex-col w-full mt-4 bg-white rounded-xl space-y-1 overflow-hidden`}
           >
             <NavigationLinks />
           </div>
 
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-4">
             <NavigationLinks />
           </nav>
 
-          <div className={`flex items-center space-x-6 ${showMobileMenu ? 'w-full justify-end mt-4' : 'w-auto'}`}>
+          {/* Desktop Notifications & Profile */}
+          <div className="hidden md:flex items-center space-x-4">
             <div className="relative" ref={notificationsPanelRef}>
               <button
-                className="p-2 text-gray-600 hover:text-blue-600 transition-colors duration-200 ease-in-out rounded-lg hover:bg-gray-50"
+                className="p-2 text-gray-600 hover:text-blue-600 transition-colors duration-200 ease-in-out rounded-full hover:bg-blue-50"
                 onClick={() => setShowNotifications(!showNotifications)}
                 aria-label="Toggle notifications"
               >
@@ -196,18 +206,18 @@ const Header: React.FC<HeaderProps> = ({
                 )}
               </button>
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                  <div className="p-4 border-b border-gray-200">
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-100 z-50">
+                  <div className="p-3 border-b border-gray-100">
                     <h3 className="text-lg font-semibold text-gray-800">
                       Notifications
                     </h3>
                   </div>
-                  <ul className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
+                  <ul className="divide-y divide-gray-100 max-h-96 overflow-y-auto">
                     {notifications.length > 0 ? (
                       notifications.map((notification) => (
                         <li
                           key={notification.id}
-                          className="p-4 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200 ease-in-out"
+                          className="p-3 text-sm text-gray-700 hover:bg-blue-50 transition-colors duration-200 ease-in-out"
                         >
                           {notification.message}
                         </li>
@@ -224,7 +234,7 @@ const Header: React.FC<HeaderProps> = ({
 
             <div className="relative" ref={profileMenuRef}>
               <button
-                className="flex items-center space-x-2 p-1 rounded-full hover:ring-2 hover:ring-gray-200 transition-all duration-200 ease-in-out"
+                className="flex items-center space-x-2 p-1 rounded-full hover:ring-2 hover:ring-blue-100 transition-all duration-200 ease-in-out"
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 aria-label="Toggle profile menu"
               >
@@ -237,8 +247,8 @@ const Header: React.FC<HeaderProps> = ({
                 />
               </button>
               {showProfileMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                  <div className="p-4 border-b border-gray-200 text-center">
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 z-50 overflow-hidden">
+                  <div className="p-3 border-b border-gray-100 text-center bg-gray-50">
                     <p className="text-gray-800 font-semibold">
                       {name}
                     </p>
@@ -248,13 +258,13 @@ const Header: React.FC<HeaderProps> = ({
                   </div>
                   <ul>
                     <li
-                      className="p-3 hover:bg-gray-50 cursor-pointer text-gray-700 transition-colors duration-200 ease-in-out"
+                      className="p-3 hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition-colors duration-200 ease-in-out border-b border-gray-50"
                       onClick={() => handleNavigation('/profile')}
                     >
                       Profile
                     </li>
                     <li
-                      className="p-3 hover:bg-gray-50 cursor-pointer text-gray-700 transition-colors duration-200 ease-in-out"
+                      className="p-3 hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition-colors duration-200 ease-in-out"
                       onClick={handleLogoutClick}
                     >
                       Log Out
@@ -264,10 +274,43 @@ const Header: React.FC<HeaderProps> = ({
               )}
             </div>
           </div>
-        </header>
+
+          {/* Mobile Notifications Panel */}
+          {showNotifications && (
+            <div className="md:hidden fixed inset-0 bg-black bg-opacity-30 z-50">
+              <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-xl max-h-[80vh] overflow-y-auto">
+                <div className="sticky top-0 bg-white p-4 border-b border-gray-100 flex justify-between items-center">
+                  <h3 className="text-lg font-semibold text-gray-800">Notifications</h3>
+                  <button 
+                    onClick={() => setShowNotifications(false)}
+                    className="p-2 hover:bg-gray-100 rounded-full"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <ul className="divide-y divide-gray-100">
+                  {notifications.length > 0 ? (
+                    notifications.map((notification) => (
+                      <li
+                        key={notification.id}
+                        className="p-4 text-sm text-gray-700 hover:bg-blue-50 transition-colors duration-200 ease-in-out"
+                      >
+                        {notification.message}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="p-4 text-sm text-gray-500 text-center">
+                      No notifications
+                    </li>
+                  )}
+                </ul>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </header>
   );
 };
-  
+
 export default Header;
