@@ -127,7 +127,7 @@ const Login: React.FC = () => {
             </div> */}
 
             <h2 className="text-center text-3xl font-bold text-gray-800 mb-8">
-             Physiyoga
+            CureTribe
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-6">

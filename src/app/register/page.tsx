@@ -88,7 +88,7 @@ const Register: React.FC = () => {
           ← Back
         </button>
         <h2 className="text-gray-800 text-2xl font-bold uppercase mb-6">
-          Register for Physiyoga
+          Register for CureTribe
         </h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-6 text-left">
@@ -128,7 +128,7 @@ const Register: React.FC = () => {
             />
           </div>
           <div className="mb-6 text-left">
-            <label htmlFor="mobileOrEmail" className="block text-gray-700 text-sm font-medium mb-2">Mobile Number or Email</label>
+            <label htmlFor="mobileOrEmail" className="block text-gray-700 text-sm font-medium mb-2">Email</label>
             <input
               type="text"
               id="mobileOrEmail"
