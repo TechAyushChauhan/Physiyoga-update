@@ -78,7 +78,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const course = fields.course[0] as string;
       const additionalNotes = fields.additionalNotes[0] as string;
       const photo = Array.isArray(files.file) ? files.file[0] : files.file;
-      const refral = fields.refral[0] as string;
+      console.log(fields.refral)
+      const refral = fields.refral?fields.refral[0] as string : '';
       if (!photo || !photo.filepath) {
         return res.status(400).json({ message: 'Photo is required or file path is missing' });
       }
@@ -122,8 +123,8 @@ console.log(course ,"course")
         // Save payment details to the database with the S3 URL
         const newCourse = await db.collection('payment').insertOne({
           transactionId: transactionId,
-          userId: userId,
-          course:course,
+          userId: new ObjectId(userId),
+          course:new ObjectId(course),
           photo: uploadedFileUrl.Location, // S3 URL
           additionalNotes: additionalNotes,
         });
@@ -143,7 +144,55 @@ console.log(course ,"course")
   } 
 
   else 
+  if (req.method === 'PUT') {
+    const form = new IncomingForm(); // Initialize formidable form handler
   
+    form.parse(req, async (err, fields, files) => {
+      if (err) {
+        return res.status(500).json({ message: 'Error parsing the form data', error: err.message });
+      }
+  
+      // Access the fields and files from the form data
+      const { status, _id } = fields; // Status and id fields should be in the form data
+      console.log('Form data:', fields);
+      console.log('Files:', files);
+  
+      if (!_id || !status) {
+        return res.status(400).json({
+          type: 'E',
+          message: 'ID and status are required',
+        });
+      }
+  
+      // Now you can access the fields correctly (status and _id)
+      const { db } = await connectToDatabase();
+      try {
+        const updatedCourse = await db.collection('payment').updateOne(
+          { _id: new ObjectId(_id) },
+          { $set: { status } }
+        );
+  
+       console.log(updatedCourse)
+  
+        res.status(200).json({
+          type: 'S',
+          message: 'Course status updated successfully',
+          data: {
+            _id,
+            status,
+          },
+        });
+      } catch (err) {
+        console.error('Error updating course:', err);
+        res.status(500).json({
+          type: 'E',
+          message: 'Error updating course status',
+          error: err.message,
+        });
+      }
+    });
+  }
+  else
   
   if (req.method === 'GET') {
     const { db } = await connectToDatabase();
@@ -226,6 +275,7 @@ console.log(course ,"course")
               userId: 1,
               course:1,
               additionalNotes: 1,
+              status:1,
               photo: 1,
               username: { $ifNull: ['$userDetails.username', 'Unknown'] }, // Get the username from userDetails
               userEmail: { $ifNull: ['$userDetails.email', 'No email provided'] },
@@ -251,6 +301,6 @@ console.log(course ,"course")
       else {
       res.status(405).json({ message: 'Method Not Allowed' });
     }
-  };
+  }
 
 export default handler;

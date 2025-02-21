@@ -32,21 +32,24 @@ const AdminPaymentDashboard = () => {
       // Determine the endpoint based on the status
       const endpoint = newStatus === 'approved' 
         ? `/api/approve` 
-        : `/api/reject`;
+        : `/api/approve`;
   
-      const response = await fetch(endpoint, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          _id: requestId,
-          status: newStatus
-        }),
-      });
+        const response = await fetch('/api/approve', {
+          method: 'PUT', // Change from PUT to PATCH
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            _id: requestId,
+            status: newStatus,
+          }),
+        });
+        
   
       if (!response.ok) {
         throw new Error(`Failed to ${newStatus} payment`);
+      }else{
+        fetchPayments()
       }
   
       // Update local state

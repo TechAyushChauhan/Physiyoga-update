@@ -83,7 +83,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   } else if (req.method === 'GET') {
     const { db } = await connectToDatabase();
-    const { id } = req.query;
+    const { id  ,userId} = req.query;
 
     if (id) {
       console.log(id, "id");
@@ -113,7 +113,75 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         console.error('Error retrieving course:', err);
         res.status(500).json({ message: 'Error retrieving course', error: err.message });
       }
-    } else {
+    } else if (userId) {
+      console.log(userId,'userId')
+      
+      try {
+        const { db } = await connectToDatabase();
+        // const courses = await db.collection<Courses>('courses')
+        //   .find({}, { projection: { playlist: 0 } })
+        //   .toArray();
+        const courses = await db.collection('courses')
+        .aggregate([
+          {
+            $lookup: {
+              from: 'payment',           // The collection to join with
+              localField: '_id',          // The field from 'courses' collection to join on
+              foreignField: 'course',     // The field from 'payments' collection to join on
+              as: 'paymentDetails'        // Alias for the joined result
+            }
+          },
+          {
+            $addFields: {
+              status: {
+                $cond: {
+                  if: { $gt: [{ $size: "$paymentDetails" }, 0] }, // If there are payment details
+                  then: {
+                    $ifNull: [{ $arrayElemAt: ["$paymentDetails.status", 0] }, "pending"] // Get first payment status or default to "pending"
+                  },
+                  else: null  // No payments, set status to null
+                }
+              }
+            }
+          },
+          {
+            $addFields: {
+              paymentDetails: {
+                $map: {
+                  input: "$paymentDetails",
+                  as: "payment",
+                  in: {
+                    $mergeObjects: [
+                      "$$payment", 
+                      {
+                        status: {
+                          $ifNull: ["$$payment.status", "not found"]  // If status is missing in a payment, set to "not found"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            $project: {
+              playlist: 0  // Exclude the playlist field
+            }
+          }
+        ])
+        .toArray();
+        res.status(200).json({
+          type: 'S',
+          message: 'Courses retrieved successfully',
+          data: courses,
+        });
+      } catch (err) {
+        console.error('Error retrieving courses:', err);
+        res.status(500).json({ message: 'Error retrieving courses', error: err.message });
+      }
+      
+    }else{
       // Get all courses if no ID is provided
       try {
         const { db } = await connectToDatabase();

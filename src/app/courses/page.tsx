@@ -5,7 +5,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { setloader } from "../../../store/slices/loaderSlice";
-import { useAppDispatch } from "../../../lib/hooks";
+import { useAppDispatch, useAppSelector } from "../../../lib/hooks";
 import LoginNavbar from "../Components/loginnavbar/page";
 import LoginFooter from "../Components/loginfooter/page";
 import CoursesComponent from "../Components/course/page";
@@ -34,15 +34,19 @@ const notifications = [
 ];
 
 const Courses: React.FC = () => {
+
   const dispatch= useAppDispatch()
+  const userid= useAppSelector((state) => state.user);
+  console.log(userid)
   const [userCourses,setuserCourses] = useState([]); 
- 
+
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const router = useRouter();
 
   
-  const getCourses = useCallback(async (): Promise<any> => {
+  const getCourses = async (): Promise<any> => {
+    console.log(userid,'frontend user')
     dispatch(setloader(true));
     try {
       const response = await fetch('/api/addcourse', {
@@ -61,11 +65,15 @@ const Courses: React.FC = () => {
     } finally {
       dispatch(setloader(false));
     }
-  }, [dispatch]);
+  }
 
   useEffect(() => {
     getCourses();
-  }, [getCourses]); 
+  }, []); 
+  
+  useEffect(() => {
+    getCourses();
+  }, [userid]); 
 
   const handleLogout = () => {
       localStorage.removeItem("token");

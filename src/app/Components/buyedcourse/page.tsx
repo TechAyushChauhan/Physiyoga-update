@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { setloader } from "../../../../store/slices/loaderSlice";
-import { useAppDispatch } from "../../../../lib/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../lib/hooks";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Progress } from "../ui/progress";
 import { Button } from "../ui/button";
@@ -36,12 +36,16 @@ const Buyedcourses: React.FC = () => {
   const [userCourses, setUserCourses] = useState<Course[]>([]);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
+   const userid= useAppSelector((state) => state.user);
+   
 
   // Use useCallback to memoize the getCourses function
   const getCourses = useCallback(async (): Promise<void> => {
     dispatch(setloader(true));
     try {
-      const response = await fetch('/api/addcourse', {
+      const data=userid.id?`?userId=${userid.id}`:''
+      //
+      const response = await fetch('/api/addcourse'+data, {
         method: 'GET',
       });
 
