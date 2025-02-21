@@ -86,19 +86,100 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     
       const courseObjectId = new ObjectId(courseId);
     
-      const course = await db.collection('courses').find({ _id: courseObjectId }).toArray();
+      const course = await db.collection('courses')
+      .aggregate([
+        {
+          $match: { _id: courseObjectId } // Match the course by its _id
+        },
+        {
+          $lookup: {
+            from: 'payment',  // The collection to join with
+            localField: '_id', // The field from 'courses' collection to join on
+            foreignField: 'course',  // The field from 'payments' collection to join on
+            as: 'paymentDetails',
+            pipeline: [
+              {
+                $match: { userId: watchedByID } // Match payments for the specific user (watchedBy)
+              }
+            ]
+          }
+        },
+        {
+          $addFields: {
+            status: {
+              $cond: {
+                if: { $gt: [{ $size: "$paymentDetails" }, 0] }, // If there are payment details
+                then: {
+                  $ifNull: [{ $arrayElemAt: ["$paymentDetails.status", 0] }, "pending"] // Get the first payment status or default to "pending"
+                },
+                else: null // No payments, set status to null
+              }
+            }
+          }
+        },
+        {
+          $addFields: {
+            paymentDetails: {
+              $map: {
+                input: "$paymentDetails",
+                as: "payment",
+                in: {
+                  $mergeObjects: [
+                    "$$payment",
+                    {
+                      status: {
+                        $ifNull: ["$$payment.status", "not found"] // If status is missing, set it to "not found"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          $addFields: {
+            playlist: {
+              $map: {
+                input: "$playlist", // Iterate over each playlist item
+                as: "item",
+                in: {
+                  $mergeObjects: [
+                    "$$item", 
+                    {
+                      watchedBy: {
+                        $filter: {
+                          input: "$$item.watchedBy", // Filter the watchedBy array in the playlist
+                          as: "watchedByUser",
+                          cond: { $eq: ["$$watchedByUser", watchedBy] } // Only include the user ID that matches
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ])
+      .toArray();
     
-      if (course.length === 0) {
-        return res.status(404).json({ message: 'Course not found' });
-      }
+    console.log(course)
+    
+      // if (course.length === 0) {
+      //   return res.status(404).json({ message: 'Course not found' });
+      // }
   
       const transformedCourse = course.map(courseItem => {
-        const groupedPlaylist = courseItem.playlist.reduce((acc, item) => {
+        // Check if playlist is null or undefined, and initialize it as an empty array if so
+        const playlist = courseItem.playlist || [];
+      
+        const groupedPlaylist = playlist.reduce((acc, item) => {
           const normalizedDay = item.day.padStart(2, '0'); // Ensure day is always 2 digits
           if (!acc[normalizedDay]) {
             acc[normalizedDay] = [];
           }
-  
+      
           // If `watchedBy` is provided, filter the items by the user
           if (watchedByID) {
             if (item.watchedBy && item.watchedBy.includes(watchedByID.toString())) {
@@ -116,19 +197,29 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             // If no `watchedBy` is provided, include all items for that day
             acc[normalizedDay].push(item);
           }
-  
+      
           return acc;
         }, {});
-  
+      
+        // Sort the groupedPlaylist by day number, not as string
+        const sortedPlaylist = Object.keys(groupedPlaylist)
+          .sort((a, b) => parseInt(a) - parseInt(b))  // Sorting by numeric value of days
+          .reduce((acc, key) => {
+            acc[key] = groupedPlaylist[key];
+            return acc;
+          }, {});
+      
         return {
           _id: courseItem._id,
           title: courseItem.title,
           description: courseItem.description,
           photo: courseItem.photo,
           pay: courseItem.pay,
-          playlist: groupedPlaylist, // Return the grouped playlist for the course
+          status: courseItem.status,
+          playlist: sortedPlaylist, // Return the sorted playlist for the course
         };
       });
+      
   
       res.status(200).json({
         type: 'S',

@@ -5,11 +5,47 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { Courses } from './../../models/addcourse';
 import { connectToDatabase } from '../../lib/mongodb';
 import { ObjectId } from 'mongodb';
+import AWS from 'aws-sdk';
+// import fs from 'fs';
+// import path from 'path';
+
+// Set up AWS S3 client
+const s3 = new AWS.S3();
 // Disable Next.js's body parsing to allow Formidable to handle it
 export const config = {
   api: {
     bodyParser: false, // Disable Next.js's default body parser
   },
+};
+const filePath = path.join(__dirname, 'myfile.txt');
+const bucketName = 'curetribevideo';
+const keyName = '6GitgH1vV5vHuVsJk/0MWZfrSfDGbTGYI2GOPWX9';
+
+// Function to upload the file
+const uploadFile = async (file,filename) => {
+  try {
+    console.log('File details:', file); // Add this to log the file object
+    
+    if (!file || !file.filepath) {
+      throw new Error('File path is missing');
+    }
+
+    // Read the file content as a buffer
+    const fileBuffer = fs.readFileSync(file.filepath);
+    
+    const obj = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: filename, // Ensure the key has a proper path
+      Body: fileBuffer, // Use fileBuffer here
+      ContentType: file.mimetype, // Optional, but good to specify
+    };
+
+    // Upload the file to S3
+    return await s3.upload(obj).promise();
+    console.log(`File uploaded successfully: ${data.Location}`);
+  } catch (error) {
+   return false
+  }
 };
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -17,25 +53,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const form = new IncomingForm();
     const { db } = await connectToDatabase();
 
-    // Determine the upload directory based on the environment (production vs development)
-    // const uploadDir = process.env.NODE_ENV_test === 'production'
-    //   ? '/tmp/uploads'  // Use /tmp in production (serverless environments like Vercel)
-    //   : path.join(process.cwd(), 'public', 'uploads');  // Local development directory
-   const uploadDir = process.env.NODE_ENV_test === 'production' 
-   ? '/tmp/uploads' // Use /tmp in production (serverless environments like Vercel)
-   : path.join(process.cwd(), 'uploads');
-    // Ensure the upload directory exists
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
     // Set up the Formidable form configuration
-    form.uploadDir = uploadDir;
     form.keepExtensions = true;
 
     // Parse the incoming request
     form.parse(req, async (err, fields, files) => {
       if (err) {
+        console.error('Form parsing error:', err);  // Log form parsing error
         return res.status(500).json({ message: 'Error parsing the form data', error: err.message });
       }
 
@@ -43,45 +67,44 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const courseDescription = fields.description[0] as string;
       const coursepay = fields.price[0] as string;
 
+      // Check if the photo exists in the files object
       const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
 
       if (!photo || !photo.filepath) {
+        console.error('Photo is missing or file path is incorrect');
         return res.status(400).json({ message: 'Photo is required or file path is missing' });
       }
 
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
       const fileExtension = path.extname(photo.originalFilename || '');
       const newFilename = uniqueSuffix + fileExtension;
-      const filePath = path.join(uploadDir, newFilename);
 
       try {
-        // Rename the file to the new file path
-        fs.renameSync(photo.filepath, filePath);
-
-        // Create the path for accessing the uploaded file
-        const photoPath = `/uploads/${newFilename}`;  // Path for accessing the uploaded photo
-        console.log(courseTitle, courseDescription, photoPath);
-
-        // Save course details to the database
-        const newCourse = await db.collection<Courses>('courses').insertOne({
+        // Upload the file directly to S3
+        const uploadedFileUrl = await uploadFile(photo, newFilename);
+console.log(uploadedFileUrl)
+        // Save course details to the database with the S3 URL
+        const newCourse = await db.collection('courses').insertOne({
           title: courseTitle,
           description: courseDescription,
-          photo: photoPath,
-          pay:Number(coursepay)
+          photo: uploadedFileUrl.Location, // Store the S3 URL
+          pay: Number(coursepay),
         });
 
         // Respond with success and the uploaded file path
         res.status(200).json({
-          type: "S",
+          type: 'S',
           message: 'Course Added successfully',
           data: newCourse, // Return the MongoDB course ID and data
         });
       } catch (dbError) {
-        console.error('Error saving course to MongoDB:', dbError);
+        console.error('Error saving course to MongoDB:', dbError);  // Log database error
         res.status(500).json({ message: 'Error saving course to MongoDB', error: dbError.message });
       }
     });
-  } else if (req.method === 'GET') {
+  }
+  
+  else if (req.method === 'GET') {
     const { db } = await connectToDatabase();
     const { id  ,userId} = req.query;
 
@@ -118,26 +141,32 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       
       try {
         const { db } = await connectToDatabase();
-        // const courses = await db.collection<Courses>('courses')
+        console.log(userId)
+       
         //   .find({}, { projection: { playlist: 0 } })
         //   .toArray();
         const courses = await db.collection('courses')
         .aggregate([
           {
             $lookup: {
-              from: 'payment',           // The collection to join with
-              localField: '_id',          // The field from 'courses' collection to join on
-              foreignField: 'course',     // The field from 'payments' collection to join on
-              as: 'paymentDetails'        // Alias for the joined result
+              from: 'payment',  // The collection to join with
+              localField: '_id', // The field from 'courses' collection to join on
+              foreignField: 'course',  // The field from 'payments' collection to join on
+              as: 'paymentDetails',
+              pipeline: [
+                {
+                  $match: { userId: new ObjectId(userId) } // Convert userId to ObjectId for comparison
+                }
+              ]
             }
           },
           {
             $addFields: {
               status: {
                 $cond: {
-                  if: { $gt: [{ $size: "$paymentDetails" }, 0] }, // If there are payment details
+                  if: { $gt: [{ $size: "$paymentDetails" }, 0] },  // If there are payment details
                   then: {
-                    $ifNull: [{ $arrayElemAt: ["$paymentDetails.status", 0] }, "pending"] // Get first payment status or default to "pending"
+                    $ifNull: [{ $arrayElemAt: ["$paymentDetails.status", 0] }, "pending"]  // Get first payment status or default to "pending"
                   },
                   else: null  // No payments, set status to null
                 }

@@ -56,8 +56,8 @@ const Buyedcourses: React.FC = () => {
    const userid= useAppSelector((state) => state.user);
    
   const [isLoading, setIsLoading] = useState(true);
-
-  const getCourses = useCallback(async (): Promise<void> => {
+console.log(userCourses)
+  const getCourses = async (): Promise<void> => {
     dispatch(setloader(true));
     setIsLoading(true);
     try {
@@ -83,11 +83,13 @@ const Buyedcourses: React.FC = () => {
       dispatch(setloader(false));
       setIsLoading(false);
     }
-  }, [dispatch]);
+  };
+
 
   useEffect(() => {
     getCourses();
-  }, [getCourses]);
+
+  }, [userid]);
 
   const convertPrice = (priceInINR: number | undefined) => {
     if (!priceInINR) return null;
@@ -98,7 +100,7 @@ const Buyedcourses: React.FC = () => {
       value: convertedPrice.toFixed(2)
     };
   };
-
+console.log(userCourses,"djsn")
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-indigo-50">
      
@@ -179,9 +181,9 @@ const Buyedcourses: React.FC = () => {
                         />
                       )}
                     </div>
-                    {course.pay && (
+                    {(course.status && course.status!=="approved")&& (
                       <Badge className="absolute top-4 right-4 bg-gradient-to-r from-violet-600 to-indigo-600 px-4 py-1.5 text-white font-medium rounded-full shadow-lg">
-                        PREMIUM
+                       { course.status}
                       </Badge>
                     )}
                   </CardHeader>
@@ -193,7 +195,7 @@ const Buyedcourses: React.FC = () => {
                       {course.description}
                     </p>
                     
-                    {course.pay && (
+                    {(( course.status!=="approved") && course.pay) && (
                       <div className="flex items-center justify-center text-violet-700 font-bold text-2xl mt-4">
                         <span className="mr-1">{convertPrice(course.pay)?.symbol}</span>
                         <span>{convertPrice(course.pay)?.value}</span>
@@ -210,13 +212,13 @@ const Buyedcourses: React.FC = () => {
                       >
                         View Course
                       </Button>
-                      <Button
+                   {( course.status!=="approved") &&   <Button
                         variant="outline"
                         className="flex-1 border-violet-200 text-violet-700 hover:bg-violet-50 font-medium py-6 rounded-xl transition-all duration-300"
                         onClick={() => router.push(`/buy?courseID=${course._id}`)}
                       >
                         Buy Now
-                      </Button>
+                      </Button>}
                     </div>
                   </CardContent>
                 </Card>

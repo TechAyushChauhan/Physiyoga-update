@@ -78,7 +78,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const course = fields.course[0] as string;
       const additionalNotes = fields.additionalNotes[0] as string;
       const photo = Array.isArray(files.file) ? files.file[0] : files.file;
-      console.log(fields.refral)
+    
       const refral = fields.refral?fields.refral[0] as string : '';
       if (!photo || !photo.filepath) {
         return res.status(400).json({ message: 'Photo is required or file path is missing' });
@@ -119,21 +119,39 @@ if (user) {
         if (!uploadedFileUrl) {
           return res.status(500).json({ message: 'Error uploading file to S3' });
         }
-console.log(course ,"course")
-        // Save payment details to the database with the S3 URL
-        const newCourse = await db.collection('payment').insertOne({
-          transactionId: transactionId,
+        const existingPayment = await db.collection('payment').findOne({
           userId: new ObjectId(userId),
-          course:new ObjectId(course),
-          photo: uploadedFileUrl.Location, // S3 URL
-          additionalNotes: additionalNotes,
+          course: new ObjectId(course),
         });
+        let data:any
+        if (existingPayment) {
+          // If the payment exists, update it
+           data = await db.collection('payment').updateOne(
+            { _id: existingPayment._id }, // Match the existing document
+            {
+              $set: {
+                transactionId: transactionId,
+                photo: uploadedFileUrl.Location, // S3 URL
+                additionalNotes: additionalNotes,
+                status:null
+              },
+            }
+          );
+          console.log('Payment updated', data);
+        } else {  const data = await db.collection('payment').insertOne({
+    transactionId: transactionId,
+    userId: new ObjectId(userId),
+    course: new ObjectId(course),
+    photo: uploadedFileUrl.Location, // S3 URL
+    additionalNotes: additionalNotes,
+  });
+  console.log('Payment inserted', data);}
 
         // Respond with success
         return res.status(200).json({
           type: "S",
           message: 'Course Added successfully',
-          data: newCourse, // Return the MongoDB course ID and data
+          data: data, // Return the MongoDB course ID and data
         });
       } catch (dbError) {
         console.error('Error saving course to MongoDB:', dbError);

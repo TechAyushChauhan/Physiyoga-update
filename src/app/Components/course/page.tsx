@@ -261,6 +261,7 @@ const CoursesComponent: React.FC = () => {
               {userCourses.map((course) => (
                 <Card key={course._id} className="group overflow-hidden rounded-xl border border-indigo-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-white">
                   <CardHeader className="relative overflow-hidden h-52 p-0 bg-indigo-50">
+                  {(course.photo)}
                     {course.photo ? (
                       <img 
                         src={course.photo} 
