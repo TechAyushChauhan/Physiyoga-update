@@ -86,7 +86,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       if(refral && refral!==''){
         
         const user = await db.collection('users').findOne({ referralCode: refral });
-console.log(user);
+
 
 if (user) {
   // Check if 'referred' exists
@@ -182,9 +182,26 @@ if (user) {
         });
       }
   
-      // Now you can access the fields correctly (status and _id)
       const { db } = await connectToDatabase();
       try {
+        const data=await db.collection('payment').findOne( { _id: new ObjectId(_id) },)
+        console.log(data,"dkn")
+        const existingMeeting = await db.collection('coursemeetings').findOne({
+          userId: new ObjectId(data.userId),
+          courseId: new ObjectId(data.course),
+        });
+        console.log(existingMeeting,"dkn",!existingMeeting)
+        if (!existingMeeting) {
+         
+     
+          const meeting = await db.collection('coursemeetings').insertOne({
+            userId: new ObjectId(data.userId),
+            courseId: new ObjectId(data.course),
+            meetingDate:  null,
+            day:1,
+            meetingLink:""
+          });
+      }
         const updatedCourse = await db.collection('payment').updateOne(
           { _id: new ObjectId(_id) },
           { $set: { status } }
@@ -217,14 +234,10 @@ if (user) {
     const { id } = req.query;
 
     if (id) {
-      console.log(id, "id");
-
-  // Ensure id is a single string
-  // const courseId = Array.isArray(id) ? id[0] : id;
-      // Get a specific course by ID
+     
       try {
         const course = await db.collection<Courses>('payment').find().toArray();
-        console.log(course, 'course');
+       
         if (!course) {
           return res.status(404).json({
             type: 'E',
@@ -270,7 +283,7 @@ if (user) {
               preserveNullAndEmptyArrays: true // If there's no match, preserve the original document
             }
           },
-          // Perform the lookup to join with the courses collection
+        
           {
             $lookup: {
               from: 'courses', // The courses collection name

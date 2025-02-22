@@ -5,6 +5,7 @@ import Image from "next/image";
 import Videoplayer from "./../../Components/videoplayer/vid";
 import { useAppSelector } from "../../../../lib/hooks";
 import { setUser } from '../../../../store/slices/userSlice';
+import { tree } from "next/dist/build/templates/app-page";
 const CoursePages: React.FC = () => {
 
   const data = useAppSelector((state) => state.user);
@@ -230,6 +231,7 @@ console.log(data)
       setVideoUrl(blobUrl);
     }
   };
+  console.log(coursedet?.courseMeetings ? coursedet.courseMeetings[0] : 0, "fkdm");
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -324,8 +326,8 @@ console.log(data)
             <span className="font-medium">Share & Earn</span>
           </button>
         </div>
+{coursedet?.courseMeetings  && <button>{`DAY ${coursedet?.courseMeetings[0].day}` }</button>}
 
-        {/* Course Content Section */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="border-b border-gray-200 p-6">
             <h2 className="text-xl font-bold text-gray-900">Course Content</h2>

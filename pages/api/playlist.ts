@@ -138,6 +138,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           }
         },
         {
+          $lookup: {
+            from: 'coursemeetings', // Join with the 'coursemeetings' collection
+            localField: '_id', // The field from 'courses' collection to join on
+            foreignField: 'courseId', // The field from 'coursemeetings' collection to join on
+            as: 'courseMeetings' // The result will be in the 'courseMeetings' field
+          }
+        },
+        {
           $addFields: {
             playlist: {
               $map: {
@@ -164,11 +172,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       ])
       .toArray();
     
-    console.log(course)
+    console.log(course[0].courseMeetings)
     
-      // if (course.length === 0) {
-      //   return res.status(404).json({ message: 'Course not found' });
-      // }
+      
   
       const transformedCourse = course.map(courseItem => {
         // Check if playlist is null or undefined, and initialize it as an empty array if so
@@ -212,6 +218,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return {
           _id: courseItem._id,
           title: courseItem.title,
+          courseMeetings:course[0].courseMeetings || null,
           description: courseItem.description,
           photo: courseItem.photo,
           pay: courseItem.pay,
