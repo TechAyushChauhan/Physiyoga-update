@@ -1,17 +1,29 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Clock, Link, Send, Check, X, Search, Users } from 'lucide-react';
 import LoginNavbar from "../Components/loginnavbar/page";
 import LoginFooter from "../Components/loginfooter/page";
-
+import ScheduleSection from './schedulegetallcomponent';
 
 interface User {
-  id: number;
+  _id: string;
+  username: string;
+  mobileOrEmail: string;
+}
+
+interface MeetingParticipant {
+  userid: string;
   name: string;
   email: string;
-  department: string;
-  avatar: string;
+}
+
+interface MeetingSchedule {
+  topic: string;
+  start_time: string;
+  duration: string;
+  link: string;
+  participants: MeetingParticipant[];
 }
 
 interface ToastProps {
@@ -36,17 +48,12 @@ const Toast: React.FC<ToastProps> = ({ message, type }) => (
 );
 
 const MeetingInvitePage: React.FC = () => {
-  const dummyUsers: User[] = [
-    { id: 1, name: 'John Smith', email: 'john.smith@example.com', department: 'Engineering', avatar: 'JS' },
-    { id: 2, name: 'Sarah Johnson', email: 'sarah.j@example.com', department: 'Marketing', avatar: 'SJ' },
-    { id: 3, name: 'Michael Brown', email: 'michael.b@example.com', department: 'Sales', avatar: 'MB' },
-    { id: 4, name: 'Emma Wilson', email: 'emma.w@example.com', department: 'Design', avatar: 'EW' },
-    { id: 5, name: 'David Lee', email: 'david.lee@example.com', department: 'Engineering', avatar: 'DL' },
-  ];
-
+  const [users, setUsers] = useState<User[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [meetingLink, setMeetingLink] = useState('');
   const [meetingTime, setMeetingTime] = useState('');
+  const [meetingTopic, setMeetingTopic] = useState('');
+  const [meetingDuration, setMeetingDuration] = useState('30min');
   const [searchTerm, setSearchTerm] = useState('');
   const [toast, setToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({
     show: false,
@@ -54,16 +61,60 @@ const MeetingInvitePage: React.FC = () => {
     type: 'success'
   });
 
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    const token = localStorage.getItem('authToken');
+    
+    if (!token) {
+      setToast({
+        show: true,
+        message: 'Authentication token not found. Please login again.',
+        type: 'error'
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3000/api/user', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.type === 'S') {
+        setUsers(data.data);
+      } else {
+        setToast({
+          show: true,
+          message: data.msg || 'Failed to fetch users',
+          type: 'error'
+        });
+      }
+    } catch (error) {
+      setToast({
+        show: true,
+        message: 'Error fetching users. Please try again.',
+        type: 'error'
+      });
+    }
+  };
+
   const handleUserSelect = (user: User) => {
     setSelectedUsers(prev => 
-      prev.find(u => u.id === user.id)
-        ? prev.filter(u => u.id !== user.id)
+      prev.find(u => u._id === user._id)
+        ? prev.filter(u => u._id !== user._id)
         : [...prev, user]
     );
   };
 
   const handleSendInvites = async () => {
-    if (!meetingLink || !meetingTime || selectedUsers.length === 0) {
+    if (!meetingLink || !meetingTime || !meetingTopic || selectedUsers.length === 0) {
       setToast({
         show: true,
         message: 'Please fill in all fields and select at least one user',
@@ -73,42 +124,86 @@ const MeetingInvitePage: React.FC = () => {
       return;
     }
 
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+    const token = localStorage.getItem('authToken');
+    
+    if (!token) {
       setToast({
         show: true,
-        message: 'Invites sent successfully!',
-        type: 'success'
+        message: 'Authentication token not found. Please login again.',
+        type: 'error'
       });
-      
-      // Reset form
-      setSelectedUsers([]);
-      setMeetingLink('');
-      setMeetingTime('');
-      
-      setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3000);
+      return;
+    }
+
+    // Format the meeting schedule data according to the API schema
+    const meetingSchedule: MeetingSchedule = {
+      topic: meetingTopic,
+      start_time: new Date(meetingTime).toISOString(),
+      duration: meetingDuration,
+      link: meetingLink,
+      participants: selectedUsers.map(user => ({
+        userid: user._id,
+        name: user.username,
+        email: user.mobileOrEmail
+      }))
+    };
+
+    try {
+      const response = await fetch('http://localhost:3000/api/schedule', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(meetingSchedule)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setToast({
+          show: true,
+          message: 'Meeting scheduled successfully!',
+          type: 'success'
+        });
+        
+        // Reset form
+        setSelectedUsers([]);
+        setMeetingLink('');
+        setMeetingTime('');
+        setMeetingTopic('');
+      } else {
+        throw new Error(data.msg || 'Failed to schedule meeting');
+      }
     } catch (error) {
       setToast({
         show: true,
-        message: 'Failed to send invites. Please try again.',
+        message: error instanceof Error ? error.message : 'Failed to schedule meeting. Please try again.',
         type: 'error'
       });
+    } finally {
       setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3000);
     }
   };
 
-  const filteredUsers = dummyUsers.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.department.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = users.filter(user =>
+    user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.mobileOrEmail?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const getInitials = (username: string) => {
+    return username
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-              <LoginNavbar />
-
+      <LoginNavbar />
+      <ScheduleSection />
       {/* Header */}
       <div className="bg-white border-b sticky top-0 z-10 backdrop-blur-lg bg-opacity-90">
         <div className="max-w-4xl mx-auto px-4 py-4">
@@ -126,6 +221,21 @@ const MeetingInvitePage: React.FC = () => {
             <h2 className="text-lg font-semibold text-gray-800">Meeting Details</h2>
           </div>
           <div className="p-6 space-y-6">
+            {/* Meeting Topic */}
+            <div className="group">
+              <label className="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors">
+                Meeting Topic
+              </label>
+              <input
+                type="text"
+                value={meetingTopic}
+                onChange={(e) => setMeetingTopic(e.target.value)}
+                placeholder="Enter meeting topic"
+                className="block w-full px-3 py-2.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 bg-gray-50 focus:bg-white"
+              />
+            </div>
+
+            {/* Meeting Link */}
             <div className="group">
               <label className="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors">
                 Meeting Link
@@ -144,6 +254,7 @@ const MeetingInvitePage: React.FC = () => {
               </div>
             </div>
             
+            {/* Meeting Time */}
             <div className="group">
               <label className="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors">
                 Meeting Time
@@ -159,6 +270,25 @@ const MeetingInvitePage: React.FC = () => {
                   className="block w-full pl-10 pr-3 py-2.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 bg-gray-50 focus:bg-white"
                 />
               </div>
+            </div>
+
+            {/* Meeting Duration */}
+            <div className="group">
+              <label className="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors">
+                Duration
+              </label>
+              <select
+                value={meetingDuration}
+                onChange={(e) => setMeetingDuration(e.target.value)}
+                className="block w-full px-3 py-2.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 bg-gray-50 focus:bg-white"
+              >
+                <option value="15min">15 minutes</option>
+                <option value="30min">30 minutes</option>
+                <option value="45min">45 minutes</option>
+                <option value="60min">1 hour</option>
+                <option value="90min">1.5 hours</option>
+                <option value="120min">2 hours</option>
+              </select>
             </div>
           </div>
         </div>
@@ -193,13 +323,13 @@ const MeetingInvitePage: React.FC = () => {
                 <div className="flex flex-wrap gap-2">
                   {selectedUsers.map(user => (
                     <div
-                      key={user.id}
+                      key={user._id}
                       className="bg-white text-blue-800 px-3 py-1.5 rounded-full text-sm flex items-center border shadow-sm hover:shadow-md transition-all duration-200 group"
                     >
                       <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-medium mr-2 group-hover:scale-110 transition-transform">
-                        {user.avatar}
+                        {getInitials(user.username)}
                       </span>
-                      {user.name}
+                      {user.username}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -219,27 +349,24 @@ const MeetingInvitePage: React.FC = () => {
             <div className="space-y-3 max-h-96 overflow-y-auto rounded-xl">
               {filteredUsers.map(user => (
                 <div
-                  key={user.id}
+                  key={user._id}
                   onClick={() => handleUserSelect(user)}
                   className={`p-4 rounded-xl cursor-pointer transition-all duration-200 transform hover:scale-[1.01] active:scale-[0.99] ${
-                    selectedUsers.find(u => u.id === user.id)
+                    selectedUsers.find(u => u._id === user._id)
                       ? 'bg-gradient-to-r from-blue-50 to-white border-blue-200 border shadow-sm'
                       : 'hover:bg-gray-50 border border-gray-200'
                   }`}
                 >
                   <div className="flex items-center space-x-4">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 text-blue-600 flex items-center justify-center text-sm font-medium transform hover:scale-110 transition-transform">
-                      {user.avatar}
+                      {getInitials(user.username)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-800 truncate">{user.name}</p>
-                      <p className="text-sm text-gray-500 truncate">{user.email}</p>
+                      <p className="font-medium text-gray-800 truncate">{user.username}</p>
+                      <p className="text-sm text-gray-500 truncate">{user.mobileOrEmail}</p>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <span className="text-sm text-gray-600 bg-gradient-to-r from-gray-100 to-white px-3 py-1 rounded-full hidden sm:inline-block">
-                        {user.department}
-                      </span>
-                      {selectedUsers.find(u => u.id === user.id) && (
+                      {selectedUsers.find(u => u._id === user._id) && (
                         <Check className="w-5 h-5 text-blue-500 flex-shrink-0 animate-scale-check" />
                       )}
                     </div>
@@ -262,6 +389,7 @@ const MeetingInvitePage: React.FC = () => {
           </div>
         </div>
       </div>
+
 
       {/* Toast Notification */}
       {toast.show && <Toast message={toast.message} type={toast.type} />}
