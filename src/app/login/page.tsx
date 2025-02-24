@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, FormEvent, useCallback } from "react";
 import { useRouter } from "next/navigation";
 // import { useAppDispatch, useAppSelector } from "../../../lib/hooks";
 import { callApi } from "../../../lib/callApi";
 import toast, { Toaster } from "react-hot-toast";
 import { Lock, User, ArrowLeft, LogIn, Eye, EyeOff } from "lucide-react";
+import { setUser } from "../../../store/slices/userSlice";
+import { useAppDispatch } from "../../../lib/hooks";
 
 interface FormData {
   username: string;
@@ -14,7 +16,7 @@ interface FormData {
 
 const Login: React.FC = () => {
   const router = useRouter();
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
   // Hydration-safe state management
   const [isClient, setIsClient] = useState(false);
@@ -43,6 +45,37 @@ const Login: React.FC = () => {
     // Clear error when user starts typing
     if (error) setError("");
   };
+    const fetchUser = useCallback(async (token: string): Promise<void> => {
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+    
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+    
+        const userData:any= await response.json();
+        console.log(userData)
+        dispatch(setUser({
+          name: userData.user.name || null,
+          refid: userData.user.referralCode || null,
+          loggedIn: userData.type === "S" ? true : false,
+          id:userData.user.id || null,
+        }));
+        
+        console.log(userData); // This contains the user details if successful
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error('Error fetching user:', error.message);
+        }
+        throw error;
+      }
+    }, [dispatch]); 
 
   const handleLogin = async () => {
     setIsLoading(true);
@@ -61,6 +94,7 @@ const Login: React.FC = () => {
       }
       localStorage.setItem('authToken', user.token);
       router.push("/dashboard");
+      fetchUser( user.token)
       // Store token or user info if needed
       //   localStorage.setItem('userToken', user.token || '');
       

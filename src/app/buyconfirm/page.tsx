@@ -251,7 +251,7 @@ const PaymentDetailsPage = () => {
                 <h3 className="font-semibold text-blue-800 mb-2 text-lg">Course: {courseName}</h3>
                 <div className="flex justify-between items-center mb-3">
                   <p className="text-black text-sm">Price:</p>
-                  <p className="text-black font-bold text-lg">${courseFees}</p>
+                  <p className="text-black font-bold text-lg">₹{courseFees}</p>
                 </div>
                 <div className="pt-3 border-t border-blue-200">
                   <h4 className="font-medium text-blue-800 mb-2">Payment Instructions:</h4>

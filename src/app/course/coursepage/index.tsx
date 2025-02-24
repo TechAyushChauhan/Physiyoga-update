@@ -18,7 +18,8 @@ const CoursePages: React.FC = () => {
   const { name, refid, loggedIn,id } = useAppSelector((state) => state.user);
   const userid= useAppSelector((state) => state.user);
   console.log(userid.id,"id outside")
-  
+  const [showMeetings, setShowMeetings] = useState(false);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { loading } = useAppSelector((state) => state.loader);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -327,6 +328,33 @@ console.log(data)
           </button>
         </div>
 {coursedet?.courseMeetings  && <button>{`DAY ${coursedet?.courseMeetings[0].day}` }</button>}
+<div className="p-4">
+  <button
+    onClick={() => setShowMeetings(!showMeetings)}
+    className="bg-blue-600 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-700 transition"
+  >
+    {showMeetings ? "Hide Meetings" : "See All Meetings"}
+  </button>
+
+  {showMeetings && coursedet?.courseMeetings?.length > 0 && (
+    <div className="mt-4 bg-white p-4 rounded-md shadow-md">
+      <h2 className="text-xl font-semibold mb-2">Upcoming Meetings</h2>
+      <ul>
+        {coursedet.courseMeetings.map((meeting, index) => (
+          <li key={index} className="flex justify-between items-center p-2 border-b">
+            <span>{meeting.title}</span>
+            <button
+              onClick={() => window.open(meeting.meetingLink, "_blank")}
+              className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 transition"
+            >
+              Join
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</div>
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="border-b border-gray-200 p-6">

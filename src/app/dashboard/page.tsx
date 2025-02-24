@@ -1,37 +1,79 @@
-
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import LoginFooter from "../Components/loginfooter/page";
 import LoginNavbar from "../Components/loginnavbar/page";
-import {
-  Book,
-  ClipboardList,
-  TrendingUp,
-  User,
-  Video
-} from 'lucide-react';
+import { Book, ClipboardList, TrendingUp, User, Video } from 'lucide-react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import Buyedcourses from "../Components/buyedcourse/page";
 import MonthlyGoals from "../Components/monthlygoals/monthlygoals";
+import { useAppSelector } from "../../../lib/hooks";
 
-type DateValue = Date | [Date | null, Date | null] | null;
+// Modal component to show meetings
+const MeetingModal: React.FC<{ meetings: any[], onClose: () => void }> = ({ meetings, onClose }) => {
+  return (
+    <div className="fixed inset-0 bg-gray-800 bg-opacity-70 flex justify-center items-center z-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-3/4 md:w-1/2 text-gray-800 relative">
+        {/* Close button inside the modal */}
+        <button onClick={onClose} className="absolute top-2 right-2 text-red-600 font-bold hover:text-red-800 transition-colors">
+          X
+        </button>
+        <h2 className="text-xl font-bold mb-4 text-gray-900">Meetings</h2>
+        <ul>
+          {meetings.length > 0 ? (
+            meetings.map((meeting, index) => (
+              <li key={index} className="mb-4">
+                <h3 className="font-semibold">{meeting.topic}</h3>
+                <p><strong>Start Time:</strong> {new Date(meeting.start_time).toLocaleString()}</p>
+                <p><strong>Link:</strong> <a href={meeting.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 transition-colors">{meeting.link}</a></p>
+                <p><strong>Duration:</strong> {meeting.duration}</p>
+              </li>
+            ))
+          ) : (
+            <p>No meetings available.</p>
+          )}
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+
 
 const Dashboard: React.FC = () => {
   const router = useRouter();
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [date, setDate] = useState<DateValue>(new Date());
-  const [isCollapsed, setIsCollapsed] = useState<boolean | null>(null);
+  const [date, setDate] = useState<Date | null>(new Date());
+  const [meetings, setMeetings] = useState<any[]>([]);  // Ensure meetings is an array
+  const [showModal, setShowModal] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState<boolean | null>(false); // Corrected this line
+ const userid= useAppSelector((state) => state.user);
 
   useEffect(() => {
-    const saved = localStorage.getItem("sidebarCollapsed");
-    setIsCollapsed(saved ? JSON.parse(saved) : false);
-  }, []);
+    // Fetch meetings data using the userid from the login API
+    const fetchMeetings = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/api/meeting?userid=${userid.id}`);
+        const data = await response.json();
+        
+        // Ensure the data is an array
+        if (Array.isArray(data)) {
+          setMeetings(data);
+        } else {
+          setMeetings([]);  // Set as empty array if not an array
+        }
+      } catch (error) {
+        console.error("Error fetching meetings:", error);
+      }
+    };
 
-  const handleDateChange = (value: DateValue) => {
+    fetchMeetings();
+  }, [userid]);
+
+  const handleDateChange = (value: Date | null) => {
     setDate(value);
     console.log('Selected date:', value);
   };
@@ -129,6 +171,13 @@ const Dashboard: React.FC = () => {
                   </button>
                 </div>
               </div>
+              {/* Button to open the meeting popup */}
+              <button
+  onClick={() => setShowModal(true)}
+  className="p-4 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors"
+>
+  View Meetings
+</button>
             </div>
           </section>
 
@@ -138,6 +187,9 @@ const Dashboard: React.FC = () => {
 
       <Buyedcourses />
       <LoginFooter />
+
+      {/* Render the modal */}
+      {showModal && <MeetingModal meetings={meetings} onClose={() => setShowModal(false)} />}
     </div>
   );
 };
