@@ -327,34 +327,65 @@ console.log(data)
             <span className="font-medium">Share & Earn</span>
           </button>
         </div>
-{coursedet?.courseMeetings  && <button>{`DAY ${coursedet?.courseMeetings[0].day}` }</button>}
-<div className="p-4">
-  <button
-    onClick={() => setShowMeetings(!showMeetings)}
-    className="bg-blue-600 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-700 transition"
-  >
-    {showMeetings ? "Hide Meetings" : "See All Meetings"}
-  </button>
 
-  {showMeetings && coursedet?.courseMeetings?.length > 0 && (
-    <div className="mt-4 bg-white p-4 rounded-md shadow-md">
-      <h2 className="text-xl font-semibold mb-2">Upcoming Meetings</h2>
-      <ul>
-        {coursedet.courseMeetings.map((meeting, index) => (
-          <li key={index} className="flex justify-between items-center p-2 border-b">
-            <span>{meeting.title}</span>
+<div className="p-4">
+      <button
+        onClick={() => setShowMeetings(true)}
+        className="bg-blue-600 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-700 transition"
+      >
+        See All Meetings
+      </button>
+
+      {showMeetings && coursedet?.courseMeetings?.length > 0 && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-96 relative border border-gray-300">
+            {/* Close button */}
             <button
-              onClick={() => window.open(meeting.meetingLink, "_blank")}
-              className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 transition"
+              onClick={() => setShowMeetings(false)}
+              className="absolute top-2 right-2 text-gray-700 hover:text-red-500 text-2xl font-bold"
             >
-              Join
+              ×
             </button>
-          </li>
-        ))}
-      </ul>
+
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
+              Joining Meetings
+            </h2>
+
+            <ul className="max-h-96 overflow-y-auto">
+              {coursedet.courseMeetings.map((meeting, index) => (
+                <li
+                  key={meeting._id || index}
+                  className="p-4 bg-white shadow-sm rounded-md mb-3 border border-gray-300"
+                >
+                  <p className="text-gray-800">
+                    <strong>Meeting ID:</strong> {meeting._id}
+                  </p>
+                  <p className="text-gray-800">
+                    <strong>User ID:</strong> {meeting.userId}
+                  </p>
+                  <p className="text-gray-800">
+                    <strong>Course ID:</strong> {meeting.courseId}
+                  </p>
+                  <p className="text-gray-800">
+                    <strong>Date:</strong>{" "}
+                    {new Date(meeting.meetingDate).toLocaleString()}
+                  </p>
+                  <p className="text-gray-800">
+                    <strong>Day:</strong> {meeting.day}
+                  </p>
+                  <button
+                    onClick={() => window.open(meeting.meetingLink, "_blank")}
+                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition mt-3 w-full"
+                  >
+                    Join Meeting
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
-  )}
-</div>
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="border-b border-gray-200 p-6">
