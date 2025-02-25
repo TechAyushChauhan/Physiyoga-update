@@ -385,34 +385,57 @@ const AppointmentForm: React.FC = () => {
           </div>
 
  {/* Date */}
-      <div>
-        <label htmlFor="date" className="block text-sm font-medium text-gray-600">Appointment Date</label>
-        <input
-          id="date"
-          name="date"
-          type="date"
-          value={formData.date}
-          onChange={handleChange}
-          className={`w-full px-4 py-2 border rounded-md text-black ${errors.date ? "border-red-500" : "border-gray-300"}`}
-        required
-        />
-        {errors.date && <p className="text-red-500 text-sm mt-1">{errors.date}</p>}
-      </div>
+<div>
+  <label htmlFor="date" className="block text-sm font-medium text-gray-600">
+    Appointment Date
+  </label>
+  <input
+    id="date"
+    name="date"
+    type="date"
+    value={formData.date}
+    onChange={handleChange}
+    onInput={(e) => {
+      const selectedDate = new Date(e.target.value);
+      const day = selectedDate.getDay(); // 0 = Sunday, 6 = Saturday
+      if (day === 0 || day === 6) {
+        e.target.value = "";
+        alert("Weekends are not allowed. Please select a weekday.");
+      }
+    }}
+    className={`w-full px-4 py-2 border rounded-md text-black ${
+      errors.date ? "border-red-500" : "border-gray-300"
+    }`}
+    required
+  />
+  {errors.date && <p className="text-red-500 text-sm mt-1">{errors.date}</p>}
+</div>
 
-      {/* Time */}
-      <div>
-        <label htmlFor="time" className="block text-sm font-medium text-gray-600">Appointment Time</label>
-        <input
-          id="time"
-          name="time"
-          type="time"
-          value={formData.time}
-          onChange={handleChange}
-          className={`w-full px-4 py-2 border rounded-md text-black ${errors.time ? "border-red-500" : "border-gray-300"}`}
-   
-        />
-        {errors.time && <p className="text-red-500 text-sm mt-1">{errors.time}</p>}
-      </div>
+
+      <div className="mb-6">
+          <label htmlFor="time" className="block text-sm font-medium text-gray-600">
+            Appointment Time
+          </label>
+          <select
+            id="time"
+            name="time"
+            value={formData.time}
+            onChange={handleChange}
+            className={`w-full px-4 py-2 border rounded-md text-black ${
+              errors.time ? "border-red-500" : "border-gray-300"
+            }`}
+          >
+            <option value="">Select Time</option>
+            <option value="3:00 PM - 3:45 PM">3:00 PM - 3:45 PM</option>
+            <option value="4:00 PM - 4:45 PM">4:00 PM - 4:45 PM</option>
+            <option value="5:00 PM - 5:45 PM">5:00 PM - 5:45 PM</option>
+            <option value="6:00 PM - 6:45 PM">6:00 PM - 6:45 PM</option>
+            <option value="7:00 PM - 7:45 PM">7:00 PM - 7:45 PM</option>
+            <option value="8:00 PM - 8:45 PM">8:00 PM - 8:45 PM</option>
+          </select>
+
+          {errors.time && <p className="text-red-500 text-sm mt-1">{errors.time}</p>}
+        </div>
       
           <div>
             <label htmlFor="hereabout" className="block text-lg font-medium text-black pb-5">
