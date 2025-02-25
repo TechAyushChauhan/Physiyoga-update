@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Bell, ChevronDown, Menu, Home, BookOpen, Settings, LogOut, User } from 'lucide-react';
+import { useAppSelector } from '../../../../lib/hooks';
 
 interface Notification {
   id: string | number;
@@ -37,13 +38,14 @@ const Header: React.FC<HeaderProps> = ({
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showAdminDropdown, setShowAdminDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-
+  const [showmenuadmin, setshowmenuadmin] = useState(false);
   const notificationsPanelRef = useRef<HTMLDivElement>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const adminDropdownRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
-
-  const adminNavItems: NavItem[] = [
+ const userid= useAppSelector((state) => state.user);
+ console.log(userid,"login data user")
+  const adminNavItems: NavItem[] | [] = [
     { path: '/appointmentdata', label: 'Appointment Data', icon: <Settings className="w-4 h-4" /> },
     { path: '/meetingdata', label: 'Course Meeting Data', icon: <BookOpen className="w-4 h-4" /> },
     { path: '/logindata', label: 'Login Data', icon: <User className="w-4 h-4" /> },
@@ -71,9 +73,17 @@ const Header: React.FC<HeaderProps> = ({
       });
     };
 
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+  useEffect(()=>{
+    console.log(userid.mobileOrEmail=="meet",userid.mobileOrEmail)
+    if (userid.mobileOrEmail=="meet") {
+      setshowmenuadmin(true)
+    }
+
+  },[userid])
 
   const handleNavigation = (path: string) => {
     setShowMobileMenu(false);
@@ -120,7 +130,7 @@ const Header: React.FC<HeaderProps> = ({
                 <span className="text-white font-bold text-xl">Y</span>
               </div>
               <h1 className="text-xl font-semibold text-gray-800 hidden sm:block">
-                Welcome, {loggedIn ? name : 'Guest'}
+                Welcome, {showmenuadmin ? userid.name : 'Guest'}
               </h1>
             </div>
           </div>
@@ -132,14 +142,14 @@ const Header: React.FC<HeaderProps> = ({
             
             {/* Admin Dropdown */}
             <div className="relative" ref={adminDropdownRef}>
-              <button
+         {(showmenuadmin) &&    <button
                 onClick={() => setShowAdminDropdown(!showAdminDropdown)}
                 className="group flex items-center space-x-2 px-4 py-2.5 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
               >
                 <Settings className="w-4 h-4 group-hover:text-blue-600 transition-colors duration-200" />
                 <span className="font-medium">Admin</span>
                 <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showAdminDropdown ? 'rotate-180' : ''}`} />
-              </button>
+              </button>}
               
               {showAdminDropdown && (
                 <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
@@ -216,8 +226,8 @@ const Header: React.FC<HeaderProps> = ({
               {showProfileMenu && (
                 <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
                   <div className="p-4 border-b border-gray-100 bg-gray-50">
-                    <p className="font-semibold text-gray-800">{name}</p>
-                    <p className="text-sm text-gray-500">Student</p>
+                    <p className="font-semibold text-gray-800">{showmenuadmin?userid.name:"Guest"}</p>
+                    {/* <p className="text-sm text-gray-500">Student</p> */}
                   </div>
                   <div className="p-2">
                     <button

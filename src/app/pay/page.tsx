@@ -19,7 +19,7 @@ function App() {
 
   const createRazorpayOrder = async (amount) => {
     try {
-      const response = await axios.post('http://localhost:3000/api/payment', {
+      const response = await axios.post('/api/payment', {
         amount: amount * 100,
         currency: 'INR',
       });
@@ -66,7 +66,7 @@ function App() {
     const paymentId = e.target.paymentId.value;
 
     try {
-      const response = await axios.get(`http://localhost:5000/payment/${paymentId}`);
+      const response = await axios.get(`/payment/${paymentId}`);
       setResponseState(response.data);
       setErrorMessage('');
     } catch (error) {

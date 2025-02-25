@@ -56,7 +56,7 @@ const Dashboard: React.FC = () => {
     // Fetch meetings data using the userid from the login API
     const fetchMeetings = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/meeting?userid=${userid.id}`);
+        const response = await fetch(`/meeting?userid=${userid.id}`);
         const data = await response.json();
         
         // Ensure the data is an array

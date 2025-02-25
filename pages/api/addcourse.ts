@@ -228,7 +228,34 @@ console.log(uploadedFileUrl)
         res.status(500).json({ message: 'Error retrieving courses', error: err.message });
       }
     }
-  }
+  }else  if (req.method === 'DELETE') {
+      const { db } = await connectToDatabase();
+      const { courseid } = req.query;
+      try {
+       
+  
+        // Find the user in the database
+        const user = await db.collection('courses').findOne({ _id: new ObjectId(courseid) });
+  
+        // If user not found
+        if (!courseid) {
+          return res.status(404).json({ msg: 'course not found' });
+        }
+  
+        // Delete the user from the database
+        const deleteResult = await db.collection('courses').deleteOne({ _id: user._id });
+  
+        // If no document was deleted
+     
+  
+        return res.status(200).json({
+          type: 'S',
+          msg: 'course deleted successfully',
+        });
+      } catch (error) {
+        console.error('Error deleting course:', error);
+        return res.status(500).send('Server error');
+      }}
       else {
       res.status(405).json({ message: 'Method Not Allowed' });
     }

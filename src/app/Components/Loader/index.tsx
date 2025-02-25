@@ -39,6 +39,7 @@ const Loader: React.FC = () => {
         refid: userData.user.referralCode || null,
         loggedIn: userData.type === "S" ? true : false,
         id:userData.user.id || null,
+        mobileOrEmail:userData.user.mobileOrEmail || null
       }));
       
       console.log(userData); // This contains the user details if successful

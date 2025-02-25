@@ -32,7 +32,7 @@ const ScheduleSection = () => {
   useEffect(() => {
     const fetchMeetings = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/schedule');
+        const response = await fetch('/api/schedule');
         if (!response.ok) throw new Error('Failed to fetch meetings');
         const data = await response.json();
 
@@ -89,7 +89,7 @@ const ScheduleSection = () => {
   const handleUpdateMeeting = async () => {
     if (editingMeeting) {
       try {
-        const response = await fetch(`http://localhost:3000/api/schedule`, {
+        const response = await fetch(`/api/schedule`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

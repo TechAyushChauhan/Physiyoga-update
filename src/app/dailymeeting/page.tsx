@@ -78,7 +78,7 @@ const MeetingInvitePage: React.FC = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/user', {
+      const response = await fetch('/api/user', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -149,7 +149,7 @@ const MeetingInvitePage: React.FC = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/schedule', {
+      const response = await fetch('/api/schedule', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

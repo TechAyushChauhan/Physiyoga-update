@@ -13,6 +13,7 @@ export const config = {
 };
 import AWS from 'aws-sdk';
 import { progress } from 'framer-motion';
+import ejs from 'ejs';
 
 
 // Set up AWS S3 client
@@ -23,6 +24,7 @@ const filePath = path.join(__dirname, 'myfile.txt');
 const bucketName = 'curetribevideo';
 const keyName = '6GitgH1vV5vHuVsJk/0MWZfrSfDGbTGYI2GOPWX9';
 
+import nodemailer from "nodemailer";
 // Function to upload the file
 const uploadFile = async (file,filename) => {
   try {
@@ -169,11 +171,13 @@ if (user) {
       if (err) {
         return res.status(500).json({ message: 'Error parsing the form data', error: err.message });
       }
+
+
   
       // Access the fields and files from the form data
-      const { status, _id } = fields; // Status and id fields should be in the form data
+      const { status='rejected', _id ,...otherfield} = fields; // Status and id fields should be in the form data
       console.log('Form data:', fields);
-      console.log('Files:', files);
+      console.log('otherfield:', otherfield);
   
       if (!_id || !status) {
         return res.status(400).json({
@@ -207,7 +211,58 @@ if (user) {
           { $set: { status } }
         );
   
-       console.log(updatedCourse)
+       console.log(updatedCourse,status,status=="approved","----------")
+       if (status=="approved") {
+        
+        const renderTemplate = async (data: object) => {
+          try {
+            const templatePath = path.resolve(`./lib/mailbuyedsuccess.ejs`);
+            return await ejs.renderFile(templatePath, data);
+          } catch (error) {
+            console.error("Error rendering template:", error);
+            throw new Error("Failed to render email template");
+          }
+        };
+        const templateData = {
+          EMAIL:otherfield.userEmail,
+          NAME:otherfield.name,
+          COURSE_NAME:otherfield.coursename,
+          COURSE_LINK: "https://physiyoga-test.netlify.app/"+otherfield.course,
+          SUPPORT_EMAIL:"mynameisayush007@gmail.com"
+         
+        };
+        
+        const html = await renderTemplate(templateData);
+          const receiver = {
+        from: "mynameisayush008@gmail.com",
+        to: `${otherfield.userEmail}`,
+        subject: 'physiyoga-login',
+        html: html,
+      };
+
+      const auth = nodemailer.createTransport({
+        service: "gmail",
+        secure: true,
+        port: 465,
+        auth: {
+          user: "mynameisayush008@gmail.com",
+          pass: "ftyk hlvt jvll avau"
+        }
+      });
+       const sendEmailPromise = new Promise<void>((resolve, reject) => {
+   auth.sendMail(receiver, (error) => {
+     if (error) {
+       reject(error);
+     } else {
+       resolve();
+     }
+   });
+ });
+
+ await sendEmailPromise;
+        
+       }
+     
   
         res.status(200).json({
           type: 'S',
@@ -309,7 +364,7 @@ if (user) {
               status:1,
               photo: 1,
               username: { $ifNull: ['$userDetails.username', 'Unknown'] }, // Get the username from userDetails
-              userEmail: { $ifNull: ['$userDetails.email', 'No email provided'] },
+              userEmail: { $ifNull: ['$userDetails.mobileOrEmail', 'No email provided'] },
               courseName: { $ifNull: ['$courseDetails.title', 'No course name'] }, // Get the course name from courseDetails
               pay: { $ifNull: ['$courseDetails.pay', 'No course name'] }, 
               time: 1,

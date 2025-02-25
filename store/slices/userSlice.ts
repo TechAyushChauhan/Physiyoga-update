@@ -6,10 +6,12 @@ interface UserState {
   refid: string | null;  
   loggedIn: boolean;
   id: string | null;
+  mobileOrEmail:string | null;
 }
 
 const initialState: UserState = {  
   name: null,
+  mobileOrEmail:null,
   refid:null,
   id:null,
   loggedIn: false,
@@ -20,17 +22,19 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action: PayloadAction<UserState>) => { // Use UserState, not Omit
-      const { name, refid, loggedIn,id } = action.payload;
+      const { name, refid, loggedIn,id, mobileOrEmail} = action.payload;
 
       state.name = name;
       state.refid = refid;
 state.id=id;
       state.loggedIn = loggedIn;
+      state.mobileOrEmail=mobileOrEmail
     },
     clearUser: (state) => {
       state.name = null;
       state.refid = null;
       state.loggedIn = false;
+      state.  mobileOrEmail=null
     },
   },
 });

@@ -27,9 +27,10 @@ const AdminPaymentDashboard = () => {
     fetchPayments();
   }, []);
 
-  const handleStatusChange = async (requestId, newStatus) => {
+  const handleStatusChange = async (requestId, newStatus,request?) => {
     try {
       // Determine the endpoint based on the status
+      console.log(request,"--------")
       const endpoint = newStatus === 'approved' 
         ? `/api/approve` 
         : `/api/approve`;
@@ -42,8 +43,14 @@ const AdminPaymentDashboard = () => {
           body: JSON.stringify({
             _id: requestId,
             status: newStatus,
+            ...(!request ? {} : { coursename: request. courseName,
+              userEmail: request.userEmail,
+              name:request.username,
+              course:request.course,
+            }), 
           }),
         });
+  
         
   
       if (!response.ok) {
@@ -201,7 +208,7 @@ const AdminPaymentDashboard = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
                       <button
-                        onClick={() => handleStatusChange(request._id, 'approved')}
+                        onClick={() => handleStatusChange(request._id, 'approved',request)}
                         className="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 p-2 rounded-full"
                         title="Approve"
                       >
@@ -270,7 +277,7 @@ const AdminPaymentDashboard = () => {
                       <img
                         src={selectedRequest.photo.includes('s3.eu-north-1.amazonaws.com') 
                           ? selectedRequest.photo 
-                          : `http://localhost:3000${selectedRequest.photo}`}
+                          : `${selectedRequest.photo}`}
                         alt="Payment Proof"
                         className="max-h-48 w-auto object-contain rounded-lg border border-gray-200"
                       />

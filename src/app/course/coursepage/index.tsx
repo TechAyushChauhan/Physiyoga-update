@@ -320,7 +320,7 @@ console.log(data)
             className="flex items-center justify-center px-6 py-4 bg-white rounded-xl hover:bg-gray-50 transition-colors shadow-sm border border-gray-200 group"
             onClick={() => {
               const shareableLink = `${window.location.origin}/course/${courseid}/${refid}`;
-              // ... existing share logic ...
+             
             }}
           >
             <FaShare className="text-purple-500 mr-2 group-hover:scale-110 transition-transform" />
