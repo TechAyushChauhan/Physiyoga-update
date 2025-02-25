@@ -119,7 +119,6 @@ const [appointdata,setappointdata]=useState([])
               <thead>
                 <tr className="bg-gray-100">
                   {[
-                    "Set Appointment",
                     "Appointment Date",
                     "Appointment Time",
                     "Name",
@@ -145,14 +144,7 @@ const [appointdata,setappointdata]=useState([])
               <tbody>
                 {appointdata.map((data, index) => (
                   <tr key={index} className="border-b hover:bg-gray-50">
-                    <td className="px-4 py-2">
-                      <button
-                        onClick={() => handleEdit(index)}
-                        className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm"
-                      >
-                        Set Time
-                      </button>
-                    </td>
+                  
                     <td className="px-4 py-2">{data.date}</td>
                     <td className="px-4 py-2">{data.time}</td>
                     <td className="px-4 py-2 font-medium">{data.name}</td>

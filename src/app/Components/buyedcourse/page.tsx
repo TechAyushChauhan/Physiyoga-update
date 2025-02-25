@@ -56,7 +56,7 @@ const Buyedcourses: React.FC = () => {
    const userid= useAppSelector((state) => state.user);
    
   const [isLoading, setIsLoading] = useState(true);
-console.log(userCourses)
+
   const getCourses = async (): Promise<void> => {
     dispatch(setloader(true));
     setIsLoading(true);
@@ -100,7 +100,7 @@ console.log(userCourses)
       value: convertedPrice.toFixed(2)
     };
   };
-console.log(userCourses,"djsn")
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-indigo-50">
      

@@ -1,7 +1,9 @@
 import { ObjectId } from 'mongodb';
 import { connectToDatabase } from '../../lib/mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
-
+import nodemailer from "nodemailer";
+import ejs from 'ejs';
+import path from 'path';
 export const config = {
   api: {
     bodyParser: true, // Enable body parser
@@ -42,15 +44,74 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
   } else if (req.method === 'POST') {
     try {
-      const {
-        name, gender, birthdate, mobileNumber, email, address, city, state, pincode,
-        appointmentDate, appointmentTime, howDidYouHear, referrer, medicalHistory,
+      const {date,time,mobile,
+        name, gender, birthdate,altMobile, mobileNumber, email, address, city, state, pincode,medicalInformation,allergy
+      ,otherMedicalInformation,medicines ,physiciannumber,othermedicines, appointmentDate, appointmentTime, howDidYouHear, referrer, medicalHistory,
         physicianContactNo, currentMedications, medicineAllergy,
       } = req.body;
 
  
+        
+        const renderTemplate = async (data: object) => {
+          try {
+            const templatePath = path.resolve(`./lib/mailappointmentsuccess.ejs`);
+            return await ejs.renderFile(templatePath, data);
+          } catch (error) {
+            console.error("Error rendering template:", error);
+            throw new Error("Failed to render email template");
+          }
+        };
+        const templateData = {
+          formData_date:date,
+          formData_time:time,
+          formData_name:name,
+          formData_gender: gender,
+          formData_birthdate:birthdate,
+          formData_mobile:mobile,
+          formData_altMobile : altMobile,
+          formData_email:email,
+          formData_address:address,
+          formData_city:city,
+          formData_state:state,
+          formData_pincode:pincode,
+          formData_medicalInformation:medicalInformation,
+          formData_allergy:allergy,
+          formData_otherMedicalInformation:otherMedicalInformation,
+          formData_medicines:medicines,
+          formData_othermedicines:othermedicines,
+          formData_physiciannumber:physiciannumber,
+        };
+        
+        const html = await renderTemplate(templateData);
+          const receiver = {
+        from: "mynameisayush008@gmail.com",
+        to: `mynameisayush008@gmail.com`,
+        subject: 'new appointment',
+        html: html,
+      };
 
-      // Insert the new appointment into the database
+      const auth = nodemailer.createTransport({
+        service: "gmail",
+        secure: true,
+        port: 465,
+        auth: {
+          user: "mynameisayush008@gmail.com",
+          pass: "ftyk hlvt jvll avau"
+        }
+      });
+       const sendEmailPromise = new Promise<void>((resolve, reject) => {
+   auth.sendMail(receiver, (error) => {
+     if (error) {
+       reject(error);
+     } else {
+       resolve();
+     }
+   });
+ });
+
+ await sendEmailPromise;
+        
+            // Insert the new appointment into the database
       const newAppointment = await db.collection('appointments').insertOne(req.body);
 
       res.status(201).json({

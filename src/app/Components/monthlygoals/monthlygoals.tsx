@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Progress } from '../ui/progress';
 import { Badge } from "../ui/badge";
@@ -16,6 +16,8 @@ import {
   Check,
   X
 } from 'lucide-react';
+import { useAppSelector } from '../../../../lib/hooks';
+import { AnyARecord } from 'dns';
 
 export interface GoalData {
   id: string;
@@ -52,28 +54,114 @@ const initialGoals: GoalData[] = [
 ];
 
 const GoalTracker: React.FC = () => {
-  const [goals, setGoals] = useState<GoalData[]>(initialGoals);
+  const [goals, setGoals] = useState<any[]>([]);
   const [showInputForm, setShowInputForm] = useState(false);
+    const userid= useAppSelector((state) => state.user);
+    const fetchMeetings = async () => {
+      try {
+        const response = await fetch(`/api/goalTracker?userId=${userid.id}`);
+        const data = await response.json();
+        console.log(data)
+        if(data.type=="S"){
+          console.log(data.data,"lll,l[l,")
+          setGoals(data.data)
+        }
+     
+      } catch (error) {
+        console.error("Error fetching meetings:", error);
+      }
+    };
+     useEffect(() => {
+        // Fetch meetings data using the userid from the login API
+        if (!userid.id) {
+          return
+        }
+        
+    
+        fetchMeetings();
+      }, [userid]);
+      const addgoal = async (data:any) => {
+        try {
+        //  console.log(playlistItemId,'watchedid')
+         if (!userid.id) {
+          return
+         }
+          const response = await fetch('/api/goalTracker', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          });
+    
+          if (response.ok) {
+            // console.log(await response.json())
+            // const updatedPlaylist = { ...playlist };
+            setShowInputForm(false);
+            fetchMeetings()
+            // fetchCourses(userId)
+            // console.log(updatedPlaylist)
+            // console.log(playlist)
+            // setWatched(true);
+          } else {
+            const data = await response.json();
+            console.error('Error:', data.message);
+          }
+        } catch (error) {
+          console.error('Error marking as watched:', error);
+        }
+      };
+    
 
   const handleGoalSubmit = (formData: Omit<GoalData, 'id' | 'daysLeft' | 'streak'>) => {
-    const newGoal: GoalData = {
+    console.log(formData)
+    const data={
+      userId:userid.id,
+      goalTitle:formData.title,
+      state:formData.state,
+      progress:formData.progress,
+      category:formData.category,
+      totalDays:formData.totalDays
+    }
+    const newGoal:any = {
       ...formData,
+      userId:userid.id,
       id: `goal-${goals.length + 1}`,
-      daysLeft: formData.totalDays,
+      totalDays: formData.totalDays,
       streak: 0
     };
-    setGoals([...goals, newGoal]);
-    setShowInputForm(false);
+   addgoal(data)
+ 
+    // setShowInputForm(false);
   };
+  const DeleteGoal = async (id) => {
+    try {
+      const response = await fetch(`/api/goalTracker?id=${id}`, {
+        method: 'DELETE'});
+      const data = await response.json();
+      console.log(data)
+      if(data.type=="S"){
+        fetchMeetings()
+        console.log(data.data)
+        setGoals(data.data)
+      }
+   
+    } catch (error) {
+      console.error("Error fetching meetings:", error);
+    }
+  };
+  
 
   const handleDeleteGoal = (goalId: string) => {
-    setGoals(goals.filter(goal => goal.id !== goalId));
+    console.log(goalId)
+    DeleteGoal(goalId)
+    // setGoals(goals.filter(goal => goal.id !== goalId));
   };
 
   const handleUpdateGoal = (updatedGoal: GoalData) => {
-    setGoals(goals.map(goal => 
-      goal.id === updatedGoal.id ? updatedGoal : goal
-    ));
+    // setGoals(goals.map(goal => 
+    //   goal.id === updatedGoal.id ? updatedGoal : goal
+    // ));
   };
 
   return (
@@ -104,9 +192,9 @@ const GoalTracker: React.FC = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {goals.map((goal) => (
+        {(goals || []).map((goal) => (
           <GoalCard 
-            key={goal.id} 
+            key={goal._id} 
             goal={goal} 
             onDelete={handleDeleteGoal}
             onUpdate={handleUpdateGoal}
@@ -118,9 +206,9 @@ const GoalTracker: React.FC = () => {
 };
 
 const GoalCard: React.FC<{
-  goal: GoalData;
+  goal: AnyARecord;
   onDelete: (id: string) => void;
-  onUpdate: (goal: GoalData) => void;
+  onUpdate: (goal: any) => void;
 }> = ({ goal, onDelete, onUpdate }) => {
   const [isEditingState, setIsEditingState] = useState(false);
   const [isEditingProgress, setIsEditingProgress] = useState(false);
@@ -158,7 +246,7 @@ const GoalCard: React.FC<{
       <CardHeader className="pb-4 px-5">
   <div className="flex justify-between items-start gap-4">
     <CardTitle className="text-lg font-semibold text-gray-800 leading-tight">
-      {goal.title}
+      {goal.goalTitle}
     </CardTitle>
     <div className="flex items-center gap-3">
       {isEditingState ? (
@@ -217,7 +305,7 @@ const GoalCard: React.FC<{
         variant="ghost"
         size="sm"
         className="h-9 w-9 p-0 rounded-full hover:bg-red-50 text-gray-400 hover:text-red-600 transition-all duration-200 ml-1"
-        onClick={() => onDelete(goal.id)}
+        onClick={() => onDelete(goal._id)}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -302,7 +390,7 @@ const GoalCard: React.FC<{
           </div>
           <div className="flex items-center gap-2 justify-end text-sm text-gray-600">
             <Calendar className="h-4 w-4" />
-            <span>{goal.daysLeft} days left</span>
+            <span>{goal.totalDays} days left</span>
           </div>
         </div>
       </CardContent>
